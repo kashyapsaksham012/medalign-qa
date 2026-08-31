@@ -1,0 +1,123 @@
+# Machine-readable dataset specification for the MultiMedQA replication.
+# Derived from project_healthcare_.pdf Section 3.1 + Table 1 and from inspection
+# of the local files. See docs/replication_plan.md Section 5 for prose.
+
+datasets:
+
+  medqa_usmle_4opt:
+    name: "MedQA (USMLE), 4-option"
+    paper_ref: "[33] Jin et al., Applied Sciences 11:6421 (2021)"
+    role: multiple_choice
+    domain: "professional medical exam (US, USMLE)"
+    open_or_closed: open
+    format: "question + 4 options + gold letter"
+    splits_used: {dev_for_exemplars: "train+dev (11450)", eval: "test (1273)"}
+    record_schema: [question, options(A..D), answer, answer_idx, meta_info, metamap_phrases]
+    gold: answer_idx
+    local: present
+    local_path: "data_clean.zip::data_clean/questions/US/4_options/phrases_no_exclude_{split}.jsonl"
+    classification: DATASET-VERIFIED
+    used_for: [Table1, Table4, Table5, Table6, Table7, Fig3, FigA1, FigA2, Fig5, human_eval(no)]
+    prompts: {few_shot: "Table A.13 (verbatim)", cot: "Table A.18 (verbatim)"}
+
+  medmcqa:
+    name: "MedMCQA"
+    paper_ref: "[64] Pal et al., CHIL 2022"
+    role: multiple_choice
+    domain: "professional medical entrance exam (India, AIIMS/NEET)"
+    open_or_closed: open
+    format: "question + 4 options (opa..opd) + cop (1-indexed)"
+    splits_used: {dev_for_exemplars: "train (182822)", eval: "valid (4183) [RA-01]"}
+    record_schema: [question, exp, cop, opa, opb, opc, opd, subject_name, topic_name, id, choice_type]
+    gold: cop
+    local: present
+    local_path: "data.zip::{train,dev,test}.json"
+    classification: DATASET-VERIFIED
+    caveats: ["test labels withheld (0/6150)", "paper 'dev'=training split"]
+    used_for: [Table1, Table5, Table6, Table7, Fig3, FigA1, FigA2]
+    prompts: {few_shot: "Table A.14 (verbatim)", cot: "Table A.19 (verbatim)"}
+
+  pubmedqa:
+    name: "PubMedQA (pqa_labeled)"
+    paper_ref: "[34] Jin et al., EMNLP 2019"
+    role: multiple_choice
+    domain: "biomedical research literature"
+    open_or_closed: closed
+    format: "question + context (abstract) + yes/no/maybe"
+    splits_used: {dev_for_exemplars: "official train/dev", eval: "official test (500) [RA-02]"}
+    record_schema: [QUESTION, CONTEXTS, LABELS, MESHES, final_decision, LONG_ANSWER]
+    gold: final_decision
+    local: MISSING
+    download: "github.com/pubmedqa/pubmedqa -> data/ori_pqal.json + data/test_ground_truth.json"
+    classification: MISSING
+    used_for: [Table1, Table5, Table6, Table7, Fig3]
+    prompts: {few_shot: "Table A.15 (verbatim, 3-shot)", cot: "Table A.20 (verbatim)"}
+
+  mmlu_clinical:
+    name: "MMLU - 6 clinical subjects"
+    paper_ref: "[29] Hendrycks et al. 2021"
+    role: multiple_choice
+    domain: "professional/college medicine & biology"
+    open_or_closed: open
+    format: "question + 4 options + gold letter (headerless CSV)"
+    subjects: [anatomy, clinical_knowledge, college_medicine, medical_genetics, professional_medicine, college_biology]
+    splits_used: {dev_for_exemplars: "dev (5-shot)", eval: "test"}
+    gold: "column 5 (answer letter)"
+    local: MISSING
+    download: "people.eecs.berkeley.edu/~hendrycks/data.tar  (or HF cais/mmlu)"
+    classification: MISSING
+    used_for: [Fig4, TableA1]
+    prompts: {few_shot: "standard 5 dev exemplars [RA-06]", cot: "Table A.21 (verbatim)"}
+
+  liveqa_trec2017:
+    name: "LiveQA TREC-2017 (Medical)"
+    paper_ref: "[1] Abacha et al., TREC 2017"
+    role: long_form
+    domain: "consumer health questions (NLM)"
+    open_or_closed: open
+    format: "question (SUBJECT + MESSAGE) -> free-text long answer"
+    splits_used: {dev_for_exemplars: "train (634) [MISSING]", eval: "test (104); 20 -> human_eval"}
+    record_schema: [qid, SUBJECT, MESSAGE, NIST-PARAPHRASE, ANNOTATIONS(FOCUS,TYPE), ReferenceAnswers]
+    local: partial
+    local_path: "LiveQA_MedicalTask_TREC2017-master.zip::TestDataset/*"
+    download: "github.com/abachaa/LiveQA_MedicalTask_TREC2017 -> TrainingDatasets/Train-1.xml + Train-2.xml"
+    classification: INCOMPLETE
+    used_for: [Table1, human_eval(20), IPT_exemplar_pool]
+    prompts: {few_shot: "Table A.16 (partial) [RA-14]", cot: "NOT SPECIFIED IN PAPER"}
+
+  medicationqa:
+    name: "MedicationQA (MedInfo 2019)"
+    paper_ref: "[2] Abacha et al., MedInfo 2019"
+    role: long_form
+    domain: "consumer medication questions"
+    open_or_closed: open
+    format: "question -> free-text answer (+ drug focus, question type)"
+    splits_used: {eval: "all (674); 20 -> human_eval"}
+    record_schema: [Question, "Focus (Drug)", "Question Type", Answer, "Section Title", URL]
+    local: present
+    local_path: "MedInfo2019-QA-Medications.xlsx (sheet DrugQA, A1:F691)"
+    classification: DATASET-VERIFIED
+    caveats: ["690 local rows vs 674 in paper (RA-08)"]
+    used_for: [Table1, human_eval(20), IPT_exemplar_pool]
+    prompts: {few_shot: "Table A.17 (partial) [RA-14]", cot: "NOT SPECIFIED IN PAPER"}
+
+  healthsearchqa:
+    name: "HealthSearchQA (this paper's new dataset)"
+    paper_ref: "this paper (Section 3.1)"
+    role: long_form
+    domain: "commonly searched consumer health questions"
+    open_or_closed: open
+    format: "question only -> free-text long answer"
+    splits_used: {eval: "all (3173 released); 100 -> human_eval"}
+    record_schema: [question]
+    local: present
+    local_path: "41586_2023_6291_MOESM6_ESM.xlsx (sheet1=all, sheet2=140 human-eval subset)"
+    classification: DATASET-VERIFIED
+    caveats: ["3173 released vs 3375 stated in paper (RA-09; CANNOT BE DETERMINED why)"]
+    used_for: [Table1, human_eval(100), IPT_exemplar_pool]
+    prompts: {few_shot: "Section A.8 partial [RA-14]", cot: "NOT SPECIFIED IN PAPER"}
+
+not_required:
+  - "data_clean.zip textbooks/en/*.txt (18 English textbooks) -- MedQA retrieval corpus; this paper does NO retrieval"
+  - "data_clean.zip textbooks/zh_* -- Chinese; paper is English-only (Section 6.1)"
+  - "data_clean.zip questions/Mainland, questions/Taiwan -- Chinese MedQA; not used"

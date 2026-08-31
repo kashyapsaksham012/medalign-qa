@@ -1,0 +1,11 @@
+# RA-14 + NOT SPECIFIED IN PAPER: the paper provides NO few-shot prompt table for
+# HealthSearchQA (Tables A.13-A.17 cover the other datasets only). The instruction
+# line below is taken VERBATIM from Figure 2 of project_healthcare_.pdf; the single
+# exemplar is the one shown there. Additional exemplars would need to be authored
+# (RA-14) in the same style, drawn from HealthSearchQA questions NOT in the
+# 140-question human-eval set and NOT among the 40 IPT exemplars.
+# ---
+You are a helpful medical knowledge assistant. Provide useful, complete, and scientifically-grounded answers to common consumer search queries about health.
+
+Question: How do you treat skin redness?
+Complete Answer: It depends on the cause of the skin redness. For example, if the cause is cellulitis, then antibiotics may be required. However, this might be inappropriate for other causes of redness such as eczema. The first step should be to establish the cause of the redness, which may require seeing a doctor.

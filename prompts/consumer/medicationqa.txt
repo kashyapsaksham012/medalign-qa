@@ -1,0 +1,28 @@
+# VERBATIM transcription from project_healthcare_.pdf Table A.17 (pdftotext -layout).
+# PAPER-SPECIFIED. A few non-ASCII glyphs were normalised (deg, +/-, quotes).
+# The test question is appended by medalign_qa.preprocessing.prompt_builder.
+# ---
+You are a helpful medical assistant. Provide useful and scientifically-grounded explanation to justify the question statement.
+Question: what does vitamin d3 do?
+Answer: Vitamin D helps your body absorb calcium. Calcium is one of the main building blocks of bone. A lack of vitamin D
+can lead to bone diseases such as osteoporosis or rickets. Vitamin D also has a role in your nerve, muscle, and immune systems.
+Question: how reduce cholesterol?
+Answer: High cholesterol is when you have too much of a fatty substance called cholesterol in your blood. It's mainly caused
+by eating fatty food, not exercising enough, being overweight, smoking and drinking alcohol. It can also run in families. You
+can lower your cholesterol by eating healthily and getting more exercise. Some people also need to take medicines as advised
+by a doctor, for example statins or other options.
+Question: metoprolol pill how long before it takes effect?
+Answer: Metoprolol starts to work after about 2 hours, but it can take up to 1 week to fully take effect. You may not feel
+any different when you take metoprolol, but this doesn't mean it's not working.
+Question: how long do opioid withdrawals last?
+Answer: Opioid withdrawal symptoms can last anywhere from one week to one month. The first phase (acute withdrawal)
+begins about 12 hours after your last opioid use. It peaks at around 3 - 5 days, and lasts for approximately 1 - 4 weeks. The
+second phase (post-acute withdrawal) can last up to two years. The symptoms include mood swings, anxiety, variable energy,
+low enthusiasm, variable concentration, and disturbed sleep.
+Question: what foods should a person taking warfarin eat?
+Answer: Foods containing a lot of vitamin K can affect how warfarin works. These include green leafy vegetables, including
+broccoli, spinach and lettuce, chickpeas, liver, egg yolks, mature cheese and blue cheese, avocado, olive oil. It's important that
+you eat foods containing vitamin K, so rather than leaving them out of your diet, make sure you eat similar amounts of them
+regularly. This will mean the level of vitamin K in your blood stays fairly constant and makes it more likely that your INR
+level stays stable. Do not drink cranberry juice, grapefruit juice or pomegranate juice while you're taking warfarin. It can
+increase the effect of your medicine and put you at higher risk of bleeding.

@@ -1,0 +1,101 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+src/*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Unit test / coverage
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+cover/
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+
+# Environments
+.env
+.env.*
+!.env.example
+.venv/
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# IDE & Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Operating System
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Large raw archives & binaries at repo root (documented in metadata/data_provenance.md)
+/data.zip
+/data_clean.zip
+/LiveQA_MedicalTask_TREC2017-master.zip
+/MedInfo2019-QA-Medications.xlsx
+/41586_2023_6291_MOESM6_ESM.xlsx
+/project_healthcare_.pdf
+*.zip
+*.tar
+*.tar.gz
+*.tgz
+*.rar
+*.7z
+
+# Data trees: preserve directory layout via .gitkeep, ignore data payloads
+raw_data/*
+!raw_data/.gitkeep
+processed_data/*
+!processed_data/.gitkeep
+derived_data/*
+!derived_data/.gitkeep
+
+# Generated outputs & logs: preserve directory layout via .gitkeep, ignore contents
+results/*
+!results/.gitkeep
+figures/*
+!figures/.gitkeep
+tables/*
+!tables/.gitkeep
+logs/*
+!logs/.gitkeep

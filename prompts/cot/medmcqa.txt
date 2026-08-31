@@ -1,0 +1,43 @@
+# VERBATIM transcription from project_healthcare_.pdf Table A.19 (pdftotext -layout).
+# PAPER-SPECIFIED. A few non-ASCII glyphs were normalised (deg, +/-, quotes).
+# The test question is appended by medalign_qa.preprocessing.prompt_builder.
+# ---
+Instructions: The following are multiple-choice questions about medical knowledge. Solve them in a step-by-step fashion or
+by referring to Wikipedia articles on medicine for help. Output a single option as the final answer.
+
+Question: Maximum increase in prolactin level is caused by:
+(A) Risperidone (B) Clozapine (C) Olanzapine (D) Aripiprazole
+Explanation: Clozapine generally does not raise prolactin levels. Atypicals such as olanzapine and aripiprazole cause small if
+no elevation. Risperidone is known to result in a sustained elevated prolactin level. Therefore risperidone is likely to cause the
+maximum increase in prolactin level.
+Answer: (A)
+
+Question: What is the age of routine screening mammography?
+(A) 20 years (B) 30 years (C) 40 years (D) 50 years
+Explanation: The age of routine screening depends on the country you are interested in and varies widely. For the US, it is
+40 years of age according to the American Cancer Society. In Europe, it is typically closer to 50 years. For a patient based in
+the US, the best answer is 40 years.
+Answer: (C)
+
+Question: A 65-year-old male complains of severe back pain and inability to move his left lower limb. Radiographic studies
+demonstrate the compression of nerve elements at the intervertebral foramen between vertebrae L5 and S1. Which structure is
+most likely responsible for this space-occupying lesion?
+(A) Anulus fibrosus (B) Nucleus pulposus (C) Posterior longitudinal ligament (D) Anterior longitudinal ligament
+Explanation: This man describes a herniated invertebral disk through a tear in the surrounding annulus fibrosus. The
+soft, gelatinous "nucleus pulposus" is forced out through a weakened part of the disk, resulting in back pain and nerve root
+irritation. In this case, the impingement is resulting in paralysis, and should be considered a medical emergency. Overall, the
+structure that is causing the compression and symptoms is the nucleus pulposus.
+Answer: (B)
+
+Question: Neuroendocrine cells in the lungs are:
+(A) Dendritic cells (B) Type I pneumocytes (C) Type II pneumocytes (D) APUD cells
+Explanation: Neuroendocrine cells, which are also known as Kultschitsky-type cells, Feyrter cells and APUD cells, are found
+in the basal layer of the surface epithelium and in the bronchial glands.
+Answer: (D)
+
+Question: Presence of it indicates remote contamination of water
+(A) Streptococci (B) Staphalococci (C) Clastridium pertringes (D) Nibrio
+Explanation: Because Clostridium perfringens spores are both specific to sewage contamination and environmentally stable,
+they are considered as possible conservative indicators of human fecal contamination and possible surrogates for environmentally
+stable pathogens.
+Answer: (C)

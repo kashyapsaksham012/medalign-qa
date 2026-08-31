@@ -1,0 +1,21 @@
+# MedAlign QA — replication of "Large Language Models Encode Clinical Knowledge"
+# (Singhal et al. 2022, arXiv:2212.13138v1 / Nature 2023, s41586-023-06291-3)
+#
+# Model-INDEPENDENT stack only (Phases 1-8, harness code, statistics, figures).
+# The paper's models (PaLM / Flan-PaLM / Med-PaLM) are not public; no model runtime
+# is pinned here. If a SUBSTITUTE model run is later authorised (REPLICATION
+# ASSUMPTION RA-16), add torch/transformers/accelerate (or an API client) separately.
+#
+# Exact versions are those resolved on 2026-08-31 with CPython 3.14.7 on Windows.
+# Full transitive freeze: requirements.lock.txt
+
+numpy==2.5.2
+pandas==3.0.5
+scipy==1.18.1          # non-parametric bootstrap (paper Section 4.5)
+openpyxl==3.1.5        # MedicationQA + HealthSearchQA .xlsx ingest
+lxml==6.1.2            # LiveQA TREC-2017 XML parsing
+requests==2.34.2       # dataset downloads (PubMedQA, MMLU, LiveQA train)
+matplotlib==3.11.1     # Figures 3-11, A.1-A.2
+PyYAML==6.0.3          # configs + metadata
+tqdm==4.70.0
+pytest==9.1.1

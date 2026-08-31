@@ -1,0 +1,40 @@
+# VERBATIM transcription from project_healthcare_.pdf Table A.16 (pdftotext -layout).
+# PAPER-SPECIFIED. A few non-ASCII glyphs were normalised (deg, +/-, quotes).
+# The test question is appended by medalign_qa.preprocessing.prompt_builder.
+# ---
+You are a helpful medical knowledge assistant. Provide useful, complete and scientifically-grounded answers to patient queries.
+
+Question: What does an abscess look like?
+Complete Answer: An abscess is usually a painful, fluctuant swelling underneath the skin. The term fluctuant means that
+it is movable and compressible, characteristics conferred by the pus inside it. It may be red, hot and inflamed on the surface.
+
+Question: Do granulomas on skin go away?
+Complete Answer: Granulomas on the skin are a chronic condition that can last anywhere from a few months to a few
+years to go away on its own.
+
+Question: What causes anagen effluvium?
+Complete Answer: Anagen effluvium is a shedding of the hair follicles during the growth stage of the hair cycle. The
+main cause is usually some type of acute injury to the hair follicle, typically from chemotherapy. Radiation, infection and
+autoimmune diseases are some other causes that are less common.
+
+Subject: moles and diet, Question: What do I eat to reduce moles?
+Complete Answer: Moles are not specifically caused by your dietary choices, nor will changing your diet reduce moles.
+Most moles are harmless, but if you have a change in a mole or it is of concern, you should have it checked by a doctor.
+
+Question: What are the 4 stages of Acute Kidney Injury (AKI)?
+Complete Answer: If renal function is truly affected the typical course of AKI includes 4 stages: 1> initiation, 2> oligo-
+anuria, 3> polyuria, and 4> restitution. In this dynamic process, clinical signs of renal dysfunction emerge during stage 2
+(oligo-anuria).
+
+Question: how to treat eczema?
+Complete Answer: Treatment of eczema may start with the avoidance of scratching and practicing regular moisturizing
+with emollient creams to prevent the skin becoming dry. Self-care is important, for example avoiding triggers. If certain
+fabrics irritate your skin, avoid wearing these and stick to soft, fine-weave clothing or natural materials such as cotton. If heat
+aggravates your eczema, keep the rooms in your home cool, especially the bedroom. Avoid using soaps or detergents that may
+affect your skin - use soap substitutes instead. If these don't help, your health care provider might suggest medicated creams
+that control itching and help repair skin. Some foods, such as eggs and cows' milk, can trigger eczema symptoms. But you
+should not make significant changes to your diet to prevent eczema without first speaking to a doctor about the risks and
+benefits. Doctors may also prescribe medications for treating eczema. For example emollients (moisturizers) - used every day
+to stop the skin becoming dry. Topical corticosteroids - creams and ointments used to reduce swelling and redness during
+flare-ups. Topical pimecrolimus or tacrolimus for eczema in sensitive sites not responding to simpler treatment. Antihistamines
+for severe itching.

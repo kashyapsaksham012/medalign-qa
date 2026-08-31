@@ -1,0 +1,80 @@
+# Global replication constants.
+# Each value is tagged with an evidence label. Values marked REPLICATION ASSUMPTION
+# are OUR choices to fill gaps; they are NOT what the authors necessarily did.
+
+seed: 0                      # REPLICATION ASSUMPTION (RA-19) — paper reports no seed
+
+# --- Prompting (Section 3.3.2, 4.4) ---
+few_shot:
+  medqa: 5                   # PAPER-SPECIFIED (line ~571)
+  medmcqa: 5                 # PAPER-SPECIFIED
+  pubmedqa: 3                # PAPER-SPECIFIED ("3 or fewer" for context budget)
+  mmlu: 5                    # PAPER-SPECIFIED (standard MMLU 5-shot)
+  consumer: 5               # PAPER-SPECIFIED (line ~571, "Typically we used 5")
+
+self_consistency:
+  n_chains: 11               # PAPER-SPECIFIED (line ~854)
+  temperature: 0.7           # NOT SPECIFIED IN PAPER (preprint) -> REPLICATION ASSUMPTION (RA-03)
+  temperature_sweep: [0.5, 0.7, 1.0]   # REPLICATION ASSUMPTION (RA-03)
+  top_p: 0.95                # NOT SPECIFIED IN PAPER -> REPLICATION ASSUMPTION (RA-04)
+  top_k: 40                  # NOT SPECIFIED IN PAPER -> REPLICATION ASSUMPTION (RA-04)
+  tie_break: first_seen      # NOT SPECIFIED IN PAPER -> REPLICATION ASSUMPTION (RA-04)
+
+selective_prediction:
+  n_chains: 41               # PAPER-SPECIFIED (line ~870)
+  prompt: cot                # PAPER-SPECIFIED (CoT + self-consistency)
+  dataset: medqa_usmle_4opt  # PAPER-SPECIFIED (Fig 5)
+  deferral_grid: [0.0, 0.05, 0.1, 0.15, 0.2, 0.25, 0.3, 0.35, 0.4, 0.45]  # DERIVED FROM PAPER (Fig 5 x-axis)
+
+variance_check:
+  dataset: medqa_usmle_4opt  # PAPER-SPECIFIED (A.2)
+  repeats: 4                 # PAPER-SPECIFIED (A.2)
+  reported_variance: 0.078   # PAPER-SPECIFIED (A.2) -- reference only
+
+# --- Instruction Prompt Tuning -> Med-PaLM (Section 3.3.3, A.1) ---
+instruction_prompt_tuning:
+  base_model: flan-palm-540b   # PAPER-SPECIFIED  (UNOBTAINABLE -> blocker B1/B2)
+  soft_prompt_length: 100      # PAPER-SPECIFIED (A.1)
+  embedding_dim: 18432         # PAPER-SPECIFIED (A.1)
+  trainable_params: 1_840_000  # PAPER-SPECIFIED (A.1, "1.84M")
+  init: uniform                # PAPER-SPECIFIED (A.1)
+  init_low: -0.5               # PAPER-SPECIFIED (A.1)
+  init_high: 0.5               # PAPER-SPECIFIED (A.1)
+  optimizer: adamw             # PAPER-SPECIFIED (A.1, ref [55])
+  lr_grid: [0.001, 0.003, 0.01]        # PAPER-SPECIFIED (A.1)
+  weight_decay_grid: [0.001, 0.00001]  # PAPER-SPECIFIED (A.1)
+  batch_size: 32               # PAPER-SPECIFIED (A.1)
+  steps: 200                   # PAPER-SPECIFIED (A.1)
+  chosen_lr: 0.003             # PAPER-SPECIFIED (A.1)
+  chosen_weight_decay: 0.00001 # PAPER-SPECIFIED (A.1)
+  n_exemplars: 40              # PAPER-SPECIFIED (line ~693) -- content NOT released (blocker B3)
+  lr_schedule: constant        # NOT SPECIFIED IN PAPER -> REPLICATION ASSUMPTION (RA-10)
+  warmup_steps: 0              # NOT SPECIFIED IN PAPER -> REPLICATION ASSUMPTION (RA-10)
+  max_seq_len: 2048            # NOT SPECIFIED IN PAPER -> REPLICATION ASSUMPTION (RA-10)
+  loss: token_cross_entropy    # DERIVED FROM PAPER (only sensible objective)
+  checkpoint_selection: clinician_ranking  # PAPER-SPECIFIED (A.1) -- UNOBTAINABLE (blocker B4)
+
+# --- Human evaluation statistics (Section 4.5, A.7) ---
+human_eval:
+  n_questions: 140            # PAPER-SPECIFIED (line ~878)
+  composition: {healthsearchqa: 100, liveqa: 20, medicationqa: 20}  # PAPER-SPECIFIED
+  answer_sources: [clinician_reference, flan_palm_540b, med_palm_540b]  # PAPER-SPECIFIED
+  n_clinician_raters: 9      # PAPER-SPECIFIED (line ~920)
+  ratings_per_answer: 1      # PAPER-SPECIFIED (line ~918, single-rating)
+  n_lay_raters: 5            # PAPER-SPECIFIED (line ~514)
+  bootstrap_replicas: 100    # PAPER-SPECIFIED (line ~921)
+  bootstrap_interval: percentile_95   # PAPER-SPECIFIED (line ~922)
+  bootstrap_resample_unit: question   # NOT SPECIFIED IN PAPER -> REPLICATION ASSUMPTION (RA-13)
+
+# --- Paper-to-result comparison tolerances (Phase 19) ---
+# REPLICATION ASSUMPTION (RA-17): the paper establishes NO tolerances.
+# These bands are derived from reported n and the single variance figure (A.2).
+tolerances:
+  dataset_counts_abs: 0            # zero tolerance (documented caveats excepted)
+  eval_set_composition_abs: 0
+  mc_accuracy_small_n_pp: 4.0      # subsets n < ~300
+  mc_accuracy_large_n_pp: 1.0      # n >= ~1000, greedy
+  mc_accuracy_self_consistency_pp: 1.5
+  selective_prediction_endpoint_pp: 2.0
+  human_eval_point_pp: 5.0
+  human_eval_ci_halfwidth_relative: 0.5

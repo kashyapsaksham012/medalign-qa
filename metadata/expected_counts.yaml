@@ -1,0 +1,76 @@
+# Verification targets for Phase 3. Sources:
+#   PAPER  = project_healthcare_.pdf (arXiv:2212.13138v1), Table 1 / Section 3.1
+#   LOCAL  = counted from the files already in this repo (this session)
+#   OFFICIAL = the public release of the dataset (to be confirmed on download)
+
+medqa_usmle_4opt:
+  source_file: "data_clean.zip -> data_clean/questions/US/4_options/phrases_no_exclude_{split}.jsonl"
+  paper_dev: 11450          # PAPER (Table 1)  == local train(10178) + local dev(1272)
+  paper_test: 1273          # PAPER (Table 1)
+  local_train: 10178        # DATASET-VERIFIED
+  local_dev: 1272           # DATASET-VERIFIED
+  local_test: 1273          # DATASET-VERIFIED
+  n_options: 4              # PAPER-SPECIFIED / DATASET-VERIFIED
+  gold_field: answer_idx    # DATASET-VERIFIED (present in all splits)
+
+medmcqa:
+  source_file: "data.zip -> {train,dev,test}.json (JSON Lines)"
+  local_train: 182822       # DATASET-VERIFIED
+  local_valid: 4183         # DATASET-VERIFIED  (paper Table 1 shows 6.1K for 'test'; see note)
+  local_test: 6150          # DATASET-VERIFIED  (labels withheld: 0/6150 have `cop`)
+  answer_field: cop         # DATASET-VERIFIED
+  answer_indexing: one_based  # DATASET-VERIFIED  (1=opa,2=opb,3=opc,4=opd)
+  eval_split_used: valid    # REPLICATION ASSUMPTION (RA-01)
+  note: "Paper 'dev' (187K) == training split; 57.6% reported 'on the dev set'."
+
+pubmedqa:
+  source: "github.com/pubmedqa/pubmedqa (pqa_labeled)"
+  paper_dev: 500            # PAPER (Table 1)
+  paper_test: 500           # PAPER (Table 1)
+  official_labeled_total: 1000   # OFFICIAL (to confirm)
+  official_test_split: 500       # OFFICIAL (to confirm)
+  label_field: final_decision
+  labels: [yes, no, maybe]
+  status: MISSING
+
+mmlu_clinical:
+  source: "HF cais/mmlu (canonical). Berkeley data.tar host unreachable -> RA-21"
+  # DATASET-VERIFIED: the paper's Table 1 'dev' column for MMLU == the MMLU
+  # *validation* split size. The 5-shot exemplars come from the `dev` split
+  # (exactly 5 rows per subject, RA-06). Scoring is on `test` (Section 4.3).
+  fewshot_dev_rows_per_subject: 5   # RA-06
+  eval_split: test                  # PAPER-SPECIFIED (Section 4.3)
+  subjects:                # paper_dev == validation size ; test PAPER-SPECIFIED (Table 1)
+    anatomy:               {paper_dev: 14, validation: 14, test: 135}
+    clinical_knowledge:    {paper_dev: 29, validation: 29, test: 265}
+    college_medicine:      {paper_dev: 22, validation: 22, test: 173}
+    medical_genetics:      {paper_dev: 11, validation: 11, test: 100}
+    professional_medicine: {paper_dev: 31, validation: 31, test: 272}
+    college_biology:       {paper_dev: 16, validation: 16, test: 144}
+  status: DATASET-VERIFIED
+
+liveqa_trec2017:
+  source: "github.com/abachaa/LiveQA_MedicalTask_TREC2017"
+  paper_dev: 634           # PAPER (Table 1)  == Train-1 (388 pairs) + Train-2 (246 pairs)
+  paper_test: 104          # PAPER (Table 1)
+  local_test: 104          # DATASET-VERIFIED (<NLM-QUESTION> count in Test.xml)
+  local_train: null        # MISSING (TrainingDatasets/ not in the local zip)
+  train1_pairs: 388        # per Readme.txt
+  train2_pairs: 246        # per Readme.txt
+  status: INCOMPLETE
+
+medicationqa:
+  source_file: "MedInfo2019-QA-Medications.xlsx (sheet 'DrugQA')"
+  paper_test: 674          # PAPER (Table 1, "NA / 674")
+  local_rows: 690          # DATASET-VERIFIED (range A1:F691, minus header)
+  columns: [Question, "Focus (Drug)", "Question Type", Answer, "Section Title", URL]
+  reduction_rule: "non-empty Question AND Answer"   # REPLICATION ASSUMPTION (RA-08)
+  note: "690 local vs 674 paper -- 16-row gap not explained in paper."
+
+healthsearchqa:
+  source_file: "41586_2023_6291_MOESM6_ESM.xlsx"
+  paper_size: 3375         # PAPER (line ~137, ~425)
+  local_sheet1_nonempty: 3173   # DATASET-VERIFIED
+  local_sheet2_rows: 140        # DATASET-VERIFIED (the human-eval subset)
+  authoritative: local_sheet1_nonempty   # REPLICATION ASSUMPTION (RA-09)
+  note: "202-question gap vs paper -- CANNOT BE DETERMINED FROM AVAILABLE MATERIALS."

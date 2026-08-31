@@ -1,0 +1,39 @@
+# Replication Assumptions & Deviations Register
+
+Every entry is a choice **we** made to fill a gap the paper left open, or a forced
+deviation. **None of these are things the original authors are known to have done.**
+`PAPER-SPECIFIED` facts are NOT listed here — they live in `configs/global.yaml`
+and `metadata/`.
+
+| ID | Assumption / deviation | Applies to | Basis | Confidence |
+|---|---|---|---|---|
+| RA-01 | MedMCQA evaluated on the **4,183-row validation split**; few-shot exemplars from the 182,822-row train split | §4.2, Tables 5–7 | test labels withheld; paper's "dev"=train | Medium-High |
+| RA-02 | PubMedQA uses the official `pqa_labeled` **500-item test split**; other 500 for exemplars | §4.2 | official artifact; paper only says "500/500" | Medium |
+| RA-03 | Self-consistency / selective-prediction **temperature = 0.7**; sweep {0.5, 0.7, 1.0} | §4.4, Fig 5 | Nature version + common CoT-SC default | Medium |
+| RA-04 | SC decoding: top-p 0.95, top-k 40, ties broken first-seen | §4.4 | common defaults; paper silent | Low-Medium |
+| RA-05 | Answer extraction regex `Answer:\s*\(?([A-E])\)?`; fallback = last lone option letter; else counted wrong | §3.3.2 / all MC | paper says "Output a single option"; format from A.18 | Medium |
+| RA-06 | MMLU few-shot = the 5 official `dev` exemplars per subject | §4.3, A.3 | MMLU convention | Medium |
+| RA-07 | MedQA local file used = `data_clean/questions/US/4_options/phrases_no_exclude_{split}.jsonl` | §3.1 | matches "4 options"; counts align exactly | High |
+| RA-08 | MedicationQA analytic set = rows with non-empty `Question` AND `Answer` (record resulting N vs 674) | §3.1, Table 1 | 690 vs 674 gap unexplained | Medium |
+| RA-09 | HealthSearchQA authoritative set = the **3,173** released questions; 140-eval taken directly from sheet 2 | §3.1 | released artifact > preprint text | High |
+| RA-10 | IPT: constant LR, 0 warmup, max-seq-len 2048 | §3.3.3, A.1 | A.1 gives optimizer/LR/WD/batch/steps/init only | Low-Medium |
+| RA-11 | IPT checkpoint selection proxy (replacing clinician ranking): held-out NLL or LLM-judge — explicit deviation | §3.3.3 | clinician unavailable (B4) | Low |
+| RA-12 | 40 IPT exemplars reconstructed in the A.16/A.17 style (~13/14/13 HSQA/MedicationQA/LiveQA) | §3.3.4 | content not released (B3) | Low |
+| RA-13 | Human-eval bootstrap resamples the **140 questions** with replacement, 100 replicas, 95th percentile, fixed seed | §4.5 | paper: "non-parametric bootstrap, 100 replicas, 95% percentile"; unit unstated | Medium |
+| RA-14 | Consumer few-shot prompts reconstructed from A.16/A.17 + instruction lines verbatim | §3.3.2, B8 | extrapolation of shown examples | Low-Medium |
+| RA-15 | Comparison-model numbers (Table 4, Figs 3–4) copied from their source papers with citation, not re-run | §4.1–4.3 | this matches what the authors did | High |
+| RA-16 | **If Path B chosen:** a substitute open instruction-tuned model run through the identical harness; every number tagged `REPLICATION ASSUMPTION — SUBSTITUTE MODEL`, never compared 1:1 as "reproduced" | Phases 9–15 | B1/B2 | N/A (explicit deviation) |
+| RA-17 | Phase-19 tolerance bands in `configs/global.yaml` | Phase 19 | derived from reported n + A.2 variance; paper sets none | Low |
+| RA-18′ | Environment = CPython **3.14.7** + versions in `requirements.txt` (original plan said 3.11; only 3.14 is available on this machine and the model-independent stack works on it) | Phase 1 | machine constraint | N/A |
+| RA-19 | Fixed project-wide seed (0) for every stochastic step | all phases | reproducibility; paper reports none | N/A |
+| RA-20 | LiveQA **training set** sourced from the community mirror `truehealth/liveqa` (flattened QA-pair parquet, 635 rows). The canonical `abachaa/LiveQA_MedicalTask_TREC2017` repo hosts ONLY the test set (verified via GitHub trees API); the training XMLs it references are not published anywhere by the original authors. Provenance is third-party -> `UNVERIFIED`. | §3.1, Table 1 "dev=634", exemplar sourcing | canonical source unavailable | Low-Medium |
+| RA-23 | The verbatim few-shot/CoT prompt exemplars (Tables A.13-A.21) were extracted via `pdftotext -layout`, which preserves the PDF's mid-sentence line wrapping and required normalising ~6 non-ASCII glyphs (° → " deg ", ± → "+/-", curly quotes). Exemplar *semantic content* is verbatim; *whitespace/line-breaks* are approximate. | §3.3.2, Phases 7/10/12 | PDF extraction artefact | High (content), Low (whitespace) |
+| RA-22 | The 140 human-eval questions are taken verbatim from the released xlsx sheet 2 (authoritative). Their **source-dataset attribution** (which are HSQA/LiveQA/MedicationQA) is reconstructed by string-matching; reconstruction gives 99/20/21 vs the paper's stated 100/20/20 (one question matches both HSQA and MedicationQA; 20 LiveQA items are inferred because their released text differs from the raw NIST MESSAGE). The eval set is exact; only the per-source breakdown is approximate. | §4.5, Phase 14/16 | sheet 2 has no source column | Medium |
+| RA-21 | MMLU acquired from canonical HF `cais/mmlu` per-subject parquet (Berkeley `data.tar` host was unreachable from the build machine); converted to the original headerless CSV shape `[question, A, B, C, D, answer_letter]` | §4.3, Fig 4, Table A.1 | canonical tar host timed out; `cais/mmlu` is the standard mirror | High |
+
+## Forced deviations from a strict faithful replication
+- **Models:** PaLM / Flan-PaLM / Med-PaLM cannot be obtained (B1, B2). A strict
+  faithful reproduction of the paper's numbers is therefore **not possible**.
+- **Human study:** §4.5 requires recruited clinicians and lay raters (B4).
+- These are recorded so no downstream reader mistakes a substitute result for a
+  reproduction of Med-PaLM.
