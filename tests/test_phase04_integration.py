@@ -49,16 +49,14 @@ def test_table1_pubmedqa_and_mmlu_exact():
 
 def test_medmcqa_gold_mapping_matches_raw_cop():
     _need(PROC / "medmcqa.jsonl")
-    raw = {r["id"]: r for r in io.read_jsonl(paths.RAW_MEDMCQA / "dev.json")}
+    # raw dev.json order == processed 'validation' order (loader enumerates in file order)
+    raw = list(io.read_jsonl(paths.RAW_MEDMCQA / "dev.json"))
     proc = [r for r in io.read_jsonl(PROC / "medmcqa.jsonl") if r["split"] == "validation"]
+    assert len(proc) == len(raw) == 4183
     letters = "ABCD"
-    checked = 0
-    for r in proc[:500]:
-        rid = r["meta"]["medmcqa_id"]
-        cop = raw[rid]["cop"]
-        assert r["gold"] == letters[cop - 1]   # 1-indexed cop -> letter
-        checked += 1
-    assert checked > 0
+    for rr, pr in list(zip(raw, proc))[:1000]:
+        assert pr["gold"] == letters[rr["cop"] - 1]   # 1-indexed cop -> letter
+        assert pr["question"] == rr["question"]
 
 
 def test_pubmedqa_test_split_is_official_500():

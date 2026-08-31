@@ -1,0 +1,73 @@
+# Every multiple-choice number from project_healthcare_.pdf, for Phase 19 comparison.
+# All values are PAPER-SPECIFIED with the cited location. Flan-PaLM / PaLM only
+# (Med-PaLM MC is A.6 preliminary; human-eval is out of scope).
+
+# Table 4 -- MedQA (USMLE, 4-opt) leaderboard (Section 4.1)
+table4_medqa_4opt:
+  flan_palm_540b: 67.6         # few-shot + self-consistency
+  pubmedgpt_2_7b: 50.3
+  dragon_360m: 47.5
+  biolinkbert_340m: 45.1
+  galactica_120b: 44.4
+  pubmedbert_100m: 38.1
+  gpt_neo_2_7b: 33.3
+
+medqa_5opt_flan_palm_540b: 62.0     # Section 4.1 (text only)
+
+# Figure 3 -- vs prior SOTA (Section 4.2)
+fig3:
+  medmcqa:   {prior_sota: 52.9, flan_palm_540b: 57.6}
+  medqa:     {prior_sota: 50.3, flan_palm_540b: 67.6}
+  pubmedqa:  {prior_sota: 78.2, flan_palm_540b: 79.0}
+
+# Section 4.3 -- MMLU highlights
+mmlu_flan_palm_540b:
+  professional_medicine: 83.5
+  clinical_knowledge: 84.0
+
+# Table 5 -- few-shot, PaLM vs Flan-PaLM x {8B, 62B, 540B}  (5-shot; PubMedQA 3-shot)
+table5:
+  medqa_usmle_4opt: {palm_8b: 25.7, flan_8b: 35.4, palm_62b: 40.9, flan_62b: 46.1, palm_540b: 58.9, flan_540b: 60.3}
+  medmcqa:          {palm_8b: 26.7, flan_8b: 34.5, palm_62b: 43.4, flan_62b: 46.2, palm_540b: 54.5, flan_540b: 56.5}
+  pubmedqa:         {palm_8b: 34.0, flan_8b: 67.6, palm_62b: 57.8, flan_62b: 77.2, palm_540b: 55.0, flan_540b: 79.0}
+
+# Table 6 -- few-shot vs CoT (Flan-PaLM 540B)
+table6:
+  medqa_usmle_4opt: {few_shot: 60.3, cot: 60.3}
+  medmcqa:          {few_shot: 56.5, cot: 53.6}
+  pubmedqa:         {few_shot: 79.0, cot: 77.2}
+
+# Table 7 -- few-shot vs self-consistency (Flan-PaLM 540B)
+table7:
+  medqa_usmle_4opt: {few_shot: 60.3, sc: 67.6}
+  medmcqa:          {few_shot: 56.5, sc: 57.6}
+  pubmedqa:         {few_shot: 79.0, sc: 75.2}
+
+# Table A.1 -- MMLU 6 subjects x {PaLM 540B few-shot, Flan-PaLM 540B few-shot / CoT / SC}
+# (extracted from a garbled PDF table; treat Flan-PaLM SC column as the primary target)
+tableA1_flan_palm_540b_sc:
+  clinical_knowledge: 80.4
+  medical_genetics: 74.0        # approximate -- PDF table mis-aligned
+  anatomy: 71.9
+  professional_medicine: 83.5
+  college_biology: 88.9
+  college_medicine: 76.3
+
+# Section 4.4 -- selective prediction (Fig 5)
+selective_prediction:
+  model: flan_palm_540b
+  n_decodes: 41
+  deferral_fraction: 0.45
+  accuracy_at_deferral: 82.5
+
+# A.2 -- variance of repeated MedQA evaluation (4 runs, best model)
+variance_medqa_4runs: 0.078
+
+# Qualitative findings the replication tests (Section 4.4 / 5)
+findings:
+  instruction_tuning_helps: "Flan-PaLM > PaLM on all MC datasets, all sizes (Table 5)"
+  scaling_helps: "~2x accuracy from 8B to 540B (Section 4.4)"
+  sc_beats_fewshot_medqa_medmcqa: "Table 7"
+  sc_hurts_pubmedqa: "Table 7 (79.0 -> 75.2)"
+  cot_not_better_than_fewshot_on_mc: "Table 6"
+  selective_prediction_rises_with_deferral: "Fig 5 (up to 82.5% @ 0.45)"

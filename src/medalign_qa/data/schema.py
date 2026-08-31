@@ -26,7 +26,7 @@ class Record:
         return {k: v for k, v in asdict(self).items() if v is not None or k in ("options", "context", "gold")}
 
 
-MC_DATASETS = ("medqa_usmle_4opt", "medmcqa", "pubmedqa",
+MC_DATASETS = ("medqa_usmle_4opt", "medqa_usmle_5opt", "medmcqa", "pubmedqa",
                "mmlu_anatomy", "mmlu_clinical_knowledge", "mmlu_college_medicine",
                "mmlu_medical_genetics", "mmlu_professional_medicine", "mmlu_college_biology")
 LONGFORM_DATASETS = ("liveqa", "medicationqa", "healthsearchqa")

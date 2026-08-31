@@ -26,6 +26,18 @@ TASKS: dict[str, str] = {
     "phase06": "scripts/phase06_preprocess.py",
     "phase07": "scripts/phase07_features.py",
     "phase08": "scripts/phase08_eda.py",
+    "phase09": "scripts/phase09_model.py",
+    "phase10": "scripts/phase10_fewshot.py",
+    "phase11": "scripts/phase11_cot.py",
+    "phase12": "scripts/phase12_self_consistency.py",
+    "phase13": "scripts/phase13_scaling.py",
+    "phase14": "scripts/phase14_selective_prediction.py",
+    "phase15": "scripts/phase15_variance.py",
+    "phase16": "scripts/phase16_stats.py",
+    "phase17": "scripts/phase17_tables_figures.py",
+    "phase18": "scripts/phase18_repro.py",
+    "phase19": "scripts/phase19_comparison.py",
+    "phase20": "scripts/phase20_docs.py",
     "test": None,  # special: run pytest
 }
 

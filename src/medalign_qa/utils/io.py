@@ -22,13 +22,16 @@ def read_jsonl(path: str | Path) -> Iterator[dict]:
 
 
 def write_jsonl(path: str | Path, rows: Iterable[dict]) -> int:
+    """Atomic: write to <path>.tmp then replace, so an interrupt can't truncate."""
     path = Path(path)
     path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_suffix(path.suffix + ".tmp")
     n = 0
-    with open(path, "w", encoding="utf-8") as fh:
+    with open(tmp, "w", encoding="utf-8") as fh:
         for row in rows:
             fh.write(json.dumps(row, ensure_ascii=False) + "\n")
             n += 1
+    tmp.replace(path)
     return n
 
 

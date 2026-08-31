@@ -31,10 +31,11 @@ def _jsonl(p: Path) -> list[dict]:
 # MedQA (USMLE), 4-option                        PAPER-SPECIFIED (Section 3.1)
 # --------------------------------------------------------------------------- #
 def load_medqa() -> list[Record]:
-    base = paths.RAW_MEDQA / "US" / "4_options"
     out: list[Record] = []
+    # 4-option (primary; paper headline)  -- PAPER-SPECIFIED
+    base4 = paths.RAW_MEDQA / "US" / "4_options"
     for split in ("train", "dev", "test"):
-        for i, r in enumerate(_jsonl(base / f"phrases_no_exclude_{split}.jsonl")):
+        for i, r in enumerate(_jsonl(base4 / f"phrases_no_exclude_{split}.jsonl")):
             out.append(Record(
                 uid=f"medqa_usmle_4opt/{split}/{i}",
                 dataset="medqa_usmle_4opt", split=split, task="mc",
@@ -42,6 +43,21 @@ def load_medqa() -> list[Record]:
                 options={k: r["options"][k] for k in ("A", "B", "C", "D")},
                 gold=r["answer_idx"],                       # DATASET-VERIFIED
                 gold_source="answer_idx (dataset field)",
+                meta={"usmle_step": r.get("meta_info")},
+            ))
+    # 5-option (paper reports 62.0% in text, Section 4.1)  -- PAPER-SPECIFIED
+    base5 = paths.RAW_MEDQA / "US"
+    for split in ("train", "dev", "test"):
+        p = base5 / f"{split}.jsonl"
+        if not p.exists():
+            continue
+        for i, r in enumerate(_jsonl(p)):
+            opts = {k: v for k, v in r["options"].items() if k in ("A", "B", "C", "D", "E")}
+            out.append(Record(
+                uid=f"medqa_usmle_5opt/{split}/{i}",
+                dataset="medqa_usmle_5opt", split=split, task="mc",
+                question=r["question"], options=opts,
+                gold=r["answer_idx"], gold_source="answer_idx (dataset field)",
                 meta={"usmle_step": r.get("meta_info")},
             ))
     return out
