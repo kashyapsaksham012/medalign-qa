@@ -18,15 +18,18 @@ def main() -> int:
     models_run = sorted({p.name for strat in ("few_shot", "self_consistency")
                          for p in find_predictions(strat)})
     # single model -> cannot draw a scaling curve
+    g = io.read_yaml(paths.CONFIGS / "global.yaml")
+    mcfg = io.read_yaml(paths.CONFIGS / "model" / "qwen25-7b-local.yaml")
     verdict = {
         "status": "NOT REPRODUCED",
         "reason": "Scaling (Figs A.1/A.2, Table 5 scaling reading) requires >= 2 model "
-                  "sizes. This run used a single substitute model "
-                  "(meta-llama/llama-3.1-8b-instruct).",
+                  f"sizes. This run used a single substitute model ({mcfg.get('model')}).",
         "paper_claim": io.read_yaml(paths.METADATA / "paper_results.yaml")["findings"]["scaling_helps"],
-        "to_reproduce": "Re-run Phases 10 & 12 with configs/model/*.yaml pointing at a "
-                        "larger size (e.g. llama-3.1-70b-instruct) and, ideally, the "
-                        "non-instruct base for the 'instruction tuning helps' finding.",
+        "to_reproduce": "Add a second `configs/model/*.yaml` at a larger size (e.g. "
+                        "Qwen2.5-14B-Instruct), set `run_tag` in configs/global.yaml to a "
+                        "new value, and re-run Phases 10 & 12; ideally also the non-instruct "
+                        "base for the 'instruction tuning helps' finding.",
+        "run_tag": g.get("run_tag"),
         "single_model_reference_points": {},
     }
     for strat in ("few_shot", "self_consistency"):

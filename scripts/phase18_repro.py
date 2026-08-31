@@ -51,9 +51,13 @@ def main() -> int:
     checks.append({"check": "requirements.lock.txt present", "pass": lock.exists() and lock.stat().st_size > 200})
 
     # 4. model run reproducibility metadata
-    cfg = io.read_yaml(paths.CONFIGS / "model" / "llama31-8b-instruct.yaml")
-    seed_note = io.read_yaml(paths.CONFIGS / "global.yaml")["seed"]
+    cfg = io.read_yaml(paths.CONFIGS / "model" / "qwen25-7b-local.yaml")
+    g = io.read_yaml(paths.CONFIGS / "global.yaml")
+    seed_note = g["seed"]
     checks.append({"check": "model config records model id + decode params", "pass": "decode" in cfg})
+    checks.append({"check": "substitute model frozen to an exact HF revision (RA-16)",
+                   "pass": bool(cfg.get("revision")) and cfg.get("revision") != "PIN_ME",
+                   "revision": cfg.get("revision")})
 
     # 5. seed audit -- grep src for unseeded RNG
     grep = subprocess.run(["git", "grep", "-nE", r"random\.(random|choice|randint|shuffle)|np\.random\.(rand|randint|choice)",
@@ -63,21 +67,25 @@ def main() -> int:
     checks.append({"check": "no unseeded RNG in src/ (excl. mock, seeding)",
                    "pass": len(offenders) == 0, "offenders": offenders})
 
-    report = {"seed": seed_note, "model": cfg.get("model"),
+    report = {"seed": seed_note, "run_tag": g.get("run_tag"),
+              "model": cfg.get("model"), "revision": cfg.get("revision"),
               "decode_params": cfg.get("decode"), "checks": checks,
               "all_pass": all(c["pass"] for c in checks)}
     (paths.RESULTS / "phase18_repro.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
 
     doc = ["# Reproducibility", "",
-           f"- Model: `{cfg.get('model')}` via OpenRouter (config `configs/model/llama31-8b-instruct.yaml`)",
+           f"- Substitute model (RA-16): `{cfg.get('model')}` @ `{cfg.get('revision')}` "
+           f"via local vLLM (config `configs/model/qwen25-7b-local.yaml`)",
+           f"- Prediction namespace: `derived_data/predictions/{g.get('run_tag')}/`",
            f"- Global seed: {seed_note} (RA-19; paper reports none)",
            "- Decode params: see the model config `decode:` block",
            "- Data provenance + SHA-256: `metadata/data_provenance.md`",
-           "- Env: `requirements.txt` (pinned) + `requirements.lock.txt` (full freeze), CPython 3.14.7",
+           "- Env: `requirements.txt` (pinned) + `requirements.lock.txt` (full freeze), CPython 3.14.7; "
+           "GPU runtime `requirements-pathb.txt` (record what resolved)",
            "- Deterministic: `python run.py phase01..phase08` reproduces `processed_data/` + "
            "`tables/table1_reproduced.*` byte-identically.",
-           "- API sampling (Phases 12/14/15) is inherently non-deterministic; re-runs vary "
-           "within the Phase-15 variance.", ""]
+           "- Greedy decoding (few-shot / CoT) is deterministic per (revision, GPU arch, vLLM "
+           "version). Sampled decoding (Phases 12/14/15) varies within the Phase-15 variance (RA-25).", ""]
     for c in checks:
         doc.append(f"- {'PASS' if c['pass'] else 'FAIL'}: {c['check']}")
     (paths.DOCS / "reproducibility.md").write_text("\n".join(doc) + "\n", encoding="utf-8")

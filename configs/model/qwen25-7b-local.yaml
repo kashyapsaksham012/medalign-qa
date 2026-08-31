@@ -1,0 +1,31 @@
+# Path B substitute model (RA-16) — FROZEN.
+#
+# NOT the paper's model. Every number produced through this config is
+# `REPLICATION ASSUMPTION — SUBSTITUTE MODEL` and is never compared 1:1 to
+# PaLM / Flan-PaLM / Med-PaLM. See docs/deviations.md RA-16 / RA-24 / RA-25.
+#
+# The model is frozen by the Hugging Face commit SHA in `revision` — that SHA is
+# the reproducibility anchor, since the paper's weights were never released.
+# Set it with:  python scripts/pin_model.py
+#
+# Runs locally via vLLM on one ~16 GB GPU (free Kaggle / Colab T4).
+# Runbook: docs/pathb_runbook.md
+
+provider: vllm
+model: Qwen/Qwen2.5-7B-Instruct
+revision: a09a35458c702b33eeacc393d103063234e8bc28   # Qwen/Qwen2.5-7B-Instruct @ main, resolved 2026-08-31 (ungated)
+dtype: bfloat16
+max_model_len: 4096
+gpu_memory_utilization: 0.90
+tensor_parallel_size: 1             # 1x T4 fits 7B bf16 @ 4k ctx; set 2 for T4 x2
+trust_remote_code: false
+seed: 0                             # matches configs/global.yaml seed (RA-19)
+
+# Decode settings per strategy. PAPER-SPECIFIED where noted; else REPLICATION ASSUMPTION.
+decode:
+  few_shot:             {temperature: 0.0, max_tokens: 12}                         # greedy, letter only
+  cot:                  {temperature: 0.0, max_tokens: 512}                        # greedy, room to reason
+  self_consistency:     {temperature: 0.7, top_p: 0.95, max_tokens: 512, n: 11}    # n=11 PAPER-SPECIFIED; temp RA-03
+  selective_prediction: {temperature: 0.7, top_p: 0.95, max_tokens: 512, n: 41}    # n=41 PAPER-SPECIFIED
+
+maps_to_paper_column: "no 1:1 analogue — 7B general instruct (2024) — SUBSTITUTE (RA-16)"

@@ -47,9 +47,35 @@ def test_system_prompts_defined():
 
 
 def test_config_file_present():
-    cfg = io.read_yaml(paths.CONFIGS / "model" / "llama31-8b-instruct.yaml")
+    cfg = io.read_yaml(paths.CONFIGS / "model" / "qwen25-7b-local.yaml")
+    assert cfg["provider"] in ("vllm", "local")
     assert cfg["decode"]["self_consistency"]["n"] == 11        # PAPER-SPECIFIED
     assert cfg["decode"]["selective_prediction"]["n"] == 41    # PAPER-SPECIFIED
+
+
+def test_run_tag_namespaces_predictions():
+    from medalign_qa import config as run_config
+    tag = run_config.run_tag()
+    base = run_config.predictions_base()
+    if tag:
+        assert base.name == tag
+        assert base.parent.name == "predictions"
+        # a non-empty tag must NOT resolve to the legacy flat B1 location
+        assert run_config.predictions_dir("few_shot") != paths.DERIVED / "predictions" / "few_shot"
+    p = run_config.prediction_file("few_shot", "medqa_usmle_4opt__test")
+    assert p.name == "medqa_usmle_4opt__test.jsonl" and p.parent.name == "few_shot"
+
+
+def test_vllm_backend_pin_guard():
+    """VLLMBackend refuses an unpinned (PIN_ME) revision -- the check runs before
+    any `import vllm`, so this holds on the CPU-only Phase 1-8 machine too."""
+    import pytest
+
+    from medalign_qa.models.vllm_backend import VLLMBackend
+    with pytest.raises(RuntimeError, match="revision"):
+        VLLMBackend.from_config({"model": "x", "revision": "PIN_ME"})
+    with pytest.raises(RuntimeError, match="revision"):
+        VLLMBackend.from_config({"model": "x"})  # missing entirely
 
 
 def test_env_file_is_gitignored():

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 
+from medalign_qa import config as run_config
 from medalign_qa.evaluation.mc_accuracy import any_predictions, score
 from medalign_qa.utils import io, paths
 from medalign_qa.utils.logging_utils import get_logger
@@ -13,7 +14,7 @@ TOL = io.read_yaml(paths.CONFIGS / "global.yaml")["tolerances"]
 
 
 def _acc(strategy, stem):
-    p = paths.DERIVED / "predictions" / strategy / f"{stem}.jsonl"
+    p = run_config.prediction_file(strategy, stem)
     if not p.exists():
         return None
     s = score(p)

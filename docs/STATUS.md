@@ -16,11 +16,12 @@ documentation sign-off.** The multiple-choice datasets needed for Milestone 2 �
 (4- and 5-option), PubMedQA, MMLU ×6 — are verified **exact** against the paper; MedMCQA
 data is correct with a documented eval-split assumption (RA-01). Leakage checks are clean.
 
-**Milestone 2 (model evaluation): NOT STARTED.** No valid model results exist. Earlier
-Path-B experiments (a full `llama-3.1-8b-instruct` MedQA run, later partial `qwen3.8-27b`
-runs) and their derived tables/figures/`comparison.md` have been moved to `attic/` because
-they were unfrozen, incomplete, and in one case mock-data artifacts that logged
-"replication complete". **The Path A / B / C decision is still open (see §4).**
+**Milestone 2 (model evaluation): Path B chosen (§4); code ready, no real run yet.**
+No valid model results exist. Earlier attempts — a full `llama-3.1-8b-instruct` MedQA run,
+a partial `qwen3.8-27b`/Groq run ("B1", 95/1273 few-shot), mock-data artifacts that logged
+"replication complete" — are quarantined in `attic/` (unfrozen / incomplete / mock).
+The Path B harness (local vLLM, `Qwen2.5-7B-Instruct`, frozen by HF revision) is built and
+passes end-to-end in `--mock`; the real run is pending a Kaggle GPU session (§7 steps 5–8).
 
 ---
 
@@ -67,21 +68,22 @@ they were unfrozen, incomplete, and in one case mock-data artifacts that logged
 
 ---
 
-## 4. Open decision (blocks Milestone 2)
+## 4. Decision (made 2026-08-31): **Path B**
 
-Choose one:
-- **Path A** — stop at the model boundary. Deliver benchmark + harness + IPT recipe code +
-  human-eval statistics machinery. Report Phases 9–17 as BLOCKED. Finish Phases 18–20.
-  *(cleanest defensible academic replication)*
-- **Path B** — one frozen substitute open model through the identical harness. Every number
-  tagged `REPLICATION ASSUMPTION — SUBSTITUTE MODEL`, never compared 1:1 to Flan-PaLM.
-  Requires: a single `configs/model/<name>.yaml` with a pinned provider revision; delete the
-  other candidate configs; decide on B3 (reconstruct 40 exemplars — RA-12) and B4 (accept
-  human-eval as BLOCKED).
-- **Path C** — you supply PaLM/Flan-PaLM/Med-PaLM access (not publicly possible).
+**Path B — one frozen substitute open model through the identical harness.**
+- Model: `Qwen/Qwen2.5-7B-Instruct` @ `a09a35458c702b33eeacc393d103063234e8bc28`
+  (pinned 2026-08-31 in `configs/model/qwen25-7b-local.yaml`; ungated, no HF token needed).
+- Runner: **local vLLM** on a free Kaggle/Colab T4 (no paid API). See `docs/pathb_runbook.md`.
+- First pass: **MedQA only** (4-opt + 5-opt), all strategies (RA-27). Second pass = `--all`.
+- Every number tagged `REPLICATION ASSUMPTION — SUBSTITUTE MODEL`; never compared 1:1 to Flan-PaLM.
+- B3 (40 IPT exemplars) and B4 (human eval) remain **BLOCKED** — Phase 11/14 not attempted.
+- The two un-chosen candidate configs moved to `attic/configs_superseded/`; the legacy
+  hosted-API `.env` keys are **deprecated** and must be rotated (they leaked in chat).
 
-Until this is decided, `configs/model/` holds two un-chosen candidates and `.env` a third;
-`scripts/phase09..20` exist but hard-fail with **NO DATA** rather than emit fake results.
+Predictions are namespaced `derived_data/predictions/<run_tag>/` (`run_tag: qwen25-7b-local`)
+so a fresh run never mixes with the quarantined B1 Groq run at the flat `predictions/` path.
+
+(Path A — stop at the model boundary — and Path C — you supply PaLM access — were not taken.)
 
 ---
 
@@ -116,15 +118,22 @@ Until this is decided, `configs/model/` holds two un-chosen candidates and `.env
   mock runs are stamped "MOCK — not a real result"; Phase 20 no longer hard-codes a model
   name or logs "replication complete" unconditionally.
 
-## 7. Remaining before Milestone 2 (see audit report §18 steps 5, 7, 10–12)
+## 7. Remaining before Phase 10 can officially begin
 
-1. Make the Path A/B/C decision (§4). If B: freeze one model config, delete the rest.
-2. Rotate the API keys that were exposed in chat (OpenRouter + Groq).
-3. Re-transcribe Table A.1 into `metadata/paper_results.yaml` from clean values
-   (clinical knowledge 76.2/77.0/77.0/80.4 · medical genetics 68.0/70.0/75.0/74.0 ·
-   anatomy 63.7/65.2/66.7/71.9 · professional medicine 75.0/83.8/76.5/83.5 ·
-   college biology 87.5/87.5/83.3/88.9 · college medicine 68.2/69.9/71.1/76.3).
-4. `requirements-portable.txt` (relaxed pins) + `.gitattributes` (`* text eol=lf`) +
-   `PYTHONUTF8=1` in `run.py`.
-5. Phase-9 smoke test on the frozen model (5 MedQA Qs, parser extracts a letter from each),
-   commit the config + revision, then start Phase 10 MedQA-only.
+Path B code is in place (2026-08-31, second commit): `configs/model/qwen25-7b-local.yaml`,
+`src/…/models/vllm_backend.py`, `src/…/config.py` (run_tag namespacing), `scripts/pin_model.py`,
+`scripts/kaggle_pathb.py`, `requirements-pathb.txt`, `docs/pathb_runbook.md`. The full pipeline
+passes end-to-end in `--mock`. What is left is operational, not code:
+
+| # | Item | State |
+|---|---|---|
+| 1 | Path A/B/C decision | ✅ Path B (§4) |
+| 2 | **Rotate the leaked API keys** (OpenRouter + Groq) — they were pasted in chat. `.env` still holds the old Groq key. | ❌ user action |
+| 3 | Re-transcribe Table A.1 → `metadata/paper_results.yaml` | ✅ done (`tableA1` + `tableA1_flan_palm_540b_sc`) |
+| 4 | `requirements-portable.txt` + `.gitattributes` + `PYTHONUTF8` in `run.py` | ✅ done |
+| 5 | **Pin the model** — `revision: a09a35458c702b33eeacc393d103063234e8bc28` (resolved 2026-08-31) | ✅ done |
+| 6 | **Kaggle/Colab GPU env**: create the notebook, `python scripts/kaggle_pathb.py --setup`, attach `processed_data/` (or run `phase04` from `raw_data/`) | ❌ |
+| 7 | **Phase 9 smoke on the real model** (`run.py phase09`) — 5 MedQA Qs, parser pulls a letter from each | ❌ blocked on 5+6 |
+| 8 | Then `python scripts/run_pathb_pipeline.py` (MedQA-only) | ❌ |
+
+Nothing here needs money. Steps 5–8 are one Kaggle session.

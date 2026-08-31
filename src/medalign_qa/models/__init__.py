@@ -12,11 +12,20 @@ __all__ = ["LLM", "GenConfig", "GenResult", "MockLLM", "OpenAICompatLLM", "load_
 
 
 def load_model(config_path=None, *, mock: bool = False):
-    """Factory. `mock=True` returns a MockLLM (no network) for tests."""
+    """Factory. `mock=True` returns a MockLLM (no network / no GPU) for tests.
+
+    Dispatch on `provider` in the model config:
+      vllm | local     -> VLLMBackend    (Path B default; local GPU, RA-16/RA-24/RA-25)
+      anything else     -> OpenAICompatLLM (hosted OpenAI-compatible API; legacy)
+    """
     if mock:
         return MockLLM()
     from ..utils import io, paths
     if config_path is None:
-        config_path = paths.CONFIGS / "model" / "llama31-8b-instruct.yaml"
+        config_path = paths.CONFIGS / "model" / "qwen25-7b-local.yaml"
     cfg = io.read_yaml(config_path)
+    provider = str(cfg.get("provider") or "openai_compat").lower()
+    if provider in ("vllm", "local"):
+        from .vllm_backend import VLLMBackend
+        return VLLMBackend.from_config(cfg)
     return OpenAICompatLLM.from_config(cfg)

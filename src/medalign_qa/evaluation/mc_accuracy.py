@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
+from .. import config as run_config
 from ..inference.self_consistency import plurality
 from ..utils import io, paths
 from .stats import wilson_ci
@@ -39,7 +40,7 @@ def score(pred_path: str | Path) -> dict:
 
 
 def find_predictions(strategy: str) -> list[Path]:
-    d = paths.DERIVED / "predictions" / strategy
+    d = run_config.predictions_dir(strategy)
     return sorted(d.glob("*.jsonl")) if d.exists() else []
 
 
@@ -48,11 +49,13 @@ def any_predictions() -> bool:
 
     Phases 12/16/17/19/20 MUST guard on this and hard-fail with NO DATA otherwise --
     they used to emit `PASS` / "replication complete" against zero predictions.
+    Scoped to the active run_tag so the quarantined B1 flat-layout run does not
+    count as "we have results".
     """
-    d = paths.DERIVED / "predictions"
+    d = run_config.predictions_base()
     if not d.exists():
         return False
-    for p in d.glob("*/*.jsonl"):
+    for p in d.glob("**/*.jsonl"):
         try:
             if any(True for _ in io.read_jsonl(p)):
                 return True

@@ -4,6 +4,12 @@
 
 seed: 0                      # REPLICATION ASSUMPTION (RA-19) — paper reports no seed
 
+# Active substitute-model run (Path B, RA-16). Predictions are namespaced
+# `derived_data/predictions/<run_tag>/<strategy>/...` so one model's decodes never
+# mix with another's. Empty string => legacy flat layout `predictions/<strategy>/...`
+# (that flat path holds the quarantined B1 Groq/qwen3-27b partial run — leave it be).
+run_tag: qwen25-7b-local     # REPLICATION ASSUMPTION (RA-16)
+
 # --- Prompting (Section 3.3.2, 4.4) ---
 few_shot:
   medqa: 5                   # PAPER-SPECIFIED (Tables 5/6/7 headers "(5-shot)"; exemplar block A.13 has 5)

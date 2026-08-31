@@ -6,6 +6,7 @@ import argparse
 import json
 import statistics
 
+from medalign_qa import config as run_config
 from medalign_qa.evaluation.mc_accuracy import score
 from medalign_qa.inference.runner import run_mc_split
 from medalign_qa.models import load_model
@@ -19,7 +20,7 @@ def main() -> int:
     ap.add_argument("--runs", type=int, default=4)          # PAPER-SPECIFIED (A.2)
     ap.add_argument("--limit", type=int, default=None)
     ap.add_argument("--workers", type=int, default=16)
-    ap.add_argument("--config", default=str(paths.CONFIGS / "model" / "llama31-8b-instruct.yaml"))
+    ap.add_argument("--config", default=str(paths.CONFIGS / "model" / "qwen25-7b-local.yaml"))
     args = ap.parse_args()
     log = get_logger("phase15")
 
@@ -34,7 +35,7 @@ def main() -> int:
                      max_tokens=sc["max_tokens"], n=sc["n"], seed=1000 + i,
                      limit=args.limit, max_workers=args.workers, resume=False,
                      out_subdir=f"variance/run{i}")
-        s = score(paths.DERIVED / "predictions" / f"variance/run{i}" / f"{dataset}__{split}.jsonl")
+        s = score(run_config.prediction_file(f"variance/run{i}", f"{dataset}__{split}"))
         if not s.get("n"):
             log.error("PHASE 15 NO DATA -- run %d produced no scored predictions.", i)
             return 1

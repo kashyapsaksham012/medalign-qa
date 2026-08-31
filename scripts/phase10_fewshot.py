@@ -1,23 +1,24 @@
 #!/usr/bin/env python
 """Phase 10 -- Few-shot multiple-choice inference.
 
-Default: run MedQA-4opt only (the 10.checkpoint gate). Pass --all for the full sweep
-(MedQA 4-opt & 5-opt, MedMCQA validation, PubMedQA test, MMLU x6 test).
+Default (MedQA-only first pass, RA-27): MedQA 4-opt + 5-opt test.
+Pass --all for the full sweep (adds MedMCQA validation, PubMedQA test, MMLU x6 test).
+Pass --datasets a,b to restrict to a comma list.
 """
 from __future__ import annotations
 
 import argparse
 import json
 
+from medalign_qa import config as run_config
 from medalign_qa.inference.runner import run_mc_split, score_file
 from medalign_qa.models import load_model
 from medalign_qa.utils import io, paths
 from medalign_qa.utils.logging_utils import get_logger
 
 # (dataset, split) in scope for few-shot  --  PAPER-SPECIFIED splits (RA-01/RA-02/RA-06)
-GATE = [("medqa_usmle_4opt", "test")]
+GATE = [("medqa_usmle_4opt", "test"), ("medqa_usmle_5opt", "test")]   # RA-27: MedQA first
 FULL = GATE + [
-    ("medqa_usmle_5opt", "test"),        # loader emits this only if 5-opt processed; see note
     ("medmcqa", "validation"),
     ("pubmedqa", "test"),
     *[(f"mmlu_{s}", "test") for s in paths.MMLU_SUBJECTS],
@@ -30,15 +31,18 @@ def main() -> int:
     ap.add_argument("--mock", action="store_true")
     ap.add_argument("--limit", type=int, default=None)
     ap.add_argument("--workers", type=int, default=12)
-    ap.add_argument("--config", default=str(paths.CONFIGS / "model" / "llama31-8b-instruct.yaml"))
+    ap.add_argument("--datasets", default=None, help="comma list to restrict targets")
+    ap.add_argument("--config", default=str(paths.CONFIGS / "model" / "qwen25-7b-local.yaml"))
     args = ap.parse_args()
     log = get_logger("phase10")
 
     cfg = io.read_yaml(args.config)["decode"]["few_shot"]
     model = load_model(args.config, mock=args.mock)
+    only = set(args.datasets.split(",")) if args.datasets else None
     targets = FULL if args.all else GATE
     targets = [(d, s) for (d, s) in targets
-               if (paths.PROCESSED / f"{d}.jsonl").exists()]
+               if (paths.PROCESSED / f"{d}.jsonl").exists()
+               and (only is None or d in only)]
 
     summary = {}
     for dataset, split in targets:
@@ -50,7 +54,8 @@ def main() -> int:
                  f"{dataset}/{split}", res.get("accuracy", 0), res.get("parse_rate", 0), res.get("n", 0))
 
     usage = model.usage_summary()
-    report = {"strategy": "few_shot", "model": model.name, "summary": summary, "usage": usage}
+    report = {"strategy": "few_shot", "model": model.name, "mock": args.mock,
+              "run_tag": run_config.run_tag(), "summary": summary, "usage": usage}
     (paths.RESULTS / "phase10_fewshot_accuracy.json").write_text(
         json.dumps(report, indent=2, ensure_ascii=False), encoding="utf-8")
 

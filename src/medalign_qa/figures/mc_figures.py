@@ -8,14 +8,16 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 import numpy as np  # noqa: E402
 
+from .. import config as run_config  # noqa: E402
 from ..evaluation.mc_accuracy import score  # noqa: E402
 from ..utils import io, paths  # noqa: E402
 
 PAPER = io.read_yaml(paths.METADATA / "paper_results.yaml")
+OURS_LABEL = run_config.substitute_label()
 
 
 def _acc(strategy, stem):
-    p = paths.DERIVED / "predictions" / strategy / f"{stem}.jsonl"
+    p = run_config.prediction_file(strategy, stem)
     return round(100 * score(p)["accuracy"], 1) if p.exists() and score(p).get("n") else None
 
 
@@ -34,7 +36,7 @@ def fig3() -> str:
     fig, ax = plt.subplots(figsize=(8, 4.5))
     ax.bar(x - w, prior, w, label="Prior SOTA (paper)")
     ax.bar(x, flan, w, label="Flan-PaLM 540B (paper)")
-    ax.bar(x + w, ours, w, label="Llama-3.1-8B-Instruct (this repl.)")
+    ax.bar(x + w, ours, w, label=OURS_LABEL)
     for i, v in enumerate(ours):
         ax.text(x[i] + w, v + 1, f"{v}", ha="center", fontsize=8)
     ax.set_xticks(x); ax.set_xticklabels(labels)
@@ -76,7 +78,7 @@ def fig5() -> str:
     xs = [p["deferral"] for p in pts]
     ys = [100 * p["accuracy"] for p in pts]
     fig, ax = plt.subplots(figsize=(7, 4.5))
-    ax.plot(xs, ys, marker="o", label="Llama-3.1-8B-Instruct (this repl.)")
+    ax.plot(xs, ys, marker="o", label=OURS_LABEL)
     ax.scatter([0.45], [82.5], color="red", zorder=5, label="Flan-PaLM 540B (paper): 82.5% @ 0.45")
     ax.set_xlabel("Deferral fraction"); ax.set_ylabel("Accuracy on retained (%)")
     ax.set_title("Figure 5 (replication) -- selective prediction on MedQA")

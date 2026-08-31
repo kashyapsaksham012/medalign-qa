@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import json
 
+from medalign_qa import config as run_config
 from medalign_qa.inference.runner import run_mc_split
 from medalign_qa.models import load_model
 from medalign_qa.uncertainty.selective_prediction import curve
@@ -17,7 +18,7 @@ def main() -> int:
     ap.add_argument("--mock", action="store_true")
     ap.add_argument("--limit", type=int, default=None, help="subsample size (default: full 1273)")
     ap.add_argument("--workers", type=int, default=16)
-    ap.add_argument("--config", default=str(paths.CONFIGS / "model" / "llama31-8b-instruct.yaml"))
+    ap.add_argument("--config", default=str(paths.CONFIGS / "model" / "qwen25-7b-local.yaml"))
     args = ap.parse_args()
     log = get_logger("phase14")
 
@@ -33,7 +34,7 @@ def main() -> int:
                  max_tokens=sp_cfg["max_tokens"], n=sp_cfg["n"],
                  limit=args.limit, max_workers=args.workers, seed=g["seed"],
                  out_subdir="selective_prediction")
-    out = paths.DERIVED / "predictions" / "selective_prediction" / f"{dataset}__{split}.jsonl"
+    out = run_config.prediction_file("selective_prediction", f"{dataset}__{split}")
     if not out.exists() or not any(True for _ in io.read_jsonl(out)):
         log.error("PHASE 14 NO DATA -- no decodes were produced for %s/%s.", dataset, split)
         return 1

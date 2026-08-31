@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 
+from .. import config as run_config
 from ..utils import io, paths
 from .mc_accuracy import score
 
@@ -33,7 +34,7 @@ _BANNER = ("> Substitute-model numbers. NOT a reproduction of PaLM/Flan-PaLM/Med
 
 
 def _acc(strategy: str, dataset: str, split: str) -> float | None:
-    p = paths.DERIVED / "predictions" / strategy / f"{dataset}__{split}.jsonl"
+    p = run_config.prediction_file(strategy, f"{dataset}__{split}")
     if not p.exists():
         return None
     s = score(p)

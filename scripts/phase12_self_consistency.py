@@ -9,6 +9,7 @@ from __future__ import annotations
 import argparse
 import json
 
+from medalign_qa import config as run_config
 from medalign_qa.evaluation import tables
 from medalign_qa.evaluation.mc_accuracy import any_predictions, score
 from medalign_qa.inference.runner import run_mc_split
@@ -26,7 +27,7 @@ def main() -> int:
     ap.add_argument("--limit", type=int, default=None)
     ap.add_argument("--datasets", default=None, help="comma list to restrict targets")
     ap.add_argument("--workers", type=int, default=16)
-    ap.add_argument("--config", default=str(paths.CONFIGS / "model" / "llama31-8b-instruct.yaml"))
+    ap.add_argument("--config", default=str(paths.CONFIGS / "model" / "qwen25-7b-local.yaml"))
     args = ap.parse_args()
     log = get_logger("phase12")
 
@@ -47,7 +48,7 @@ def main() -> int:
                      temperature=sc["temperature"], top_p=sc.get("top_p", 1.0),
                      max_tokens=sc["max_tokens"], n=sc["n"], limit=args.limit,
                      max_workers=args.workers, seed=seed)
-        s = score(paths.DERIVED / "predictions" / "self_consistency" / f"{dataset}__{split}.jsonl")
+        s = score(run_config.prediction_file("self_consistency", f"{dataset}__{split}"))
         s.pop("_per_uid_correct", None)
         summary[f"{dataset}/{split}"] = s
         log.info("  %-28s SC acc=%.3f parse=%.3f (n=%d)", f"{dataset}/{split}",

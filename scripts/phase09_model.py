@@ -41,7 +41,7 @@ def write_table4_baselines() -> None:
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--config", default=str(paths.CONFIGS / "model" / "llama31-8b-instruct.yaml"))
+    ap.add_argument("--config", default=str(paths.CONFIGS / "model" / "qwen25-7b-local.yaml"))
     ap.add_argument("--n", type=int, default=5)
     ap.add_argument("--mock", action="store_true", help="offline dry-run")
     args = ap.parse_args()

@@ -7,7 +7,14 @@ Status: OPEN · MITIGATED (documented REPLICATION ASSUMPTION in place) · RESOLV
 
 ---
 
-## B1 — PaLM / Flan-PaLM models unavailable  ·  CRITICAL  ·  OPEN
+## B1 — PaLM / Flan-PaLM models unavailable  ·  CRITICAL  ·  OPEN (Path B substitute in place)
+
+**2026-08-31: Path B chosen.** Substitute = `Qwen/Qwen2.5-7B-Instruct` (frozen HF revision),
+run locally via vLLM through the same harness (RA-16 / RA-24 / RA-25). This does **not**
+resolve B1 — the paper's own models are still unobtainable and no substitute number is a
+reproduction of PaLM/Flan-PaLM. It unblocks *execution* of Phases 9–10, 12, 14, 15 with
+clearly-tagged substitute results. Scaling (Phase 13) stays NOT REPRODUCED (one model size).
+
 1. **Missing:** weights or inference API for PaLM and Flan-PaLM at 8B, 62B, 540B.
 2. **Required for:** every quantitative MC result — Tables 4, 5, 6, 7, 8, A.1;
    Figs 3, 4, 5, A.1, A.2; all scaling / instruction-tuning / CoT / SC ablations.

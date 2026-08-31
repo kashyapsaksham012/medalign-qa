@@ -14,6 +14,7 @@ import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
+from .. import config as run_config
 from ..models.base import GenConfig
 from ..preprocessing import prompt_builder as pb
 from ..preprocessing.answer_parser import parse_choice, valid_letters
@@ -36,12 +37,13 @@ def run_mc_split(model, dataset: str, split: str, strategy: str,
                  top_p: float = 1.0, limit: int | None = None,
                  resume: bool = True, log_every: int = 200,
                  seed: int | None = None, max_workers: int = 12,
+                 batch_size: int = 256,
                  out_subdir: str | None = None) -> dict:
     """strategy in {'few_shot','cot','self_consistency'}. n>1 -> SC decodes/question.
     out_subdir overrides the predictions/<...> folder (used by Phase 14)."""
     assert strategy in ("few_shot", "cot", "self_consistency")
     key = _MC_DATASET_KEY[dataset]
-    out_path = paths.DERIVED / "predictions" / (out_subdir or strategy) / f"{dataset}__{split}.jsonl"
+    out_path = run_config.predictions_dir(out_subdir or strategy) / f"{dataset}__{split}.jsonl"
     out_path.parent.mkdir(parents=True, exist_ok=True)
     # self_consistency reuses the CoT prompt but samples n decodes
     prompt_strategy = "cot" if strategy == "self_consistency" else strategy
@@ -68,13 +70,13 @@ def run_mc_split(model, dataset: str, split: str, strategy: str,
     # "Answer:" / trailing "(X)" anchor, else count the decode as unparsed.
     allow_bare = prompt_strategy == "few_shot"
 
-    def work(r: dict) -> dict:
+    def _cfg() -> GenConfig:
+        return GenConfig(n=n, temperature=temperature, top_p=top_p,
+                         max_tokens=max_tokens, system=sys_msg, seed=seed,
+                         stop=["\nQuestion:", "\n\nQuestion"])
+
+    def _row(r: dict, res) -> dict:
         letters = valid_letters(len(r["options"]))
-        prompt = build(r, key)
-        cfg = GenConfig(n=n, temperature=temperature, top_p=top_p,
-                        max_tokens=max_tokens, system=sys_msg, seed=seed,
-                        stop=["\nQuestion:", "\n\nQuestion"])
-        res = model.generate(prompt, cfg)
         preds = [parse_choice(t, letters, allow_bare=allow_bare) for t in res.texts]
         row = {"uid": r["uid"], "dataset": dataset, "split": split, "strategy": strategy,
                "gold": r["gold"], "n_options": len(r["options"]),
@@ -84,6 +86,26 @@ def run_mc_split(model, dataset: str, split: str, strategy: str,
             row["parsed_single"] = preds[0]
             row["correct"] = (preds[0] == r["gold"]) if r["gold"] else None
         return row
+
+    # --- batched path: one model call per chunk (vLLM / any backend exposing
+    #     generate_batch). Far faster than 1 request/question; chunked so a crash
+    #     still leaves a resumable partial file. ------------------------------- #
+    if hasattr(model, "generate_batch"):
+        chunk = max(1, batch_size)
+        with open(out_path, "a", encoding="utf-8") as fh:
+            for i in range(0, len(todo), chunk):
+                part = todo[i:i + chunk]
+                results = model.generate_batch([build(r, key) for r in part], _cfg())
+                for r, res in zip(part, results):
+                    fh.write(json.dumps(_row(r, res), ensure_ascii=False) + "\n")
+                fh.flush()
+                counter["done"] += len(part)
+                rate = counter["done"] / (time.time() - t0)
+                log.info("  %d/%d  (%.1f/s)", counter["done"], len(todo), rate)
+        return score_file(out_path)
+
+    def work(r: dict) -> dict:
+        return _row(r, model.generate(build(r, key), _cfg()))
 
     with open(out_path, "a", encoding="utf-8") as fh, \
             ThreadPoolExecutor(max_workers=max_workers) as ex:

@@ -9,10 +9,17 @@ Tasks map to scripts/phaseNN_*.py. Each phase script is independently runnable.
 """
 from __future__ import annotations
 
+import os
 import runpy
 import subprocess
 import sys
 from pathlib import Path
+
+# Force UTF-8 everywhere: child processes (subprocess), file opens without an
+# explicit encoding, and this console. Phase scripts/logs contain non-ASCII
+# (arrows, +/-, degree) that cp1252 cannot encode.
+os.environ.setdefault("PYTHONUTF8", "1")
+os.environ.setdefault("PYTHONIOENCODING", "utf-8")
 
 # Windows consoles default to cp1252; phase scripts/log lines contain non-ASCII
 # (arrows, +/-, degree). Force UTF-8 output so a phase can't die with UnicodeEncodeError.
