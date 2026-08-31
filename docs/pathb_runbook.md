@@ -28,35 +28,40 @@ not use them. `HF_TOKEN` is only needed for a gated model; Qwen2.5 is ungated.
 
 ---
 
-## 1. Get the data onto Kaggle
+## 1. Make the data dataset (once)
 
-The harness scores `processed_data/*.jsonl` (built by Phase 4 from `raw_data/`).
-Two options:
+Only MedQA is needed for the first pass. On your machine, upload these two files as a
+**private Kaggle Dataset** (kaggle.com/datasets → New Dataset → drag the files):
 
-- **Attach a dataset** (fastest): from a machine that has `processed_data/`, zip it
-  and upload as a private Kaggle Dataset, then "Add data" to the notebook. The files
-  must land at `/kaggle/input/<name>/processed_data/`.
-- **Rebuild in the notebook**: also upload `raw_data/` (the big zips + xlsx), then
-  `python run.py phase04`.
+    processed_data/medqa_usmle_4opt.jsonl
+    processed_data/medqa_usmle_5opt.jsonl
 
-Only MedQA is needed for the first pass: `processed_data/medqa_usmle_4opt.jsonl` and
-`medqa_usmle_5opt.jsonl`.
+Name it e.g. `medalign-medqa`. `scripts/kaggle_pathb.py --run` scans `/kaggle/input/**`
+for `medqa_usmle_*.jsonl` and stages them automatically — no path wiring needed.
+
+## 2. Private-repo access (once)
+
+The repo is private, so Kaggle needs a GitHub token:
+1. GitHub → Settings → Developer settings → Personal access tokens → Fine-grained →
+   new token, **read-only Contents** on `medalign-qa`, 30-day expiry.
+2. Kaggle notebook → Add-ons → Secrets → add `GH_TOKEN` = that token.
 
 ---
 
-## 2. Kaggle notebook
+## 3. Kaggle notebook
 
-1. New Notebook → Settings → **Accelerator: GPU T4 x2**, **Internet: On**.
+1. New Notebook → Settings → **Accelerator: GPU T4 x2**, **Internet: On**,
+   **Add data → your `medalign-medqa` dataset**.
 2. Cells:
 
 ```python
-!git clone <your-repo-url> mq && cd mq && git log -1 --oneline
+from kaggle_secrets import UserSecretsClient
+tok = UserSecretsClient().get_secret("GH_TOKEN")
+!git clone https://{tok}@github.com/kashyapsaksham012/medalign-qa.git mq && cd mq && git log -1 --oneline
 %cd mq
-# link the attached data in (adjust the input path)
-!mkdir -p processed_data && cp /kaggle/input/<name>/processed_data/*.jsonl processed_data/ || true
 
-!python scripts/kaggle_pathb.py --setup     # pip install + GPU check + pin verify
-!python scripts/kaggle_pathb.py --run       # phases 9-20 (MedQA-only) + package
+!python scripts/kaggle_pathb.py --setup     # vllm install (~10 min) + GPU/pin check
+!python scripts/kaggle_pathb.py --run       # stages data, phases 9-20 (MedQA-only), packages
 ```
 
 3. `--run` writes `pathb_artifacts.zip` (results/, tables/, figures/, logs/,

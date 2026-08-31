@@ -1,20 +1,22 @@
 # Path B GPU runtime -- ONLY for the substitute-model inference (Phases 9-15).
-# NOT needed for the Phase 1-8 data harness. Install on the GPU box / Kaggle / Colab:
+# NOT needed for the Phase 1-8 data harness.
 #
-#   pip install -r requirements-pathb.txt -e .
+# IMPORTANT: install vllm FIRST and let it choose its own torch --
+#   pip install -U vllm
+# vllm pins an exact torch/CUDA build; letting it drive avoids the mismatch you get
+# from Kaggle's pre-installed torch (e.g. 2.10.0+cu128, newer than any vllm wheel).
+# `scripts/kaggle_pathb.py --setup` does this in the right order.
 #
-# Python 3.10-3.11 (vLLM lags the newest CPython). Kaggle's default image already
-# ships a compatible torch+CUDA; usually `pip install vllm` is enough there.
-# Pin loosely, then record what actually resolved (pip freeze > requirements-pathb.lock.txt).
+# Then record what actually resolved:  pip freeze > requirements-pathb.lock.txt
 
-vllm>=0.6.3,<0.10
-torch>=2.4
-transformers>=4.45
+vllm                       # pulls its own torch + a matching flash-attn / xformers
+transformers>=4.45         # (vllm depends on it; also the fallback backend)
 huggingface-hub>=0.25
 accelerate>=0.34
 sentencepiece>=0.2
 
-# base pipeline deps (subset of requirements.txt needed by phases 9-19)
+# base pipeline deps (subset of requirements.txt needed by phases 9-19).
+# On Kaggle these are already present; harmless to re-list.
 numpy>=1.24
 pandas>=2.0
 scipy>=1.10

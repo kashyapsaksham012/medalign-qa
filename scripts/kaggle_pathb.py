@@ -34,15 +34,27 @@ def sh(*cmd: str) -> int:
 
 
 def setup() -> int:
-    if sh(PY, "-m", "pip", "install", "-q", "-r", "requirements-pathb.txt", "-e", "."):
+    # 1. vLLM first, on its own -- it pins an exact torch/CUDA build. Letting it
+    #    drive avoids a mismatch with Kaggle's pre-installed torch.
+    if sh(PY, "-m", "pip", "install", "-q", "-U", "vllm"):
+        print("vllm install failed -- see log above. You can still run few-shot/CoT "
+              "with the transformers fallback: set `provider: hf` in the model config.", flush=True)
         return 1
-    # GPU sanity
-    sh(PY, "-c", "import torch; print('CUDA:', torch.cuda.is_available(), torch.cuda.get_device_name(0) if torch.cuda.is_available() else '')")
-    # freeze what actually resolved
+    # 2. the rest (skip deps -- vllm already resolved torch & transformers)
+    sh(PY, "-m", "pip", "install", "-q", "huggingface-hub", "accelerate", "sentencepiece", "pyyaml", "tqdm")
+    sh(PY, "-m", "pip", "install", "-q", "--no-deps", "-e", ".")
+    # 3. GPU + vLLM sanity
+    sh(PY, "-c", "import torch,vllm; print('torch', torch.__version__, '| CUDA', torch.cuda.is_available(),"
+                 " '|', torch.cuda.device_count(), 'GPU |', 'vllm', vllm.__version__)")
+    # 4. freeze what actually resolved
     with open(ROOT / "requirements-pathb.lock.txt", "w", encoding="utf-8") as fh:
         subprocess.run([PY, "-m", "pip", "freeze"], cwd=ROOT, stdout=fh)
-    # pin the model revision (needs internet ON)
-    return sh(PY, "scripts/pin_model.py")
+    # 5. confirm the model revision is pinned (resolve it if still PIN_ME)
+    cfg = (ROOT / "configs" / "model" / "qwen25-7b-local.yaml").read_text(encoding="utf-8")
+    if "PIN_ME" in cfg:
+        return sh(PY, "scripts/pin_model.py")
+    print("model already pinned:", [l for l in cfg.splitlines() if l.startswith("revision:")][0], flush=True)
+    return 0
 
 
 def _run_tag() -> str:
@@ -51,14 +63,34 @@ def _run_tag() -> str:
     return c.run_tag()
 
 
-def run(full: bool) -> int:
+def _stage_data() -> list[Path]:
+    """Copy processed_data jsonl from an attached Kaggle dataset into ./processed_data/.
+    Looks under /kaggle/input/**  and  ./_data/**  for *.jsonl (or a processed_data/ dir)."""
+    import shutil
     proc = ROOT / "processed_data"
+    proc.mkdir(exist_ok=True)
     have = list(proc.glob("medqa_usmle_*.jsonl"))
+    if have:
+        return have
+    roots = [Path("/kaggle/input"), ROOT / "_data"]
+    for base in roots:
+        if not base.exists():
+            continue
+        for src in list(base.glob("**/processed_data/*.jsonl")) or list(base.glob("**/*.jsonl")):
+            if src.name.endswith(".jsonl"):
+                shutil.copy2(src, proc / src.name)
+    return list(proc.glob("medqa_usmle_*.jsonl"))
+
+
+def run(full: bool) -> int:
+    have = _stage_data()
     if not have:
-        print("processed_data/ has no MedQA files. Either attach a Kaggle dataset "
-              "with processed_data/, or run `python run.py phase04` with raw_data/ present.",
+        print("No MedQA files found. Attach a Kaggle Dataset containing "
+              "medqa_usmle_4opt.jsonl + medqa_usmle_5opt.jsonl (this script scans "
+              "/kaggle/input/**), or run `python run.py phase04` with raw_data/ present.",
               flush=True)
         return 2
+    print("staged:", *(p.name for p in have), flush=True)
     cmd = [PY, "scripts/run_pathb_pipeline.py"] + (["--all"] if full else [])
     rc = subprocess.run(cmd, cwd=ROOT).returncode
 

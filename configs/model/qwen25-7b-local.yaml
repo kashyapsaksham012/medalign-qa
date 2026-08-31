@@ -17,9 +17,11 @@ revision: a09a35458c702b33eeacc393d103063234e8bc28   # Qwen/Qwen2.5-7B-Instruct 
 dtype: bfloat16
 max_model_len: 4096
 gpu_memory_utilization: 0.90
-tensor_parallel_size: 1             # 1x T4 fits 7B bf16 @ 4k ctx; set 2 for T4 x2
+tensor_parallel_size: 2            # Kaggle T4 x2: real tensor parallelism. Set 1 for a single 16 GB+ GPU.
+distributed_executor_backend: mp  # multiprocessing (no Ray) -- reliable on Kaggle/Colab
+enforce_eager: true               # skip CUDA graphs -- avoids OOM on 15 GB T4s (small speed cost)
 trust_remote_code: false
-seed: 0                             # matches configs/global.yaml seed (RA-19)
+seed: 0                            # matches configs/global.yaml seed (RA-19)
 
 # Decode settings per strategy. PAPER-SPECIFIED where noted; else REPLICATION ASSUMPTION.
 decode:

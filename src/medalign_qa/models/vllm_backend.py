@@ -28,6 +28,8 @@ class VLLMBackend:
                  gpu_memory_utilization: float = 0.90,
                  tensor_parallel_size: int = 1, trust_remote_code: bool = False,
                  quantization: str | None = None, seed: int = 0,
+                 distributed_executor_backend: str | None = None,
+                 enforce_eager: bool = False,
                  hf_token_env: str = "HF_TOKEN"):
         if not revision or revision == "PIN_ME":
             raise RuntimeError(
@@ -43,14 +45,18 @@ class VLLMBackend:
         self.revision = revision
         self.name = f"{model}@{revision[:12]}"
         self._tok = AutoTokenizer.from_pretrained(model, revision=revision, token=token)
-        self._llm = LLM(
+        kw = dict(
             model=model, revision=revision, dtype=dtype,
             max_model_len=max_model_len,
             gpu_memory_utilization=gpu_memory_utilization,
             tensor_parallel_size=tensor_parallel_size,
             trust_remote_code=trust_remote_code,
             quantization=quantization, seed=seed,
+            enforce_eager=enforce_eager,
         )
+        if distributed_executor_backend:
+            kw["distributed_executor_backend"] = distributed_executor_backend
+        self._llm = LLM(**kw)
         self.total_prompt_tokens = 0
         self.total_completion_tokens = 0
         self.total_cost_usd = 0.0
@@ -69,6 +75,8 @@ class VLLMBackend:
             trust_remote_code=bool(cfg.get("trust_remote_code", False)),
             quantization=cfg.get("quantization"),
             seed=int(cfg.get("seed", 0)),
+            distributed_executor_backend=cfg.get("distributed_executor_backend"),
+            enforce_eager=bool(cfg.get("enforce_eager", False)),
         )
 
     # ------------------------------------------------------------------ #
