@@ -1,0 +1,27 @@
+# Portable / relaxed dependency set for reproducing the MODEL-INDEPENDENT pipeline
+# (Phases 1-8, statistics, figures) on a machine that is NOT the 2026-08-31 build host.
+#
+# requirements.txt + requirements.lock.txt pin the exact versions resolved on the
+# build host (CPython 3.14.7, numpy 2.5.2, pandas 3.0.5, ...). Those will not resolve
+# on a normal 2023-2024 Python. Use THIS file for an independent reproduction and
+# record the versions you actually got.
+#
+#   python -m venv .venv && .venv/bin/pip install -r requirements-portable.txt -e .
+#   python run.py phase01 .. phase08 && python run.py test
+
+python_requires >= 3.10
+
+numpy>=1.24
+pandas>=2.0
+scipy>=1.10          # non-parametric bootstrap (paper Section 4.5)
+openpyxl>=3.1        # MedicationQA + HealthSearchQA .xlsx ingest
+lxml>=4.9            # LiveQA TREC-2017 XML parsing
+requests>=2.28       # dataset downloads (PubMedQA, MMLU, LiveQA train)
+matplotlib>=3.7      # Figures
+PyYAML>=6.0          # configs + metadata
+tqdm>=4.65
+pytest>=7.4
+
+# NOTE: exact-count dataset verification (Phase 3) is version-independent.
+# Byte-identical re-run checks (Phase 18) assume the same interpreter minor version
+# and a LF checkout (.gitattributes) -- expect JSON key-order stability but verify.

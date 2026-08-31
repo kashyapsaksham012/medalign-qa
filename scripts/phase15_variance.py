@@ -35,6 +35,9 @@ def main() -> int:
                      limit=args.limit, max_workers=args.workers, resume=False,
                      out_subdir=f"variance/run{i}")
         s = score(paths.DERIVED / "predictions" / f"variance/run{i}" / f"{dataset}__{split}.jsonl")
+        if not s.get("n"):
+            log.error("PHASE 15 NO DATA -- run %d produced no scored predictions.", i)
+            return 1
         accs.append(round(100 * s["accuracy"], 2))
         log.info("  run %d: acc=%.2f", i, accs[-1])
 
@@ -43,9 +46,10 @@ def main() -> int:
            "variance": round(var, 4), "stdev": round(statistics.pstdev(accs), 3),
            "paper_variance_4runs": io.read_yaml(paths.METADATA / "paper_results.yaml")["variance_medqa_4runs"],
            "note": "Loose comparison only -- different model. Paper's 0.078 is for Flan-PaLM 540B."}
+    res["mock"] = args.mock
     (paths.RESULTS / "phase15_variance.json").write_text(json.dumps(res, indent=2), encoding="utf-8")
     log.info("variance=%.4f (paper: 0.078, Flan-PaLM 540B) | mean=%.2f", var, res["mean"])
-    log.info("PHASE 15 PASS")
+    log.info("PHASE 15 %s", "PASS (MOCK -- not a real result)" if args.mock else "PASS")
     return 0
 
 

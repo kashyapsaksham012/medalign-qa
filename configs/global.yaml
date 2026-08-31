@@ -6,11 +6,17 @@ seed: 0                      # REPLICATION ASSUMPTION (RA-19) — paper reports 
 
 # --- Prompting (Section 3.3.2, 4.4) ---
 few_shot:
-  medqa: 5                   # PAPER-SPECIFIED (line ~571)
-  medmcqa: 5                 # PAPER-SPECIFIED
-  pubmedqa: 3                # PAPER-SPECIFIED ("3 or fewer" for context budget)
-  mmlu: 5                    # PAPER-SPECIFIED (standard MMLU 5-shot)
-  consumer: 5               # PAPER-SPECIFIED (line ~571, "Typically we used 5")
+  medqa: 5                   # PAPER-SPECIFIED (Tables 5/6/7 headers "(5-shot)"; exemplar block A.13 has 5)
+  medmcqa: 5                 # PAPER-SPECIFIED (Tables 5/6/7 headers "(5-shot)"; exemplar block A.14 has 5)
+  pubmedqa: 3                # PAPER-SPECIFIED (Tables 5/6/7 headers "(3-shot)"; §3.3.2 "3 or fewer"; A.15 has 3)
+  mmlu: 5                    # NOT SPECIFIED IN PAPER -> REPLICATION ASSUMPTION (RA-06).
+                             #   §A.8 gives few-shot prompts for MedQA/MedMCQA/PubMedQA/LiveQA/MedicationQA
+                             #   ONLY -- no MMLU few-shot prompt or shot count anywhere in the paper.
+                             #   5 = the universal MMLU convention (the 5 official `dev` rows/subject).
+  consumer: 5               # NOT SPECIFIED IN PAPER (approximate) -> REPLICATION ASSUMPTION.
+                             #   §3.3.2: "Typically we used 5 input-output examples for the consumer
+                             #   medical question answering datasets" -- "typically", not a fixed count.
+                             #   Consumer datasets are out of multiple-choice (Path B) scope anyway.
 
 self_consistency:
   n_chains: 11               # PAPER-SPECIFIED (line ~854)

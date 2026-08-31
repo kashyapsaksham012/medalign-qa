@@ -99,3 +99,6 @@ tables/*
 !tables/.gitkeep
 logs/*
 !logs/.gitkeep
+
+# Quarantined premature Path-B work (see attic/README.md) -- not part of the repo
+attic/

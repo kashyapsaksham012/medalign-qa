@@ -41,3 +41,21 @@ def score(pred_path: str | Path) -> dict:
 def find_predictions(strategy: str) -> list[Path]:
     d = paths.DERIVED / "predictions" / strategy
     return sorted(d.glob("*.jsonl")) if d.exists() else []
+
+
+def any_predictions() -> bool:
+    """True iff at least one non-empty prediction file exists under any strategy.
+
+    Phases 12/16/17/19/20 MUST guard on this and hard-fail with NO DATA otherwise --
+    they used to emit `PASS` / "replication complete" against zero predictions.
+    """
+    d = paths.DERIVED / "predictions"
+    if not d.exists():
+        return False
+    for p in d.glob("*/*.jsonl"):
+        try:
+            if any(True for _ in io.read_jsonl(p)):
+                return True
+        except Exception:  # noqa: BLE001
+            continue
+    return False

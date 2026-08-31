@@ -1,6 +1,14 @@
 # Machine-readable dataset specification for the MultiMedQA replication.
 # Derived from project_healthcare_.pdf Section 3.1 + Table 1 and from inspection
-# of the local files. See docs/replication_plan.md Section 5 for prose.
+# of the local files. See docs/STATUS.md (and docs/history/replication_plan.md) for prose.
+#
+# NOTE on `prompts:` fields below -- "(verbatim)" refers ONLY to the few-shot / CoT
+# EXEMPLAR BLOCKS stored in prompts/ (transcribed from Tables A.13-A.21, checked
+# line-by-line; ~6 non-ASCII glyphs normalised + PDF line-wrapping approximate, RA-23).
+# The full prompt ASSEMBLED and sent to a substitute model additionally carries a
+# chat output-format system message + a one-line tail instruction (RA-24) -- it is
+# NOT byte-identical to what the paper's completion-style models received.
+# MMLU few-shot is NOT in the paper at all (RA-06).
 
 datasets:
 

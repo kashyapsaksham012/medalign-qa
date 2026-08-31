@@ -48,6 +48,11 @@ def main() -> int:
     # freeze tolerance bands (RA-17) already in configs/global.yaml -- echo them
     report["tolerances_RA17"] = io.read_yaml(paths.CONFIGS / "global.yaml")["tolerances"]
 
+    if not report["accuracies"]:
+        log.error("PHASE 16 NO DATA -- no prediction files under derived_data/predictions/. "
+                  "Run phases 10-14 with a real (or --mock) model first.")
+        return 1
+
     (paths.RESULTS / "phase16_stats.json").write_text(
         json.dumps(report, indent=2, ensure_ascii=False), encoding="utf-8")
     log.info("scored %d prediction files; McNemar on %d datasets",

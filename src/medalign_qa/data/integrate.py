@@ -4,6 +4,7 @@ regenerate Table 1, and run leakage checks.
 from __future__ import annotations
 
 import json
+import re
 from collections import Counter
 
 from ..utils import paths
@@ -49,12 +50,18 @@ def regenerate_table1(counts: dict[str, int]) -> list[dict]:
                   "reproduced_dev": n("medqa_usmle_4opt", "train") + n("medqa_usmle_4opt", "dev"),
                   "reproduced_test": n("medqa_usmle_4opt", "test"),
                   "paper_dev": 11450, "paper_test": 1273})
-    # MedMCQA
+    # MedMCQA -- paper Table 1 'dev'(187K) == train+validation (exactly as MedQA's
+    # dev == train+dev); 'test'(6.1K) == the withheld 6150-row test split. Paper
+    # rounds both. The split we actually SCORE is the 4183 validation split (RA-01).
     table.append({"dataset": "MedMCQA", "format": "Q+A, 4 choices",
-                  "reproduced_dev": n("medmcqa", "train"),
-                  "reproduced_test": n("medmcqa", "validation"),
+                  "reproduced_dev": n("medmcqa", "train") + n("medmcqa", "validation"),
+                  "reproduced_test": n("medmcqa", "test"),
                   "paper_dev": 187000, "paper_test": 6100,
-                  "note": "paper 'test' 6.1K == withheld test; we evaluate the 4183 validation split (RA-01)"})
+                  "paper_rounds": True,
+                  "scored_split": {"split": "validation", "n": n("medmcqa", "validation"),
+                                   "basis": "RA-01 (test labels withheld; paper 'dev set' ambiguous)"},
+                  "note": "dev = train+validation = 187005 ~= 187000 (paper rounds 'over 187k'); "
+                          "test = 6150 ~= 6100. Scoring is on the 4183 validation split (RA-01)."})
     # PubMedQA
     table.append({"dataset": "PubMedQA", "format": "Q+context+A (yes/no/maybe)",
                   "reproduced_dev": n("pubmedqa", "train"),
@@ -88,6 +95,10 @@ def regenerate_table1(counts: dict[str, int]) -> list[dict]:
 # --------------------------------------------------------------------------- #
 # Leakage / integrity checks (task 11 of the plan)
 # --------------------------------------------------------------------------- #
+def _norm(s: str) -> str:
+    return re.sub(r"\s+", " ", (s or "").strip().lower())
+
+
 def leakage_checks() -> list[dict]:
     checks: list[dict] = []
 
@@ -100,28 +111,32 @@ def leakage_checks() -> list[dict]:
     checks.append({"check": "unique uids", "status": "PASS" if len(uids) == len(set(uids)) else "FAIL",
                    "detail": f"{len(uids)} records, {len(set(uids))} unique"})
 
-    # 2. MC eval splits: exemplar/eval question overlap (would be contamination)
+    # 2. MC exemplar-pool vs scored-split question overlap (train/test contamination).
+    #    Uses NORMALISED text (whitespace + case) -- exact .strip() misses variant leakage.
     for ds, ex_split, ev_split in (("medqa_usmle_4opt", "train", "test"),
                                    ("medqa_usmle_4opt", "dev", "test"),
+                                   ("medqa_usmle_5opt", "train", "test"),
+                                   ("medqa_usmle_5opt", "dev", "test"),
                                    ("medmcqa", "train", "validation"),
                                    ("pubmedqa", "train", "test")):
         r = rows(ds)
-        exq = {x["question"].strip() for x in r if x["split"] == ex_split}
-        evq = {x["question"].strip() for x in r if x["split"] == ev_split}
+        exq = {_norm(x["question"]) for x in r if x["split"] == ex_split}
+        evq = {_norm(x["question"]) for x in r if x["split"] == ev_split}
         overlap = exq & evq
-        checks.append({"check": f"{ds}: {ex_split} vs {ev_split} question overlap",
+        checks.append({"check": f"{ds}: {ex_split} vs {ev_split} normalized question overlap",
                        "status": "PASS" if not overlap else "WARN",
-                       "detail": f"{len(overlap)} shared question strings"})
+                       "detail": f"{len(overlap)} shared normalized questions"})
 
-    # 3. duplicate questions within each eval split (informational)
-    for ds, split in (("medqa_usmle_4opt", "test"), ("medmcqa", "validation"),
-                      ("pubmedqa", "test")):
+    # 3. duplicate questions within each scored split (informational)
+    for ds, split in (("medqa_usmle_4opt", "test"), ("medqa_usmle_5opt", "test"),
+                      ("medmcqa", "validation"), ("pubmedqa", "test")):
         r = [x for x in rows(ds) if x["split"] == split]
-        c = Counter(x["question"].strip() for x in r)
-        dups = {q: n for q, n in c.items() if n > 1}
+        c = Counter(_norm(x["question"]) for x in r)
+        dups = {q: k for q, k in c.items() if k > 1}
         checks.append({"check": f"{ds}/{split} duplicate questions",
                        "status": "PASS" if not dups else "INFO",
-                       "detail": f"{len(dups)} question strings appear >1x"})
+                       "detail": f"{len(dups)} normalized question strings appear >1x "
+                                 f"(of {len(r)} rows)"})
 
     # 4. MMLU: gold letter always in A-D
     bad = 0
@@ -137,6 +152,42 @@ def leakage_checks() -> list[dict]:
     missing = sum(1 for x in r if x.get("gold") not in ("A", "B", "C"))
     checks.append({"check": "PubMedQA test gold present", "status": "PASS" if missing == 0 else "FAIL",
                    "detail": f"{missing}/{len(r)} missing"})
+
+    # 6. MMLU: few-shot exemplar splits vs the scored test split (contamination)
+    for s in paths.MMLU_SUBJECTS:
+        r = rows(f"mmlu_{s}")
+        test_q = {_norm(x["question"]) for x in r if x["split"] == "test"}
+        for src in ("dev", "validation"):
+            src_q = {_norm(x["question"]) for x in r if x["split"] == src}
+            ov = src_q & test_q
+            checks.append({"check": f"mmlu_{s}: {src} vs test question overlap",
+                           "status": "PASS" if not ov else "WARN",
+                           "detail": f"{len(ov)} shared normalized questions"})
+
+    # 7. intra-dataset duplicate questions (Part 4 of the audit brief -- every dataset)
+    for ds in ("healthsearchqa", "medicationqa", "liveqa", "medqa_usmle_4opt",
+               "medqa_usmle_5opt", "medmcqa", "pubmedqa"):
+        r = rows(ds)
+        norms = [_norm(x["question"]) for x in r]
+        n_dup = len(norms) - len(set(norms))
+        checks.append({"check": f"{ds}: intra-dataset duplicate questions",
+                       "status": "PASS" if n_dup == 0 else "INFO",
+                       "detail": f"{n_dup} duplicate normalized question strings "
+                                 f"across {len(norms)} records ({len(set(norms))} distinct)"})
+
+    # 8. 140-question human-eval set disjoint from the 40 IPT exemplars (paper §4.5).
+    #    Exemplars are the null PLACEHOLDER (B3) -> vacuously disjoint until RA-12 fills them;
+    #    this check exists so it FAILS LOUDLY once real exemplars are added and overlap.
+    he_p = paths.DERIVED / "human_eval_140.jsonl"
+    ipt_p = paths.DERIVED / "ipt_exemplars.PLACEHOLDER.jsonl"
+    if he_p.exists() and ipt_p.exists():
+        he_q = {_norm(x["question"]) for x in _rows(he_p)}
+        ipt_q = {_norm(x.get("question") or "") for x in _rows(ipt_p)} - {""}
+        ov = he_q & ipt_q
+        checks.append({"check": "human_eval_140 vs IPT exemplars disjoint (§4.5)",
+                       "status": "PASS" if not ov else "FAIL",
+                       "detail": f"{len(ov)} shared questions "
+                                 f"({len(ipt_q)} non-null exemplars — 0 == placeholder, B3)"})
 
     return checks
 
@@ -157,15 +208,40 @@ def run(write_reports: bool = True) -> dict:
     return report
 
 
+def _matches(reproduced, paper, *, rounds: bool) -> bool:
+    """Exact match, or -- when the paper explicitly rounds this figure -- within the
+    rounding step implied by the paper's own precision (nearest 100 for 187K/6.1K)."""
+    if reproduced is None or paper is None:
+        return reproduced == paper
+    if reproduced == paper:
+        return True
+    if not rounds:
+        return False
+    step = 10 ** (len(str(paper)) - len(str(paper).rstrip("0")))  # 187000 -> 1000, 6100 -> 100
+    return abs(reproduced - paper) < max(step, 1)
+
+
 def _write_table1_md(table1: list[dict]) -> None:
     lines = ["# Table 1 (reproduced) — MultiMedQA dataset sizes", "",
+             "Match = `exact` (identical) · `~rounding` (paper rounds this figure; within its "
+             "rounding step) · `test exact` · `see note` (documented deviation — RA-xx).", "",
              "| Dataset | Format | Reproduced dev | Reproduced test | Paper dev | Paper test | Match | Note |",
              "|---|---|---|---|---|---|---|---|"]
     for t in table1:
         rd, rt = t["reproduced_dev"], t["reproduced_test"]
         pd_, pt = t["paper_dev"], t["paper_test"]
-        match = "exact" if (rd == pd_ and rt == pt) else (
-            "test exact" if rt == pt else "see note")
-        lines.append(f"| {t['dataset']} | {t['format']} | {rd} | {rt} | {pd_} | {pt} | {match} | "
-                     f"{t.get('note', '')} |")
+        rounds = t.get("paper_rounds", False)
+        dev_ok = _matches(rd, pd_, rounds=rounds)
+        test_ok = _matches(rt, pt, rounds=rounds)
+        if dev_ok and test_ok:
+            match = "~rounding" if rounds else "exact"
+        elif test_ok:
+            match = "test exact"
+        else:
+            match = "see note"
+        scored = t.get("scored_split")
+        note = t.get("note", "")
+        if scored:
+            note = f"scored split: {scored['split']} (n={scored['n']}, {scored['basis']}). " + note
+        lines.append(f"| {t['dataset']} | {t['format']} | {rd} | {rt} | {pd_} | {pt} | {match} | {note} |")
     (paths.TABLES / "table1_reproduced.md").write_text("\n".join(lines) + "\n", encoding="utf-8")

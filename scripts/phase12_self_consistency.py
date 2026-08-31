@@ -10,7 +10,7 @@ import argparse
 import json
 
 from medalign_qa.evaluation import tables
-from medalign_qa.evaluation.mc_accuracy import score
+from medalign_qa.evaluation.mc_accuracy import any_predictions, score
 from medalign_qa.inference.runner import run_mc_split
 from medalign_qa.models import load_model
 from medalign_qa.utils import io, paths
@@ -31,6 +31,9 @@ def main() -> int:
     log = get_logger("phase12")
 
     sc = io.read_yaml(args.config)["decode"]["self_consistency"]  # n=11 PAPER-SPECIFIED
+    g = io.read_yaml(paths.CONFIGS / "global.yaml")
+    seed = g["seed"]  # RA-19: per-decode offset applied in the backend so the 11 samples
+                      # are distinct but the run is reproducible (paper A.2 accepts SC variance)
     model = load_model(args.config, mock=args.mock)
     only = set(args.datasets.split(",")) if args.datasets else None
 
@@ -43,23 +46,32 @@ def main() -> int:
         run_mc_split(model, dataset, split, "self_consistency",
                      temperature=sc["temperature"], top_p=sc.get("top_p", 1.0),
                      max_tokens=sc["max_tokens"], n=sc["n"], limit=args.limit,
-                     max_workers=args.workers)
+                     max_workers=args.workers, seed=seed)
         s = score(paths.DERIVED / "predictions" / "self_consistency" / f"{dataset}__{split}.jsonl")
         s.pop("_per_uid_correct", None)
         summary[f"{dataset}/{split}"] = s
         log.info("  %-28s SC acc=%.3f parse=%.3f (n=%d)", f"{dataset}/{split}",
                  s.get("accuracy", 0), s.get("parse_rate", 0), s.get("n", 0))
 
+    if not any_predictions():
+        log.error("PHASE 12 NO DATA -- no predictions were produced (every target skipped "
+                  "or every decode failed). Not writing tables.")
+        return 1
+
     written = tables.write_all()
     usage = model.usage_summary()
     (paths.RESULTS / "phase12_mc_results.json").write_text(
         json.dumps({"strategy": "self_consistency", "n_decodes": sc["n"],
-                    "model": model.name, "summary": summary, "tables": written,
-                    "usage": usage}, indent=2, ensure_ascii=False), encoding="utf-8")
+                    "model": model.name, "mock": args.mock, "seed": seed,
+                    "summary": summary, "tables": written, "usage": usage},
+                   indent=2, ensure_ascii=False), encoding="utf-8")
     log.info("tables: %s", written)
     log.info("est cost $%.4f", usage.get("est_cost_usd", 0))
-    log.info("PHASE 12 PASS")
-    return 0
+    got = [k for k, v in summary.items() if v.get("n")]
+    log.info("PHASE 12 %s -- %d/%d targets produced predictions%s",
+             "PASS" if got else "NO DATA", len(got), len(summary),
+             "  (MOCK data -- not a real result)" if args.mock else "")
+    return 0 if got else 1
 
 
 if __name__ == "__main__":

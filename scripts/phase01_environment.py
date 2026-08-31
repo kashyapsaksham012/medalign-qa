@@ -32,7 +32,7 @@ REQUIRED_FILES = [
     paths.METADATA / "data_provenance.md",
     paths.DOCS / "blockers.md",
     paths.DOCS / "deviations.md",
-    paths.DOCS / "replication_plan.md",
+    paths.DOCS / "STATUS.md",
 ]
 
 REQUIRED_ORIGINALS = list(paths.ORIGINALS.values())

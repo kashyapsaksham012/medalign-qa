@@ -1,0 +1,11 @@
+# Normalise line endings so "byte-identical re-run" reproducibility checks (Phase 18)
+# are stable across Windows/macOS/Linux checkouts.
+* text=auto eol=lf
+
+# Binary / generated payloads: never touch
+*.png binary
+*.parquet binary
+*.xlsx binary
+*.pdf binary
+*.zip binary
+*.tar binary

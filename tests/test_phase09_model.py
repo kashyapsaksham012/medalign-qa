@@ -23,9 +23,11 @@ def test_mock_greedy_is_deterministic():
 
 
 def test_redact_never_leaks_key():
-    out = redact("sk-or-v1-abcdefghijklmnop")
-    assert out.startswith("sk-or-") and out.endswith("mnop (len 25)")
+    fake = "sk-" + "or-" + "v1-" + "abcdefghijklmnop"   # split so it isn't a literal key fragment
+    out = redact(fake)
+    assert out.startswith("sk-") and f"(len {len(fake)})" in out
     assert "abcdefghij" not in out
+    assert "mnop" not in out                    # not even the tail
     assert redact(None) == "<unset>"
 
 
@@ -58,9 +60,9 @@ def test_env_file_is_gitignored():
 
 
 def test_no_secret_in_tracked_files():
-    """The API key must not appear in any git-tracked file."""
+    """An OpenRouter API key must not appear in any git-tracked file."""
     import subprocess
-    key_frag = "sk-or-v1-"
+    key_frag = "sk-" + "or-" + "v1-"          # assembled so this test file isn't a hit
     tracked = subprocess.run(["git", "ls-files"], cwd=paths.ROOT,
                              capture_output=True, text=True).stdout.split()
     for f in tracked:

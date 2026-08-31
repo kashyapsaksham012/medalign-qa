@@ -63,6 +63,11 @@ def run_mc_split(model, dataset: str, split: str, strategy: str,
     t0 = time.time()
     counter = {"done": 0}
 
+    # RA-05: bare-letter fallback is only safe for greedy few-shot (letter-only output).
+    # CoT / self-consistency generations are long reasoning text -> require an explicit
+    # "Answer:" / trailing "(X)" anchor, else count the decode as unparsed.
+    allow_bare = prompt_strategy == "few_shot"
+
     def work(r: dict) -> dict:
         letters = valid_letters(len(r["options"]))
         prompt = build(r, key)
@@ -70,7 +75,7 @@ def run_mc_split(model, dataset: str, split: str, strategy: str,
                         max_tokens=max_tokens, system=sys_msg, seed=seed,
                         stop=["\nQuestion:", "\n\nQuestion"])
         res = model.generate(prompt, cfg)
-        preds = [parse_choice(t, letters) for t in res.texts]
+        preds = [parse_choice(t, letters, allow_bare=allow_bare) for t in res.texts]
         row = {"uid": r["uid"], "dataset": dataset, "split": split, "strategy": strategy,
                "gold": r["gold"], "n_options": len(r["options"]),
                "generations": res.texts, "parsed": preds,

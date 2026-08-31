@@ -19,14 +19,17 @@ data.zip / data_clean.zip / *.xlsx / LiveQA_*.zip   user-provided datasets (read
 raw_data/        immutable canonical copies / extracts / downloads
 processed_data/  schema-unified parse of each dataset
 derived_data/    MultiMedQA assembly, materialised prompts, predictions, results
-prompts/         few-shot & CoT prompts (verbatim from the paper where given)
+prompts/         few-shot & CoT exemplar blocks (verbatim from paper Tables A.13-A.21
+                 where given; MMLU few-shot = RA-06 assumption). The ASSEMBLED prompt
+                 sent to a substitute model adds a chat output-format wrapper (RA-24).
 configs/         global.yaml (every constant, evidence-labelled)
 metadata/        dataset_specs.yaml, expected_counts.yaml, data_provenance.md
 src/medalign_qa/ the package (utils, data, preprocessing, inference, training,
                  evaluation, fairness, uncertainty, figures)
 scripts/         phaseNN_*.py entrypoints
 tests/           pytest suite (per-phase validation)
-docs/            replication_plan.md, blockers.md, deviations.md
+docs/            STATUS.md (single source of truth), blockers.md, deviations.md,
+                 history/ (superseded planning docs)
 results/ figures/ tables/ logs/   generated artifacts
 ```
 

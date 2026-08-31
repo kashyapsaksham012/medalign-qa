@@ -7,7 +7,29 @@ from ..utils import io, paths
 from .mc_accuracy import score
 
 PAPER = io.read_yaml(paths.METADATA / "paper_results.yaml")
-MODEL_LABEL = "Llama-3.1-8B-Instruct"   # RA-16/RA-24 substitute
+
+
+def _model_label() -> str:
+    """The substitute model is NOT frozen yet (see docs/STATUS.md). Best-effort label
+    from whichever phase result was written last; never claim a specific model here."""
+    for name in ("phase12_mc_results.json", "phase10_fewshot_accuracy.json"):
+        p = paths.RESULTS / name
+        if p.exists():
+            try:
+                d = json.loads(p.read_text(encoding="utf-8"))
+                m = d.get("model")
+                if m:
+                    return f"{m}{' [MOCK]' if d.get('mock') else ''} — SUBSTITUTE (RA-16/RA-24)"
+            except Exception:  # noqa: BLE001
+                pass
+    return "SUBSTITUTE MODEL (RA-16/RA-24) — not frozen, see docs/STATUS.md"
+
+
+MODEL_LABEL = _model_label()
+
+_BANNER = ("> Substitute-model numbers. NOT a reproduction of PaLM/Flan-PaLM/Med-PaLM. "
+           "Absolute gaps vs the paper are expected; only the qualitative direction is tested "
+           "(see results/comparison.md).")
 
 
 def _acc(strategy: str, dataset: str, split: str) -> float | None:
@@ -92,10 +114,16 @@ def tableA1() -> str:
 
 
 def write_all() -> list[str]:
+    global MODEL_LABEL
+    MODEL_LABEL = _model_label()
     out = []
     for name, fn in (("table4", table4), ("table5", table5), ("table6", table6),
                      ("table7", table7), ("tableA1", tableA1)):
         p = paths.TABLES / f"{name}.md"
-        p.write_text(fn(), encoding="utf-8")
+        body = fn()
+        # inject the substitute-model banner right after the H1
+        lines = body.split("\n", 1)
+        p.write_text(f"{lines[0]}\n\n{_BANNER}\n\n_Model: {MODEL_LABEL}_\n{lines[1] if len(lines) > 1 else ''}",
+                     encoding="utf-8")
         out.append(str(p.relative_to(paths.ROOT)))
     return out

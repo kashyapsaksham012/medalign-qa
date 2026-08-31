@@ -7,15 +7,15 @@ and `metadata/`.
 
 | ID | Assumption / deviation | Applies to | Basis | Confidence |
 |---|---|---|---|---|
-| RA-01 | MedMCQA evaluated on the **4,183-row validation split**; few-shot exemplars from the 182,822-row train split | §4.2, Tables 5–7 | test labels withheld; paper's "dev"=train | Medium-High |
+| RA-01 | MedMCQA evaluated on the **4,183-row validation split**; few-shot exemplars from the 182,822-row train split | §4.2, Tables 5–7 | test labels withheld (0/6150 have `cop`); the 4,183 split is the only scoreable one. Paper §4.2 says "57.6% on the dev set" but Table 1's "dev"=187K=train+validation, so the paper's scoring split is **genuinely ambiguous**. **Comparability caveat:** this split is 31.5% "Dental" (1318/4183) and gold-letter A = 32% (1348/4183) per `results/phase08_eda_report.json` — a real distributional skew when comparing any MedMCQA number to the paper's. | **Medium** |
 | RA-02 | PubMedQA uses the official `pqa_labeled` **500-item test split**; other 500 for exemplars | §4.2 | official artifact; paper only says "500/500" | Medium |
 | RA-03 | Self-consistency / selective-prediction **temperature = 0.7**; sweep {0.5, 0.7, 1.0} | §4.4, Fig 5 | Nature version + common CoT-SC default | Medium |
 | RA-04 | SC decoding: top-p 0.95, top-k 40, ties broken first-seen | §4.4 | common defaults; paper silent | Low-Medium |
 | RA-05 | Answer extraction regex `Answer:\s*\(?([A-E])\)?`; fallback = last lone option letter; else counted wrong | §3.3.2 / all MC | paper says "Output a single option"; format from A.18 | Medium |
 | RA-06 | MMLU few-shot = the 5 official `dev` exemplars per subject | §4.3, A.3 | MMLU convention | Medium |
 | RA-07 | MedQA local file used = `data_clean/questions/US/4_options/phrases_no_exclude_{split}.jsonl` | §3.1 | matches "4 options"; counts align exactly | High |
-| RA-08 | MedicationQA analytic set = rows with non-empty `Question` AND `Answer` (record resulting N vs 674) | §3.1, Table 1 | 690 vs 674 gap unexplained | Medium |
-| RA-09 | HealthSearchQA authoritative set = the **3,173** released questions; 140-eval taken directly from sheet 2 | §3.1 | released artifact > preprint text | High |
+| RA-08 | MedicationQA: use **all 690 released rows**; the paper's 674 **cannot be reconstructed by any rule found**. Verified: all 690 rows have non-empty `Question` AND `Answer` (so that filter yields 690, not 674); 651 rows are distinct after whitespace/case normalisation (39 exact duplicates). Every MedicationQA count is therefore treated as **approximate**. | §3.1, Table 1 | released file has 690 rows; 674 unexplained and unreproducible | Low (unreconstructable) |
+| RA-09 | HealthSearchQA authoritative set = the **3,173** released questions (Nature 2023 Supplementary Data 6); 140-eval taken directly from sheet 2. Paper (preprint) states 3,375 — a 202-question gap, **CANNOT BE DETERMINED** (preprint text vs published artifact). Verified: sheet 1 has no header row; 3,173 non-empty rows contain **3,156 distinct** questions after normalisation (17 exact duplicates). Sheet 2's 140 rows carry leading whitespace (handled by `cohort._norm`). | §3.1 | released artifact > preprint text | High (set) / caveated (count) |
 | RA-10 | IPT: constant LR, 0 warmup, max-seq-len 2048 | §3.3.3, A.1 | A.1 gives optimizer/LR/WD/batch/steps/init only | Low-Medium |
 | RA-11 | IPT checkpoint selection proxy (replacing clinician ranking): held-out NLL or LLM-judge — explicit deviation | §3.3.3 | clinician unavailable (B4) | Low |
 | RA-12 | 40 IPT exemplars reconstructed in the A.16/A.17 style (~13/14/13 HSQA/MedicationQA/LiveQA) | §3.3.4 | content not released (B3) | Low |

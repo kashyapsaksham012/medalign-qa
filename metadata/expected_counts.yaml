@@ -16,12 +16,19 @@ medqa_usmle_4opt:
 medmcqa:
   source_file: "data.zip -> {train,dev,test}.json (JSON Lines)"
   local_train: 182822       # DATASET-VERIFIED
-  local_valid: 4183         # DATASET-VERIFIED  (paper Table 1 shows 6.1K for 'test'; see note)
+  local_valid: 4183         # DATASET-VERIFIED
   local_test: 6150          # DATASET-VERIFIED  (labels withheld: 0/6150 have `cop`)
   answer_field: cop         # DATASET-VERIFIED
   answer_indexing: one_based  # DATASET-VERIFIED  (1=opa,2=opb,3=opc,4=opd)
   eval_split_used: valid    # REPLICATION ASSUMPTION (RA-01)
-  note: "Paper 'dev' (187K) == training split; 57.6% reported 'on the dev set'."
+  paper_dev: 187000         # PAPER (Table 1) == local train(182822) + local valid(4183) = 187005 (paper rounds "over 187k")
+  paper_test: 6100          # PAPER (Table 1) == local test(6150) (paper rounds to "6.1K")
+  note: >
+    Paper Table 1 'dev'=187K == train + validation (182822+4183=187005), exactly as
+    the MedQA row is train+dev. Paper 'test'=6.1K == the withheld 6150-row test split.
+    §4.2 reports 57.6% 'on the dev set' -- which split that refers to is AMBIGUOUS
+    (Table 1's 'dev' is 187K = untestable). We score the 4183 validation split (RA-01);
+    see docs/deviations.md RA-01 for the Dental / gold-A distributional caveat.
 
 pubmedqa:
   source: "github.com/pubmedqa/pubmedqa (pqa_labeled)"

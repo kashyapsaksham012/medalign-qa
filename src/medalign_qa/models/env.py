@@ -40,6 +40,7 @@ def get(name: str, default: str | None = None, *, required: bool = False) -> str
 
 
 def redact(secret: str | None) -> str:
+    """Show only the first 3 chars (provider hint, not key material) + length."""
     if not secret:
         return "<unset>"
-    return f"{secret[:6]}...{secret[-4:]} (len {len(secret)})"
+    return f"{secret[:3]}***redacted*** (len {len(secret)})"

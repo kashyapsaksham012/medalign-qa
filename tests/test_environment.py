@@ -45,7 +45,7 @@ def test_phase1_files_present():
               paths.METADATA / "data_provenance.md",
               paths.DOCS / "blockers.md",
               paths.DOCS / "deviations.md",
-              paths.DOCS / "replication_plan.md"):
+              paths.DOCS / "STATUS.md"):
         assert f.is_file(), f
 
 

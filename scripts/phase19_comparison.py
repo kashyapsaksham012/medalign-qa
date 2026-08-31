@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import json
 
-from medalign_qa.evaluation.mc_accuracy import score
+from medalign_qa.evaluation.mc_accuracy import any_predictions, score
 from medalign_qa.utils import io, paths
 from medalign_qa.utils.logging_utils import get_logger
 
@@ -22,6 +22,10 @@ def _acc(strategy, stem):
 
 def main() -> int:
     log = get_logger("phase19")
+    if not any_predictions() and not (paths.RESULTS / "phase14_selective_prediction.json").exists():
+        log.error("PHASE 19 NO DATA -- no predictions and no selective-prediction result. "
+                  "Nothing to compare against the paper. Run phases 10-15 first.")
+        return 1
     rows = []
 
     def cmp(name, paper, ours, tol, note=""):
@@ -113,9 +117,23 @@ def main() -> int:
     md += ["", "## Not reproduced", ""] + [f"- {x}" for x in out["not_reproduced"]]
     (paths.RESULTS / "comparison.md").write_text("\n".join(md) + "\n", encoding="utf-8")
 
+    # was any of this from MOCK data?
+    is_mock = any(
+        json.loads((paths.RESULTS / n).read_text(encoding="utf-8")).get("mock")
+        for n in ("phase12_mc_results.json", "phase15_variance.json",
+                  "phase14_selective_prediction.json")
+        if (paths.RESULTS / n).exists())
+    out["mock_data"] = is_mock
+    attempted = [f for f in findings if f["verdict"] != "NOT-ATTEMPTED"]
+
     for f in findings:
         log.info("  %-52s %s", f["finding"], f["verdict"])
-    log.info("PHASE 19 PASS -- results/comparison.md")
+    if not attempted:
+        log.error("PHASE 19 NO DATA -- every finding is NOT-ATTEMPTED (no predictions).")
+        return 1
+    log.info("PHASE 19 %s -- results/comparison.md  (%d/%d findings evaluated)",
+             "PASS (MOCK data -- not a real result)" if is_mock else "PASS",
+             len(attempted), len(findings))
     return 0
 
 

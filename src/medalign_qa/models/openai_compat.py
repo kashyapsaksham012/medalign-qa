@@ -9,6 +9,7 @@ Design notes:
 """
 from __future__ import annotations
 
+import dataclasses
 import threading
 import time
 
@@ -95,8 +96,13 @@ class OpenAICompatLLM:
 
     def generate(self, prompt: str, cfg: GenConfig) -> GenResult:
         texts, p_tok, c_tok = [], 0, 0
-        for _ in range(cfg.n):
-            t, pt, ct = self._one_call(prompt, cfg)
+        for i in range(cfg.n):
+            # self-consistency: each of the n decodes must be an INDEPENDENT sample.
+            # If a fixed seed is supplied, offset it per decode -- otherwise providers
+            # that honour `seed` return n identical outputs and SC collapses to 1 sample.
+            call_cfg = cfg if (cfg.seed is None or cfg.n == 1) \
+                else dataclasses.replace(cfg, seed=cfg.seed + i)
+            t, pt, ct = self._one_call(prompt, call_cfg)
             texts.append(t)
             p_tok += pt
             c_tok += ct

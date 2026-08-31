@@ -1,6 +1,6 @@
 """Canonical project paths. Single source of truth for every phase.
 
-Layout (see README.md / docs/replication_plan.md):
+Layout (see README.md / docs/STATUS.md):
     raw_data/        immutable canonical copies of every input dataset
     processed_data/  parsed, schema-unified copies (one record schema)
     derived_data/    benchmark assembly, eval sets, predictions, computed results

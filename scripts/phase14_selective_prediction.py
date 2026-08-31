@@ -26,14 +26,19 @@ def main() -> int:
     grid = g["selective_prediction"]["deferral_grid"]
     model = load_model(args.config, mock=args.mock)
 
+    g = io.read_yaml(paths.CONFIGS / "global.yaml")
     dataset, split = "medqa_usmle_4opt", "test"
     run_mc_split(model, dataset, split, "self_consistency",
                  temperature=sp_cfg["temperature"], top_p=sp_cfg.get("top_p", 1.0),
                  max_tokens=sp_cfg["max_tokens"], n=sp_cfg["n"],
-                 limit=args.limit, max_workers=args.workers,
+                 limit=args.limit, max_workers=args.workers, seed=g["seed"],
                  out_subdir="selective_prediction")
     out = paths.DERIVED / "predictions" / "selective_prediction" / f"{dataset}__{split}.jsonl"
+    if not out.exists() or not any(True for _ in io.read_jsonl(out)):
+        log.error("PHASE 14 NO DATA -- no decodes were produced for %s/%s.", dataset, split)
+        return 1
     res = curve(out, grid)
+    res["mock"] = args.mock
     res["paper_reference"] = io.read_yaml(paths.METADATA / "paper_results.yaml")["selective_prediction"]
     res["subsample"] = args.limit
     (paths.RESULTS / "phase14_selective_prediction.json").write_text(
@@ -43,7 +48,7 @@ def main() -> int:
         log.info("  defer %.2f  n=%4d  acc=%s", p["deferral"], p["n_kept"], p["accuracy"])
     log.info("monotonic non-decreasing: %s | paper: 82.5%% @ 0.45", res["monotonic_non_decreasing"])
     log.info("est cost $%.4f", model.usage_summary().get("est_cost_usd", 0))
-    log.info("PHASE 14 PASS")
+    log.info("PHASE 14 %s", "PASS (MOCK -- not a real result)" if args.mock else "PASS")
     return 0
 
 

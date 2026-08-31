@@ -44,10 +44,21 @@ table7:
   pubmedqa:         {few_shot: 79.0, sc: 75.2}
 
 # Table A.1 -- MMLU 6 subjects x {PaLM 540B few-shot, Flan-PaLM 540B few-shot / CoT / SC}
-# (extracted from a garbled PDF table; treat Flan-PaLM SC column as the primary target)
+# Re-transcribed 2026-08-31 from a clean text extraction of the PDF (pypdf), verified
+# row-by-row against paper page 31. All four columns below are PAPER-SPECIFIED.
+tableA1:
+  # subject: [PaLM 540B few-shot, Flan-PaLM 540B few-shot, Flan-PaLM 540B CoT, Flan-PaLM 540B SC]
+  clinical_knowledge:    [76.2, 77.0, 77.0, 80.4]
+  medical_genetics:      [68.0, 70.0, 75.0, 74.0]
+  anatomy:               [63.7, 65.2, 66.7, 71.9]
+  professional_medicine: [75.0, 83.8, 76.5, 83.5]
+  college_biology:       [87.5, 87.5, 83.3, 88.9]
+  college_medicine:      [68.2, 69.9, 71.1, 76.3]
+
+# convenience view: the Flan-PaLM 540B self-consistency column (column 4 above)
 tableA1_flan_palm_540b_sc:
   clinical_knowledge: 80.4
-  medical_genetics: 74.0        # approximate -- PDF table mis-aligned
+  medical_genetics: 74.0
   anatomy: 71.9
   professional_medicine: 83.5
   college_biology: 88.9

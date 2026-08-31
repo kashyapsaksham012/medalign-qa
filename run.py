@@ -14,8 +14,21 @@ import subprocess
 import sys
 from pathlib import Path
 
+# Windows consoles default to cp1252; phase scripts/log lines contain non-ASCII
+# (arrows, +/-, degree). Force UTF-8 output so a phase can't die with UnicodeEncodeError.
+for _stream in (sys.stdout, sys.stderr):
+    try:
+        _stream.reconfigure(encoding="utf-8", errors="replace")  # type: ignore[union-attr]
+    except Exception:  # noqa: BLE001
+        pass
+
 ROOT = Path(__file__).resolve().parent
 PY = sys.executable
+
+# Phases that require model predictions (Path A/B/C decision -- see docs/STATUS.md).
+# They hard-fail with "NO DATA" rather than emit placeholder results.
+# Phase 18 (reproducibility validation) is model-independent for the Phase 1-8 pipeline.
+_NEEDS_MODEL = {f"phase{n:02d}" for n in (9, 10, 11, 12, 13, 14, 15, 16, 17, 19, 20)}
 
 TASKS: dict[str, str] = {
     "phase01": "scripts/phase01_environment.py",
@@ -45,8 +58,17 @@ TASKS: dict[str, str] = {
 def _list() -> None:
     print("Available tasks:")
     for name, target in TASKS.items():
-        exists = "" if target is None else ("  " if (ROOT / target).exists() else "  (not yet created)")
-        print(f"  {name:10s} -> {target or 'pytest'}{exists}")
+        if target is None:
+            note = ""
+        elif not (ROOT / target).exists():
+            note = "  (not yet created)"
+        elif name in _NEEDS_MODEL:
+            note = "  [needs a FROZEN model — Path decision; NO DATA otherwise]"
+        else:
+            note = ""
+        print(f"  {name:10s} -> {target or 'pytest'}{note}")
+    print("\nPhases 01-08 are the model-independent data harness (Milestone 1).")
+    print("Phases 09-20 need the Path A/B/C decision in docs/STATUS.md §4.")
 
 
 def main(argv: list[str]) -> int:

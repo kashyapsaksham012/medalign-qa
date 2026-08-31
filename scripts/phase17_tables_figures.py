@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 
 from medalign_qa.evaluation import tables
+from medalign_qa.evaluation.mc_accuracy import any_predictions
 from medalign_qa.figures import mc_figures
 from medalign_qa.utils import paths
 from medalign_qa.utils.logging_utils import get_logger
@@ -19,6 +20,11 @@ BLOCKED = [
 
 def main() -> int:
     log = get_logger("phase17")
+    if not any_predictions():
+        log.error("PHASE 17 NO DATA -- no model predictions under derived_data/predictions/. "
+                  "Rendering empty PAPER-vs-OURS tables would misrepresent project state. "
+                  "Run phases 10-15 first (real model, or --mock for a plumbing check).")
+        return 1
     t = tables.write_all()
     f = mc_figures.write_all()
     (paths.TABLES / "_BLOCKED.md").write_text(
