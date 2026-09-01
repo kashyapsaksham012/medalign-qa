@@ -32,6 +32,23 @@ def _done_uids(out_path: Path) -> set[str]:
     return {r["uid"] for r in io.read_jsonl(out_path)}
 
 
+def split_is_complete(strategy: str, dataset: str, split: str,
+                      *, limit: int | None = None, out_subdir: str | None = None) -> bool:
+    """True iff the prediction file already holds every uid for this (dataset, split).
+
+    Phases 10/11/12/14/15 use this to skip loading the (GPU) model entirely when a
+    re-run has nothing left to infer — so the pipeline is safe to re-invoke on an
+    incremental sweep or a no-GPU machine.
+    """
+    out_path = run_config.predictions_dir(out_subdir or strategy) / f"{dataset}__{split}.jsonl"
+    if not out_path.exists():
+        return False
+    uids = [r["uid"] for r in io.read_jsonl(paths.PROCESSED / f"{dataset}.jsonl") if r["split"] == split]
+    if limit:
+        uids = uids[:limit]
+    return bool(uids) and set(uids).issubset(_done_uids(out_path))
+
+
 def run_mc_split(model, dataset: str, split: str, strategy: str,
                  *, temperature: float, max_tokens: int, n: int = 1,
                  top_p: float = 1.0, limit: int | None = None,
@@ -51,6 +68,11 @@ def run_mc_split(model, dataset: str, split: str, strategy: str,
     rows = [r for r in io.read_jsonl(paths.PROCESSED / f"{dataset}.jsonl") if r["split"] == split]
     if limit:
         rows = rows[:limit]
+    if not resume and out_path.exists():
+        # resume=False means "start this file from scratch". The write below is
+        # append-mode, so without this an existing file (e.g. a committed variance
+        # run) would be *doubled*, not replaced.
+        out_path.unlink()
     done = _done_uids(out_path) if resume else set()
     todo = [r for r in rows if r["uid"] not in done]
     log.info("%s/%s [%s] n=%d: %d rows, %d done, %d to run (workers=%d)",

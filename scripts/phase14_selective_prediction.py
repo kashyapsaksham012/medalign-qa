@@ -6,7 +6,7 @@ import argparse
 import json
 
 from medalign_qa import config as run_config
-from medalign_qa.inference.runner import run_mc_split
+from medalign_qa.inference.runner import run_mc_split, split_is_complete
 from medalign_qa.models import load_model
 from medalign_qa.uncertainty.selective_prediction import curve
 from medalign_qa.utils import io, paths
@@ -25,10 +25,14 @@ def main() -> int:
     g = io.read_yaml(paths.CONFIGS / "global.yaml")
     sp_cfg = io.read_yaml(args.config)["decode"]["selective_prediction"]  # n=41 PAPER-SPECIFIED
     grid = g["selective_prediction"]["deferral_grid"]
-    model = load_model(args.config, mock=args.mock)
-
-    g = io.read_yaml(paths.CONFIGS / "global.yaml")
     dataset, split = "medqa_usmle_4opt", "test"
+
+    complete = split_is_complete("self_consistency", dataset, split,
+                                 limit=args.limit, out_subdir="selective_prediction")
+    model = None if complete else load_model(args.config, mock=args.mock)
+    if model is None:
+        log.info("selective-prediction decodes already complete -- scoring the curve only")
+
     run_mc_split(model, dataset, split, "self_consistency",
                  temperature=sp_cfg["temperature"], top_p=sp_cfg.get("top_p", 1.0),
                  max_tokens=sp_cfg["max_tokens"], n=sp_cfg["n"],
@@ -48,7 +52,7 @@ def main() -> int:
     for p in res["points"]:
         log.info("  defer %.2f  n=%4d  acc=%s", p["deferral"], p["n_kept"], p["accuracy"])
     log.info("monotonic non-decreasing: %s | paper: 82.5%% @ 0.45", res["monotonic_non_decreasing"])
-    log.info("est cost $%.4f", model.usage_summary().get("est_cost_usd", 0))
+    log.info("est cost $%.4f", model.usage_summary().get("est_cost_usd", 0) if model is not None else 0.0)
     log.info("PHASE 14 %s", "PASS (MOCK -- not a real result)" if args.mock else "PASS")
     return 0
 

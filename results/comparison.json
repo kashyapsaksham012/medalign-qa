@@ -21,19 +21,19 @@
     {
       "metric": "MedMCQA few-shot",
       "paper": 34.5,
-      "ours": null,
-      "delta": null,
+      "ours": 56.6,
+      "delta": 22.1,
       "tolerance_pp": 1.0,
-      "verdict": "NOT-ATTEMPTED",
+      "verdict": "DIVERGENT (expected: different model)",
       "note": "vs Flan-PaLM 8B"
     },
     {
       "metric": "PubMedQA few-shot",
       "paper": 67.6,
-      "ours": null,
-      "delta": null,
+      "ours": 72.8,
+      "delta": 5.2,
       "tolerance_pp": 1.5,
-      "verdict": "NOT-ATTEMPTED",
+      "verdict": "DIVERGENT (expected: different model)",
       "note": "vs Flan-PaLM 8B"
     },
     {
@@ -100,22 +100,22 @@
     {
       "finding": "SC beats few-shot on MedMCQA",
       "verdict": "NOT-ATTEMPTED",
-      "detail": "ours: FS None -> SC None; paper 56.5 -> 57.6"
+      "detail": "ours: FS 56.6 -> SC None; paper 56.5 -> 57.6"
     },
     {
       "finding": "SC hurts PubMedQA",
       "verdict": "NOT-ATTEMPTED",
-      "detail": "ours: FS None -> SC None; paper 79.0 -> 75.2"
+      "detail": "ours: FS 72.8 -> SC None; paper 79.0 -> 75.2"
     },
     {
       "finding": "CoT does not beat few-shot on MC (MedQA/MedMCQA/PubMedQA)",
       "verdict": "NOT-ATTEMPTED",
-      "detail": "ours FS/CoT -- MedQA 59.4/60.5, MedMCQA None/None, PubMedQA None/None"
+      "detail": "ours FS/CoT -- MedQA 59.4/60.5, MedMCQA 56.6/None, PubMedQA 72.8/None"
     },
     {
       "finding": "Selective-prediction accuracy rises with deferral",
       "verdict": "REPRODUCED-QUALITATIVELY",
-      "detail": "ours points: [(0.0, 0.636), (0.05, 0.6547), (0.1, 0.6644), (0.15, 0.6776), (0.2, 0.7), (0.25, 0.704), (0.3, 0.7343), (0.35, 0.7415), (0.4, 0.7567), (0.45, 0.7927)]"
+      "detail": "ours points: [(0.0, 0.6292), (0.05, 0.6452), (0.1, 0.6632), (0.15, 0.671), (0.2, 0.6945), (0.25, 0.7047), (0.3, 0.7273), (0.35, 0.7388), (0.4, 0.7513), (0.45, 0.7657)]"
     },
     {
       "finding": "Instruction tuning helps (PaLM < Flan-PaLM)",

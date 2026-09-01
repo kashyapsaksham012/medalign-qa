@@ -5,8 +5,16 @@
   "to_reproduce": "Add a second `configs/model/*.yaml` at a larger size (e.g. Qwen2.5-14B-Instruct), set `run_tag` in configs/global.yaml to a new value, and re-run Phases 10 & 12; ideally also the non-instruct base for the 'instruction tuning helps' finding.",
   "run_tag": "qwen25-7b-local",
   "single_model_reference_points": {
+    "few_shot:medmcqa__validation": 56.6,
     "few_shot:medqa_usmle_4opt__test": 59.4,
     "few_shot:medqa_usmle_5opt__test": 53.6,
+    "few_shot:mmlu_anatomy__test": 71.9,
+    "few_shot:mmlu_clinical_knowledge__test": 78.9,
+    "few_shot:mmlu_college_biology__test": 82.6,
+    "few_shot:mmlu_college_medicine__test": 65.9,
+    "few_shot:mmlu_medical_genetics__test": 81.0,
+    "few_shot:mmlu_professional_medicine__test": 76.1,
+    "few_shot:pubmedqa__test": 72.8,
     "self_consistency:medqa_usmle_4opt__test": 63.3
   }
 }

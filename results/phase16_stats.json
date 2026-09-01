@@ -1,6 +1,15 @@
 {
   "note": "Wilson CIs and McNemar are BEYOND PAPER (the paper reports neither for MC).",
   "accuracies": {
+    "few_shot:medmcqa__validation": {
+      "n": 4183,
+      "accuracy": 0.5659,
+      "wilson95": [
+        0.5508,
+        0.5808
+      ],
+      "parse_rate": 1.0
+    },
     "few_shot:medqa_usmle_4opt__test": {
       "n": 1273,
       "accuracy": 0.5939,
@@ -16,6 +25,69 @@
       "wilson95": [
         0.5083,
         0.563
+      ],
+      "parse_rate": 1.0
+    },
+    "few_shot:mmlu_anatomy__test": {
+      "n": 135,
+      "accuracy": 0.7185,
+      "wilson95": [
+        0.6374,
+        0.7875
+      ],
+      "parse_rate": 1.0
+    },
+    "few_shot:mmlu_clinical_knowledge__test": {
+      "n": 265,
+      "accuracy": 0.7887,
+      "wilson95": [
+        0.7356,
+        0.8335
+      ],
+      "parse_rate": 1.0
+    },
+    "few_shot:mmlu_college_biology__test": {
+      "n": 144,
+      "accuracy": 0.8264,
+      "wilson95": [
+        0.7563,
+        0.8796
+      ],
+      "parse_rate": 1.0
+    },
+    "few_shot:mmlu_college_medicine__test": {
+      "n": 173,
+      "accuracy": 0.659,
+      "wilson95": [
+        0.5856,
+        0.7255
+      ],
+      "parse_rate": 1.0
+    },
+    "few_shot:mmlu_medical_genetics__test": {
+      "n": 100,
+      "accuracy": 0.81,
+      "wilson95": [
+        0.7222,
+        0.8749
+      ],
+      "parse_rate": 1.0
+    },
+    "few_shot:mmlu_professional_medicine__test": {
+      "n": 272,
+      "accuracy": 0.761,
+      "wilson95": [
+        0.7069,
+        0.8079
+      ],
+      "parse_rate": 1.0
+    },
+    "few_shot:pubmedqa__test": {
+      "n": 500,
+      "accuracy": 0.728,
+      "wilson95": [
+        0.6874,
+        0.7652
       ],
       "parse_rate": 1.0
     },

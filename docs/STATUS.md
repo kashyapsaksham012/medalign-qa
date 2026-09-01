@@ -16,23 +16,35 @@ documentation sign-off.** The multiple-choice datasets needed for Milestone 2 �
 (4- and 5-option), PubMedQA, MMLU ×6 — are verified **exact** against the paper; MedMCQA
 data is correct with a documented eval-split assumption (RA-01). Leakage checks are clean.
 
-**Milestone 2 (model evaluation): Path B first pass DONE — MedQA only.**
-`Qwen/Qwen2.5-7B-Instruct` @ `a09a3545…` was run through the full harness on a Kaggle
-T4 x2 (2026-09-01, `dtype: float16` — RA-28). Real results (`mock: false`), all
-strategies, MedQA 4-opt + 5-opt. Predictions + tables + figures are committed under
-`derived_data/predictions/qwen25-7b-local/`, `results/`, `tables/`, `figures/`.
-Earlier attempts (`llama-3.1-8b-instruct`, partial Groq "B1", mock artifacts) stay
-quarantined in `attic/`.
+**Milestone 2 (model evaluation): Path B in progress — few-shot done for all datasets;
+CoT + self-consistency done for MedQA only.**
+`Qwen/Qwen2.5-7B-Instruct` @ `a09a3545…` run through the harness on a Kaggle T4 x2
+(2026-09-01, `dtype: float16` — RA-28). Real results (`mock: false`). Predictions +
+tables + figures committed under `derived_data/predictions/qwen25-7b-local/`, `results/`,
+`tables/`, `figures/`. Earlier attempts (`llama-3.1-8b-instruct`, partial Groq "B1",
+mock artifacts) stay quarantined in `attic/`.
 
-**Results (MedQA 4-opt, Qwen2.5-7B — SUBSTITUTE, not Flan-PaLM):**
-few-shot 59.4 · CoT 60.5 · self-consistency(11) 63.3 · MedQA 5-opt few-shot 53.6.
-Selective prediction (n=41, 500-Q subset RA-26): 63.6 → 79.3 % across 0–0.45 deferral,
-monotonic. Variance over 4 SC runs: 0.035. Parse rate ≈ 100 % (1 genuine CoT non-answer).
+| Strategy | Datasets with real predictions |
+|---|---|
+| few-shot | MedQA 4/5-opt, MedMCQA, PubMedQA, **all 6 MMLU** ✅ |
+| CoT | MedQA 4-opt only |
+| self-consistency (n=11) | MedQA 4-opt only |
+| selective prediction (n=41) | MedQA 4-opt, **full 1273** (RA-26) ✅ |
+| variance (4 runs) | MedQA 4-opt ✅ |
+
+**Results — SUBSTITUTE model, not Flan-PaLM:**
+few-shot MedQA-4opt 59.4 · MedQA-5opt 53.6 · MedMCQA 56.6 · PubMedQA 72.8 · MMLU ×6
+{anat 71.9, clin 78.9, coll-med 65.9, med-gen 81.0, prof-med 76.1, coll-bio 82.6}.
+MedQA-4opt CoT 60.5 · self-consistency 63.3. Selective prediction: 62.9 → 76.6 % over
+0–0.45 deferral, monotonic (full 1273). Variance over 4 SC runs: 0.035.
+Notable: on few-shot MMLU, Qwen2.5-7B **matches/beats Flan-PaLM-540B** on anatomy and
+medical_genetics.
 
 **Phase 19 verdict: 2 / 7 qualitative findings evaluated, both REPRODUCED-QUALITATIVELY**
-(SC > few-shot on MedQA; selective-prediction accuracy rises with deferral). The other
-5 are NOT-ATTEMPTED pending the second pass (MedMCQA / PubMedQA / MMLU — needs `--all`)
-and a second model size (scaling / instruction-tuning findings).
+(SC > few-shot on MedQA; selective-prediction accuracy rises with deferral). Three more
+(SC vs few-shot on MedMCQA; SC hurts PubMedQA; CoT ⊁ few-shot on MC) are **unblocked by
+data but pending the CoT/SC sweep** for MedMCQA/PubMedQA/MMLU. Scaling + instruction-tuning
+need a second model size.
 
 ---
 
@@ -143,13 +155,23 @@ so a fresh run never mixes with the quarantined B1 Groq run at the flat `predict
 | 8 | `run_pathb_pipeline.py` (MedQA-only), phases 9–20 | ✅ done 2026-09-01; artifacts committed |
 | 9 | Extract artifacts locally, re-run phase 16–20, hand-check predictions | ✅ done 2026-09-01 (results consistent) |
 | 10 | `project_healthcare_.pdf` supplied; SHA-256 matches provenance; **Phase 18 reproducibility validation PASS** (`results/phase18_repro.json`, `docs/reproducibility.md`); 86/0/5 tests | ✅ done 2026-09-01 |
-| 11 | **Second pass — `run_pathb_pipeline.py --all`** (MedMCQA / PubMedQA / MMLU×6) | ❌ next Kaggle session (~4–6 T4-h) |
-| 12 | Optional: a second model size for scaling / instruction-tuning findings | ❌ optional stretch |
-| 13 | Phase 20 final write-up polish once the full MC sweep is in | ❌ after step 11 |
+| 11 | Second pass part A — **few-shot for MedMCQA / PubMedQA / MMLU×6** | ✅ done 2026-09-01 (parse-rate 1.0; committed) |
+| 11b | Selective prediction re-run on the **full 1273** (was 500-subset) | ✅ done 2026-09-01 (RA-26; committed) |
+| 11c | Phase-15 append bug fixed (`resume=False` now truncates) + `split_is_complete` guard so phases 10/11/12/14/15 skip the GPU model when already complete + regression test | ✅ done 2026-09-02 |
+| 12 | Second pass part B — **CoT + self-consistency for MedMCQA / PubMedQA / MMLU×6** | ❌ next Kaggle session (~4 T4-h); pass-2 attempt was killed mid-run |
+| 13 | Optional: a second model size for scaling / instruction-tuning findings | ❌ optional stretch |
+| 14 | Phase 20 final write-up once CoT/SC sweep is in | ❌ after step 12 |
 
-### For the second pass (step 10)
-- Upload `processed_data/{medmcqa,pubmedqa,mmlu_*}.jsonl` to the Kaggle dataset (or
-  re-run `phase04` in-notebook from `raw_data/`).
-- `python scripts/run_pathb_pipeline.py --all` — append-and-skip, so MedQA is not re-run.
-- Back on this machine: `unzip -o pathb_artifacts.zip -d . && python run.py phase19`,
-  then commit the new predictions.
+### For step 12 (the remaining CoT + SC sweep)
+- Datasets already staged locally; upload `processed_data/{medmcqa,pubmedqa,mmlu_*}.jsonl`
+  to the Kaggle dataset (or re-run `phase04` in-notebook from `raw_data/`).
+- Run **per-dataset**, not one pipeline call, so an infra kill costs minutes not the sweep:
+  `python run.py phase11 --datasets medmcqa` → `pubmedqa` → each `mmlu_*`; then the same for
+  `phase12`. The runner resumes; re-invoking is now safe (skips completed splits, no model load).
+- Likely cause of the earlier kill: vLLM OOM on 512-token CoT with `enforce_eager` +
+  `tensor_parallel_size: 2` on 15 GB T4s. Try `gpu_memory_utilization: 0.80` and run the small
+  MMLU sets first as a canary.
+- Do **not** run `run_pathb_pipeline.py --all` / `run_pathb_second_pass.py` — they invoke
+  phase 15 (which with `--force` would discard the committed variance runs) and re-run smoke.
+- Back on this machine: `unzip -o pathb_artifacts.zip -d .` then `python run.py phase16 17 19 20`,
+  then commit the new `cot/` + `self_consistency/` predictions.

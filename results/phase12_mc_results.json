@@ -27,9 +27,9 @@
   "usage": {
     "model": "Qwen/Qwen2.5-7B-Instruct@a09a35458c70",
     "revision": "a09a35458c702b33eeacc393d103063234e8bc28",
-    "n_calls": 14003,
-    "prompt_tokens": 1940591,
-    "completion_tokens": 1384023,
+    "n_calls": 0,
+    "prompt_tokens": 0,
+    "completion_tokens": 0,
     "est_cost_usd": 0.0
   }
 }

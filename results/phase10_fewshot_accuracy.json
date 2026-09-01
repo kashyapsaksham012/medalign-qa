@@ -19,14 +19,78 @@
       "n_correct": 682,
       "parse_rate": 1.0,
       "n_parsed": 1273
+    },
+    "medmcqa/validation": {
+      "path": "derived_data/predictions/qwen25-7b-local/few_shot/medmcqa__validation.jsonl",
+      "n": 4183,
+      "accuracy": 0.5658618216590964,
+      "n_correct": 2367,
+      "parse_rate": 1.0,
+      "n_parsed": 4183
+    },
+    "pubmedqa/test": {
+      "path": "derived_data/predictions/qwen25-7b-local/few_shot/pubmedqa__test.jsonl",
+      "n": 500,
+      "accuracy": 0.728,
+      "n_correct": 364,
+      "parse_rate": 1.0,
+      "n_parsed": 500
+    },
+    "mmlu_anatomy/test": {
+      "path": "derived_data/predictions/qwen25-7b-local/few_shot/mmlu_anatomy__test.jsonl",
+      "n": 135,
+      "accuracy": 0.7185185185185186,
+      "n_correct": 97,
+      "parse_rate": 1.0,
+      "n_parsed": 135
+    },
+    "mmlu_clinical_knowledge/test": {
+      "path": "derived_data/predictions/qwen25-7b-local/few_shot/mmlu_clinical_knowledge__test.jsonl",
+      "n": 265,
+      "accuracy": 0.7886792452830189,
+      "n_correct": 209,
+      "parse_rate": 1.0,
+      "n_parsed": 265
+    },
+    "mmlu_college_medicine/test": {
+      "path": "derived_data/predictions/qwen25-7b-local/few_shot/mmlu_college_medicine__test.jsonl",
+      "n": 173,
+      "accuracy": 0.6589595375722543,
+      "n_correct": 114,
+      "parse_rate": 1.0,
+      "n_parsed": 173
+    },
+    "mmlu_medical_genetics/test": {
+      "path": "derived_data/predictions/qwen25-7b-local/few_shot/mmlu_medical_genetics__test.jsonl",
+      "n": 100,
+      "accuracy": 0.81,
+      "n_correct": 81,
+      "parse_rate": 1.0,
+      "n_parsed": 100
+    },
+    "mmlu_professional_medicine/test": {
+      "path": "derived_data/predictions/qwen25-7b-local/few_shot/mmlu_professional_medicine__test.jsonl",
+      "n": 272,
+      "accuracy": 0.7610294117647058,
+      "n_correct": 207,
+      "parse_rate": 1.0,
+      "n_parsed": 272
+    },
+    "mmlu_college_biology/test": {
+      "path": "derived_data/predictions/qwen25-7b-local/few_shot/mmlu_college_biology__test.jsonl",
+      "n": 144,
+      "accuracy": 0.8263888888888888,
+      "n_correct": 119,
+      "parse_rate": 1.0,
+      "n_parsed": 144
     }
   },
   "usage": {
     "model": "Qwen/Qwen2.5-7B-Instruct@a09a35458c70",
     "revision": "a09a35458c702b33eeacc393d103063234e8bc28",
-    "n_calls": 2546,
-    "prompt_tokens": 4486254,
-    "completion_tokens": 13358,
+    "n_calls": 0,
+    "prompt_tokens": 0,
+    "completion_tokens": 0,
     "est_cost_usd": 0.0
   }
 }
