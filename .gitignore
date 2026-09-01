@@ -94,21 +94,18 @@ derived_data/*
 !derived_data/predictions/
 !derived_data/predictions/**
 
-# Generated outputs & logs: preserve directory layout via .gitkeep, ignore contents
-# ...except the committed Path B run artifacts (results/tables/figures/logs).
+# Generated outputs & logs: preserve directory layout via .gitkeep, ignore contents.
+# The Path B run-of-record artifacts under these dirs are already tracked and stay
+# tracked (gitignore does not untrack); new generated files remain ignored. To add
+# a new run's outputs, `git add -f` the specific files.
 results/*
 !results/.gitkeep
-!results/*.json
-!results/*.md
 figures/*
 !figures/.gitkeep
-!figures/*.png
 tables/*
 !tables/.gitkeep
-!tables/*.md
 logs/*
 !logs/.gitkeep
-!logs/*.log
 
 # Quarantined premature Path-B work (see attic/README.md) -- not part of the repo
 attic/

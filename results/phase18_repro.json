@@ -1,0 +1,89 @@
+{
+  "seed": 0,
+  "run_tag": "qwen25-7b-local",
+  "model": "Qwen/Qwen2.5-7B-Instruct",
+  "revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+  "decode_params": {
+    "few_shot": {
+      "temperature": 0.0,
+      "max_tokens": 12
+    },
+    "cot": {
+      "temperature": 0.0,
+      "max_tokens": 512
+    },
+    "self_consistency": {
+      "temperature": 0.7,
+      "top_p": 0.95,
+      "max_tokens": 512,
+      "n": 11
+    },
+    "selective_prediction": {
+      "temperature": 0.7,
+      "top_p": 0.95,
+      "max_tokens": 512,
+      "n": 41
+    }
+  },
+  "checks": [
+    {
+      "check": "original untouched: project_healthcare_.pdf",
+      "pass": true
+    },
+    {
+      "check": "original untouched: data.zip",
+      "pass": true
+    },
+    {
+      "check": "original untouched: data_clean.zip",
+      "pass": true
+    },
+    {
+      "check": "original untouched: LiveQA_MedicalTask_TREC2017-master.zip",
+      "pass": true
+    },
+    {
+      "check": "original untouched: MedInfo2019-QA-Medications.xlsx",
+      "pass": true
+    },
+    {
+      "check": "original untouched: 41586_2023_6291_MOESM6_ESM.xlsx",
+      "pass": true
+    },
+    {
+      "check": "phase04 re-run is byte-identical (Table1 + 3 processed files)",
+      "pass": true,
+      "before": [
+        "7d9db8664dfbda46926f305f55b12852e290e877f8975bce341dcbaa3dbd4548",
+        "586ea3fee877c417921cc1192577bf6351d2ea3583640eeb363918e693ef0900",
+        "66d475ca6d572187c3b14dfc9341d074ebe7cdc707f05fec9ef65c0aff6e2ea8",
+        "776a987b8a10c296bbb339ebb450e371ec5f3378660a7bcb375221aaa27f053c"
+      ],
+      "after": [
+        "7d9db8664dfbda46926f305f55b12852e290e877f8975bce341dcbaa3dbd4548",
+        "586ea3fee877c417921cc1192577bf6351d2ea3583640eeb363918e693ef0900",
+        "66d475ca6d572187c3b14dfc9341d074ebe7cdc707f05fec9ef65c0aff6e2ea8",
+        "776a987b8a10c296bbb339ebb450e371ec5f3378660a7bcb375221aaa27f053c"
+      ]
+    },
+    {
+      "check": "requirements.lock.txt present",
+      "pass": true
+    },
+    {
+      "check": "model config records model id + decode params",
+      "pass": true
+    },
+    {
+      "check": "substitute model frozen to an exact HF revision (RA-16)",
+      "pass": true,
+      "revision": "a09a35458c702b33eeacc393d103063234e8bc28"
+    },
+    {
+      "check": "no unseeded RNG in src/ (excl. mock, seeding)",
+      "pass": true,
+      "offenders": []
+    }
+  ],
+  "all_pass": true
+}

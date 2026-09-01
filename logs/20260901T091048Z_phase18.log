@@ -1,0 +1,12 @@
+2026-09-01 14:41:08  INFO     phase18    OK   original untouched: project_healthcare_.pdf
+2026-09-01 14:41:08  INFO     phase18    OK   original untouched: data.zip
+2026-09-01 14:41:08  INFO     phase18    OK   original untouched: data_clean.zip
+2026-09-01 14:41:08  INFO     phase18    OK   original untouched: LiveQA_MedicalTask_TREC2017-master.zip
+2026-09-01 14:41:08  INFO     phase18    OK   original untouched: MedInfo2019-QA-Medications.xlsx
+2026-09-01 14:41:08  INFO     phase18    OK   original untouched: 41586_2023_6291_MOESM6_ESM.xlsx
+2026-09-01 14:41:08  INFO     phase18    OK   phase04 re-run is byte-identical (Table1 + 3 processed files)
+2026-09-01 14:41:08  INFO     phase18    OK   requirements.lock.txt present
+2026-09-01 14:41:08  INFO     phase18    OK   model config records model id + decode params
+2026-09-01 14:41:08  INFO     phase18    OK   substitute model frozen to an exact HF revision (RA-16)
+2026-09-01 14:41:08  INFO     phase18    OK   no unseeded RNG in src/ (excl. mock, seeding)
+2026-09-01 14:41:08  INFO     phase18  PHASE 18 PASS

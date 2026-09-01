@@ -49,9 +49,7 @@ and a second model size (scaling / instruction-tuning findings).
 | 7 Prompts | ✅ | MC few-shot/CoT exemplar blocks **verbatim** from Tables A.13–A.21; MMLU few-shot = RA-06 assumption; assembled prompt adds RA-24 wrapper |
 | 8 EDA | ✅ | `results/phase08_eda_report.json`; 2 anomaly flags, both genuine dataset properties |
 
-89 pytest tests collected; 84 pass + 5 skip on a machine with the datasets staged.
-(On a checkout without `project_healthcare_.pdf` — gitignored — 2 provenance tests fail;
-that is the only difference.)
+91 pytest tests collected: **86 pass / 5 skip / 0 fail** (datasets staged + `project_healthcare_.pdf` present).
 
 ### Dataset classification (final)
 
@@ -143,10 +141,11 @@ so a fresh run never mixes with the quarantined B1 Groq run at the flat `predict
 | 6 | Kaggle GPU env + data staging | ✅ done (T4 x2, `medalign-medqa` dataset) |
 | 7 | Phase 9 smoke on the real model | ✅ done (`results/phase09_smoke.json`, parse rate 1.0) |
 | 8 | `run_pathb_pipeline.py` (MedQA-only), phases 9–20 | ✅ done 2026-09-01; artifacts committed |
-| 9 | Extract artifacts locally, re-run phase 16–20, hand-check predictions | ✅ done 2026-09-01 (results consistent; 84/86 tests pass, 2 fail only on missing local PDF) |
-| 10 | **Second pass — `run_pathb_pipeline.py --all`** (MedMCQA / PubMedQA / MMLU×6) | ❌ next Kaggle session (~4–6 T4-h) |
-| 11 | Optional: a second model size for scaling / instruction-tuning findings | ❌ optional stretch |
-| 12 | Phase 20 final write-up polish once the full MC sweep is in | ❌ after step 10 |
+| 9 | Extract artifacts locally, re-run phase 16–20, hand-check predictions | ✅ done 2026-09-01 (results consistent) |
+| 10 | `project_healthcare_.pdf` supplied; SHA-256 matches provenance; **Phase 18 reproducibility validation PASS** (`results/phase18_repro.json`, `docs/reproducibility.md`); 86/0/5 tests | ✅ done 2026-09-01 |
+| 11 | **Second pass — `run_pathb_pipeline.py --all`** (MedMCQA / PubMedQA / MMLU×6) | ❌ next Kaggle session (~4–6 T4-h) |
+| 12 | Optional: a second model size for scaling / instruction-tuning findings | ❌ optional stretch |
+| 13 | Phase 20 final write-up polish once the full MC sweep is in | ❌ after step 11 |
 
 ### For the second pass (step 10)
 - Upload `processed_data/{medmcqa,pubmedqa,mmlu_*}.jsonl` to the Kaggle dataset (or
