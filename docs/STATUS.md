@@ -158,9 +158,16 @@ so a fresh run never mixes with the quarantined B1 Groq run at the flat `predict
 | 11 | Second pass part A — **few-shot for MedMCQA / PubMedQA / MMLU×6** | ✅ done 2026-09-01 (parse-rate 1.0; committed) |
 | 11b | Selective prediction re-run on the **full 1273** (was 500-subset) | ✅ done 2026-09-01 (RA-26; committed) |
 | 11c | Phase-15 append bug fixed (`resume=False` now truncates) + `split_is_complete` guard so phases 10/11/12/14/15 skip the GPU model when already complete + regression test | ✅ done 2026-09-02 |
+| 11d | Reconciled the parallel "clean tarball" line into this branch: honest `phase18_repro.py` (`VERIFIED`/`UNAVAILABLE`/`HASH_MISMATCH`, no hard-fail on a missing archive), `comparison.md` now regenerates the Phase-15 variance table (was a hand edit) | ✅ done 2026-09-02 |
 | 12 | Second pass part B — **CoT + self-consistency for MedMCQA / PubMedQA / MMLU×6** | ❌ next Kaggle session (~4 T4-h); pass-2 attempt was killed mid-run |
 | 13 | Optional: a second model size for scaling / instruction-tuning findings | ❌ optional stretch |
 | 14 | Phase 20 final write-up once CoT/SC sweep is in | ❌ after step 12 |
+
+### Workflow — one source of truth is this git branch
+Stop assembling tarballs. On Kaggle: `git clone -b pathb-medqa-results …`, run, then
+`git add derived_data/predictions results tables figures && git commit && git push`
+(or `git format-patch` + download). Tarballs off an older commit have forked the repo
+three times; each fork costs a manual merge.
 
 ### For step 12 (the remaining CoT + SC sweep)
 - Datasets already staged locally; upload `processed_data/{medmcqa,pubmedqa,mmlu_*}.jsonl`
@@ -171,7 +178,8 @@ so a fresh run never mixes with the quarantined B1 Groq run at the flat `predict
 - Likely cause of the earlier kill: vLLM OOM on 512-token CoT with `enforce_eager` +
   `tensor_parallel_size: 2` on 15 GB T4s. Try `gpu_memory_utilization: 0.80` and run the small
   MMLU sets first as a canary.
-- Do **not** run `run_pathb_pipeline.py --all` / `run_pathb_second_pass.py` — they invoke
-  phase 15 (which with `--force` would discard the committed variance runs) and re-run smoke.
-- Back on this machine: `unzip -o pathb_artifacts.zip -d .` then `python run.py phase16 17 19 20`,
-  then commit the new `cot/` + `self_consistency/` predictions.
+- Do **not** run `run_pathb_pipeline.py --all` — it invokes phase 15. (`run_pathb_second_pass.py`
+  only ever existed in a tarball, is broken — mangled indent, `phase09` dropped — and is not in
+  this repo. Ignore any copy of it.)
+- Back on this machine (or in the notebook): `python run.py phase16 17 19 20`, then commit the
+  new `cot/` + `self_consistency/` predictions.

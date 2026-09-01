@@ -29,6 +29,22 @@ Absolute-value gaps vs Flan-PaLM are EXPECTED -- a different (2024, 8B) model. T
 | Instruction tuning helps (PaLM < Flan-PaLM) | **NOT-ATTEMPTED** | requires the model's non-instruct base -- not run (single model) |
 | Scaling helps (~2x 8B->540B) | **NOT-ATTEMPTED** | requires >= 2 model sizes -- see Phase 13 |
 
+## Repeated-run variance (Phase 15)
+
+Four MedQA 4-option self-consistency runs (n=11 decodes, 1,273 examples each):
+
+| Run | Accuracy % |
+|---|---:|
+| Run 0 | 62.45 |
+| Run 1 | 62.37 |
+| Run 2 | 62.69 |
+| Run 3 | 62.84 |
+| **Mean** | **62.587** |
+| **Population variance** | **0.0351** |
+| **Population stdev** | **0.187** |
+
+Paper reports variance **0.078** over four runs for Flan-PaLM 540B (A.2). Different model -> loose methodological comparison only.
+
 ## Not reproduced
 
 - Med-PaLM / instruction prompt tuning (B1/B2)

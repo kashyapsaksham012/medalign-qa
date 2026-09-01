@@ -115,6 +115,24 @@ def main() -> int:
            "| Finding | Verdict | Detail |", "|---|---|---|"]
     for f in findings:
         md.append(f"| {f['finding']} | **{f['verdict']}** | {f['detail']} |")
+
+    # Repeated-run variance (Phase 15, A.2) -- regenerated here so comparison.md is
+    # fully pipeline-produced (no hand edits).
+    vp = paths.RESULTS / "phase15_variance.json"
+    if vp.exists():
+        v = json.loads(vp.read_text(encoding="utf-8"))
+        runs = v.get("runs", [])
+        md += ["", "## Repeated-run variance (Phase 15)", "",
+               f"Four MedQA 4-option self-consistency runs (n=11 decodes, 1,273 examples each"
+               f"{' -- MOCK' if v.get('mock') else ''}):", "",
+               "| Run | Accuracy % |", "|---|---:|"]
+        md += [f"| Run {i} | {a} |" for i, a in enumerate(runs)]
+        md += [f"| **Mean** | **{v.get('mean')}** |",
+               f"| **Population variance** | **{v.get('variance')}** |",
+               f"| **Population stdev** | **{v.get('stdev')}** |", "",
+               f"Paper reports variance **{v.get('paper_variance_4runs')}** over four runs for "
+               f"Flan-PaLM 540B (A.2). Different model -> loose methodological comparison only."]
+
     md += ["", "## Not reproduced", ""] + [f"- {x}" for x in out["not_reproduced"]]
     (paths.RESULTS / "comparison.md").write_text("\n".join(md) + "\n", encoding="utf-8")
 

@@ -9,12 +9,12 @@
 - Deterministic: `python run.py phase01..phase08` reproduces `processed_data/` + `tables/table1_reproduced.*` byte-identically.
 - Greedy decoding (few-shot / CoT) is deterministic per (revision, GPU arch, vLLM version). Sampled decoding (Phases 12/14/15) varies within the Phase-15 variance (RA-25).
 
-- PASS: original untouched: project_healthcare_.pdf
-- PASS: original untouched: data.zip
-- PASS: original untouched: data_clean.zip
-- PASS: original untouched: LiveQA_MedicalTask_TREC2017-master.zip
-- PASS: original untouched: MedInfo2019-QA-Medications.xlsx
-- PASS: original untouched: 41586_2023_6291_MOESM6_ESM.xlsx
+- VERIFIED: original untouched: project_healthcare_.pdf
+- VERIFIED: original untouched: data.zip
+- VERIFIED: original untouched: data_clean.zip
+- VERIFIED: original untouched: LiveQA_MedicalTask_TREC2017-master.zip
+- VERIFIED: original untouched: MedInfo2019-QA-Medications.xlsx
+- VERIFIED: original untouched: 41586_2023_6291_MOESM6_ESM.xlsx
 - PASS: phase04 re-run is byte-identical (Table1 + 3 processed files)
 - PASS: requirements.lock.txt present
 - PASS: model config records model id + decode params
