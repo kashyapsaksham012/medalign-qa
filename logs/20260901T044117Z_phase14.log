@@ -1,0 +1,13 @@
+2026-09-01 05:37:04  INFO     phase14    defer 0.00  n= 500  acc=0.636
+2026-09-01 05:37:04  INFO     phase14    defer 0.05  n= 475  acc=0.6547
+2026-09-01 05:37:04  INFO     phase14    defer 0.10  n= 450  acc=0.6644
+2026-09-01 05:37:04  INFO     phase14    defer 0.15  n= 425  acc=0.6776
+2026-09-01 05:37:04  INFO     phase14    defer 0.20  n= 400  acc=0.7
+2026-09-01 05:37:04  INFO     phase14    defer 0.25  n= 375  acc=0.704
+2026-09-01 05:37:04  INFO     phase14    defer 0.30  n= 350  acc=0.7343
+2026-09-01 05:37:04  INFO     phase14    defer 0.35  n= 325  acc=0.7415
+2026-09-01 05:37:04  INFO     phase14    defer 0.40  n= 300  acc=0.7567
+2026-09-01 05:37:04  INFO     phase14    defer 0.45  n= 275  acc=0.7927
+2026-09-01 05:37:04  INFO     phase14  monotonic non-decreasing: True | paper: 82.5% @ 0.45
+2026-09-01 05:37:04  INFO     phase14  est cost $0.0000
+2026-09-01 05:37:04  INFO     phase14  PHASE 14 PASS

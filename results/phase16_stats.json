@@ -1,0 +1,60 @@
+{
+  "note": "Wilson CIs and McNemar are BEYOND PAPER (the paper reports neither for MC).",
+  "accuracies": {
+    "few_shot:medqa_usmle_4opt__test": {
+      "n": 1273,
+      "accuracy": 0.5939,
+      "wilson95": [
+        0.5667,
+        0.6205
+      ],
+      "parse_rate": 1.0
+    },
+    "few_shot:medqa_usmle_5opt__test": {
+      "n": 1273,
+      "accuracy": 0.5357,
+      "wilson95": [
+        0.5083,
+        0.563
+      ],
+      "parse_rate": 1.0
+    },
+    "cot:medqa_usmle_4opt__test": {
+      "n": 1273,
+      "accuracy": 0.6049,
+      "wilson95": [
+        0.5777,
+        0.6314
+      ],
+      "parse_rate": 0.9992
+    },
+    "self_consistency:medqa_usmle_4opt__test": {
+      "n": 1273,
+      "accuracy": 0.6332,
+      "wilson95": [
+        0.6063,
+        0.6592
+      ],
+      "parse_rate": 1.0
+    }
+  },
+  "mcnemar_fewshot_vs_sc": {
+    "medqa_usmle_4opt__test": {
+      "statistic": 13.048913043478262,
+      "p_value": 0.00028062150627415476,
+      "discordant": 184,
+      "b": 67,
+      "c": 117
+    }
+  },
+  "tolerances_RA17": {
+    "dataset_counts_abs": 0,
+    "eval_set_composition_abs": 0,
+    "mc_accuracy_small_n_pp": 4.0,
+    "mc_accuracy_large_n_pp": 1.0,
+    "mc_accuracy_self_consistency_pp": 1.5,
+    "selective_prediction_endpoint_pp": 2.0,
+    "human_eval_point_pp": 5.0,
+    "human_eval_ci_halfwidth_relative": 0.5
+  }
+}

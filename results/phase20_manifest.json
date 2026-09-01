@@ -1,0 +1,22 @@
+{
+  "model": "Qwen/Qwen2.5-7B-Instruct@a09a35458c70",
+  "mock": false,
+  "data_phases_complete": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+  ],
+  "model_phases_have_data": true,
+  "comparison_present": true,
+  "NOT_reproduced": [
+    "PaLM / Flan-PaLM (any size) -- B1",
+    "Med-PaLM / instruction prompt tuning -- B2",
+    "All human evaluation, Section 4.5 -- B4",
+    "Scaling curves -- single model"
+  ]
+}

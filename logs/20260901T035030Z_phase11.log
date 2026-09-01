@@ -1,0 +1,3 @@
+2026-09-01 03:59:22  INFO     phase11    medqa_usmle_4opt/test        acc=0.605 parse=0.999 (n=1273)
+2026-09-01 03:59:22  INFO     phase11  est cost $0.0000 | min parse-rate 99.9%
+2026-09-01 03:59:22  INFO     phase11  PHASE 11 PASS

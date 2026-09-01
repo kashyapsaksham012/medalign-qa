@@ -1,0 +1,53 @@
+{
+  "model": "Qwen/Qwen2.5-7B-Instruct@a09a35458c70",
+  "n": 5,
+  "n_correct": 3,
+  "n_parsed": 5,
+  "accuracy": 0.6,
+  "parse_rate": 1.0,
+  "usage": {
+    "model": "Qwen/Qwen2.5-7B-Instruct@a09a35458c70",
+    "revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+    "n_calls": 5,
+    "prompt_tokens": 8845,
+    "completion_tokens": 30,
+    "est_cost_usd": 0.0
+  },
+  "results": [
+    {
+      "uid": "medqa_usmle_4opt/test/0",
+      "gold": "B",
+      "parsed": "A",
+      "correct": false,
+      "raw_generation": "Answer: (A)"
+    },
+    {
+      "uid": "medqa_usmle_4opt/test/1",
+      "gold": "D",
+      "parsed": "C",
+      "correct": false,
+      "raw_generation": "Answer: (C)"
+    },
+    {
+      "uid": "medqa_usmle_4opt/test/2",
+      "gold": "B",
+      "parsed": "B",
+      "correct": true,
+      "raw_generation": "Answer: (B)"
+    },
+    {
+      "uid": "medqa_usmle_4opt/test/3",
+      "gold": "D",
+      "parsed": "D",
+      "correct": true,
+      "raw_generation": "Answer: (D)"
+    },
+    {
+      "uid": "medqa_usmle_4opt/test/4",
+      "gold": "B",
+      "parsed": "B",
+      "correct": true,
+      "raw_generation": "Answer: (B)"
+    }
+  ]
+}

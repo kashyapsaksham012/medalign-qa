@@ -1,0 +1,35 @@
+{
+  "strategy": "self_consistency",
+  "n_decodes": 11,
+  "model": "Qwen/Qwen2.5-7B-Instruct@a09a35458c70",
+  "mock": false,
+  "seed": 0,
+  "summary": {
+    "medqa_usmle_4opt/test": {
+      "path": "derived_data/predictions/qwen25-7b-local/self_consistency/medqa_usmle_4opt__test.jsonl",
+      "n": 1273,
+      "n_correct": 806,
+      "accuracy": 0.6331500392772977,
+      "parse_rate": 1.0,
+      "n_parsed": 1273,
+      "wilson95_lo": 0.606311045809888,
+      "wilson95_hi": 0.659187822648032,
+      "mode": "self_consistency"
+    }
+  },
+  "tables": [
+    "tables/table4.md",
+    "tables/table5.md",
+    "tables/table6.md",
+    "tables/table7.md",
+    "tables/tableA1.md"
+  ],
+  "usage": {
+    "model": "Qwen/Qwen2.5-7B-Instruct@a09a35458c70",
+    "revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+    "n_calls": 14003,
+    "prompt_tokens": 1940591,
+    "completion_tokens": 1384023,
+    "est_cost_usd": 0.0
+  }
+}

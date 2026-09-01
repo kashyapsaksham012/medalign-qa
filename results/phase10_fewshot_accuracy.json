@@ -1,0 +1,32 @@
+{
+  "strategy": "few_shot",
+  "model": "Qwen/Qwen2.5-7B-Instruct@a09a35458c70",
+  "mock": false,
+  "run_tag": "qwen25-7b-local",
+  "summary": {
+    "medqa_usmle_4opt/test": {
+      "path": "derived_data/predictions/qwen25-7b-local/few_shot/medqa_usmle_4opt__test.jsonl",
+      "n": 1273,
+      "accuracy": 0.593872741555381,
+      "n_correct": 756,
+      "parse_rate": 1.0,
+      "n_parsed": 1273
+    },
+    "medqa_usmle_5opt/test": {
+      "path": "derived_data/predictions/qwen25-7b-local/few_shot/medqa_usmle_5opt__test.jsonl",
+      "n": 1273,
+      "accuracy": 0.5357423409269442,
+      "n_correct": 682,
+      "parse_rate": 1.0,
+      "n_parsed": 1273
+    }
+  },
+  "usage": {
+    "model": "Qwen/Qwen2.5-7B-Instruct@a09a35458c70",
+    "revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+    "n_calls": 2546,
+    "prompt_tokens": 4486254,
+    "completion_tokens": 13358,
+    "est_cost_usd": 0.0
+  }
+}

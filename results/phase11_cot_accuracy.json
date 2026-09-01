@@ -1,0 +1,25 @@
+{
+  "strategy": "cot",
+  "model": "Qwen/Qwen2.5-7B-Instruct@a09a35458c70",
+  "summary": {
+    "medqa_usmle_4opt/test": {
+      "path": "derived_data/predictions/qwen25-7b-local/cot/medqa_usmle_4opt__test.jsonl",
+      "n": 1273,
+      "n_correct": 770,
+      "accuracy": 0.6048703849175177,
+      "parse_rate": 0.9992144540455616,
+      "n_parsed": 1272,
+      "wilson95_lo": 0.5777373466739648,
+      "wilson95_hi": 0.631372381580503,
+      "mode": "single"
+    }
+  },
+  "usage": {
+    "model": "Qwen/Qwen2.5-7B-Instruct@a09a35458c70",
+    "revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+    "n_calls": 1273,
+    "prompt_tokens": 1940591,
+    "completion_tokens": 123867,
+    "est_cost_usd": 0.0
+  }
+}

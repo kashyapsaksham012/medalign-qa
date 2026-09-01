@@ -1,0 +1,248 @@
+{
+  "generated": "2026-09-01T08:58:40Z",
+  "processed_counts": {
+    "medqa_usmle_4opt": 12723,
+    "medqa_usmle_5opt": 12723,
+    "medmcqa": 193155,
+    "pubmedqa": 1000,
+    "mmlu_anatomy": 154,
+    "mmlu_clinical_knowledge": 299,
+    "mmlu_college_medicine": 200,
+    "mmlu_medical_genetics": 116,
+    "mmlu_professional_medicine": 308,
+    "mmlu_college_biology": 165,
+    "liveqa": 739,
+    "medicationqa": 690,
+    "healthsearchqa": 3173
+  },
+  "table1": [
+    {
+      "dataset": "MedQA (USMLE, 4-opt)",
+      "format": "Q+A, 4 choices",
+      "reproduced_dev": 11450,
+      "reproduced_test": 1273,
+      "paper_dev": 11450,
+      "paper_test": 1273
+    },
+    {
+      "dataset": "MedMCQA",
+      "format": "Q+A, 4 choices",
+      "reproduced_dev": 187005,
+      "reproduced_test": 6150,
+      "paper_dev": 187000,
+      "paper_test": 6100,
+      "paper_rounds": true,
+      "scored_split": {
+        "split": "validation",
+        "n": 4183,
+        "basis": "RA-01 (test labels withheld; paper 'dev set' ambiguous)"
+      },
+      "note": "dev = train+validation = 187005 ~= 187000 (paper rounds 'over 187k'); test = 6150 ~= 6100. Scoring is on the 4183 validation split (RA-01)."
+    },
+    {
+      "dataset": "PubMedQA",
+      "format": "Q+context+A (yes/no/maybe)",
+      "reproduced_dev": 500,
+      "reproduced_test": 500,
+      "paper_dev": 500,
+      "paper_test": 500
+    },
+    {
+      "dataset": "MMLU (6 clinical subjects, sum)",
+      "format": "Q+A, 4 choices",
+      "reproduced_dev": 123,
+      "reproduced_test": 1089,
+      "paper_dev": 123,
+      "paper_test": 1089
+    },
+    {
+      "dataset": "LiveQA TREC-2017",
+      "format": "Q + long answer",
+      "reproduced_dev": 635,
+      "reproduced_test": 104,
+      "paper_dev": 634,
+      "paper_test": 104,
+      "note": "train from community mirror (RA-20)"
+    },
+    {
+      "dataset": "MedicationQA",
+      "format": "Q + long answer",
+      "reproduced_dev": 0,
+      "reproduced_test": 690,
+      "paper_dev": null,
+      "paper_test": 674,
+      "note": "released file has 690 rows; paper's 674 not reconstructable (RA-08)"
+    },
+    {
+      "dataset": "HealthSearchQA",
+      "format": "Q only + long answer",
+      "reproduced_dev": null,
+      "reproduced_test": 3173,
+      "paper_dev": null,
+      "paper_test": 3375,
+      "note": "released file has 3173 questions (RA-09)"
+    }
+  ],
+  "leakage_checks": [
+    {
+      "check": "unique uids",
+      "status": "PASS",
+      "detail": "225445 records, 225445 unique"
+    },
+    {
+      "check": "medqa_usmle_4opt: train vs test normalized question overlap",
+      "status": "PASS",
+      "detail": "0 shared normalized questions"
+    },
+    {
+      "check": "medqa_usmle_4opt: dev vs test normalized question overlap",
+      "status": "PASS",
+      "detail": "0 shared normalized questions"
+    },
+    {
+      "check": "medqa_usmle_5opt: train vs test normalized question overlap",
+      "status": "PASS",
+      "detail": "0 shared normalized questions"
+    },
+    {
+      "check": "medqa_usmle_5opt: dev vs test normalized question overlap",
+      "status": "PASS",
+      "detail": "0 shared normalized questions"
+    },
+    {
+      "check": "medmcqa: train vs validation normalized question overlap",
+      "status": "PASS",
+      "detail": "0 shared normalized questions"
+    },
+    {
+      "check": "pubmedqa: train vs test normalized question overlap",
+      "status": "PASS",
+      "detail": "0 shared normalized questions"
+    },
+    {
+      "check": "medqa_usmle_4opt/test duplicate questions",
+      "status": "PASS",
+      "detail": "0 normalized question strings appear >1x (of 1273 rows)"
+    },
+    {
+      "check": "medqa_usmle_5opt/test duplicate questions",
+      "status": "PASS",
+      "detail": "0 normalized question strings appear >1x (of 1273 rows)"
+    },
+    {
+      "check": "medmcqa/validation duplicate questions",
+      "status": "PASS",
+      "detail": "0 normalized question strings appear >1x (of 4183 rows)"
+    },
+    {
+      "check": "pubmedqa/test duplicate questions",
+      "status": "PASS",
+      "detail": "0 normalized question strings appear >1x (of 500 rows)"
+    },
+    {
+      "check": "MMLU gold in A-D",
+      "status": "PASS",
+      "detail": "0 bad gold values"
+    },
+    {
+      "check": "PubMedQA test gold present",
+      "status": "PASS",
+      "detail": "0/500 missing"
+    },
+    {
+      "check": "mmlu_anatomy: dev vs test question overlap",
+      "status": "PASS",
+      "detail": "0 shared normalized questions"
+    },
+    {
+      "check": "mmlu_anatomy: validation vs test question overlap",
+      "status": "PASS",
+      "detail": "0 shared normalized questions"
+    },
+    {
+      "check": "mmlu_clinical_knowledge: dev vs test question overlap",
+      "status": "PASS",
+      "detail": "0 shared normalized questions"
+    },
+    {
+      "check": "mmlu_clinical_knowledge: validation vs test question overlap",
+      "status": "PASS",
+      "detail": "0 shared normalized questions"
+    },
+    {
+      "check": "mmlu_college_medicine: dev vs test question overlap",
+      "status": "PASS",
+      "detail": "0 shared normalized questions"
+    },
+    {
+      "check": "mmlu_college_medicine: validation vs test question overlap",
+      "status": "PASS",
+      "detail": "0 shared normalized questions"
+    },
+    {
+      "check": "mmlu_medical_genetics: dev vs test question overlap",
+      "status": "PASS",
+      "detail": "0 shared normalized questions"
+    },
+    {
+      "check": "mmlu_medical_genetics: validation vs test question overlap",
+      "status": "PASS",
+      "detail": "0 shared normalized questions"
+    },
+    {
+      "check": "mmlu_professional_medicine: dev vs test question overlap",
+      "status": "PASS",
+      "detail": "0 shared normalized questions"
+    },
+    {
+      "check": "mmlu_professional_medicine: validation vs test question overlap",
+      "status": "PASS",
+      "detail": "0 shared normalized questions"
+    },
+    {
+      "check": "mmlu_college_biology: dev vs test question overlap",
+      "status": "PASS",
+      "detail": "0 shared normalized questions"
+    },
+    {
+      "check": "mmlu_college_biology: validation vs test question overlap",
+      "status": "PASS",
+      "detail": "0 shared normalized questions"
+    },
+    {
+      "check": "healthsearchqa: intra-dataset duplicate questions",
+      "status": "INFO",
+      "detail": "17 duplicate normalized question strings across 3173 records (3156 distinct)"
+    },
+    {
+      "check": "medicationqa: intra-dataset duplicate questions",
+      "status": "INFO",
+      "detail": "39 duplicate normalized question strings across 690 records (651 distinct)"
+    },
+    {
+      "check": "liveqa: intra-dataset duplicate questions",
+      "status": "INFO",
+      "detail": "222 duplicate normalized question strings across 739 records (517 distinct)"
+    },
+    {
+      "check": "medqa_usmle_4opt: intra-dataset duplicate questions",
+      "status": "INFO",
+      "detail": "2 duplicate normalized question strings across 12723 records (12721 distinct)"
+    },
+    {
+      "check": "medqa_usmle_5opt: intra-dataset duplicate questions",
+      "status": "INFO",
+      "detail": "2 duplicate normalized question strings across 12723 records (12721 distinct)"
+    },
+    {
+      "check": "medmcqa: intra-dataset duplicate questions",
+      "status": "INFO",
+      "detail": "74 duplicate normalized question strings across 193155 records (193081 distinct)"
+    },
+    {
+      "check": "pubmedqa: intra-dataset duplicate questions",
+      "status": "PASS",
+      "detail": "0 duplicate normalized question strings across 1000 records (1000 distinct)"
+    }
+  ]
+}

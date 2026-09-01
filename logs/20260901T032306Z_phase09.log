@@ -1,0 +1,11 @@
+2026-09-01 03:23:06  INFO     phase09  Wrote tables/table4_baselines.md
+2026-09-01 03:23:06  INFO     phase09  API base : <unset>
+2026-09-01 03:23:06  INFO     phase09  API key  : <unset>
+2026-09-01 03:25:56  INFO     phase09  Model    : Qwen/Qwen2.5-7B-Instruct@a09a35458c70
+2026-09-01 03:25:59  INFO     phase09    XX   gold=B pred=A  gen='Answer: (A)'
+2026-09-01 03:25:59  INFO     phase09    XX   gold=D pred=C  gen='Answer: (C)'
+2026-09-01 03:26:00  INFO     phase09    OK   gold=B pred=B  gen='Answer: (B)'
+2026-09-01 03:26:00  INFO     phase09    OK   gold=D pred=D  gen='Answer: (D)'
+2026-09-01 03:26:01  INFO     phase09    OK   gold=B pred=B  gen='Answer: (B)'
+2026-09-01 03:26:01  INFO     phase09  smoke: 3/5 correct, parse-rate 100%, est cost $0.0000
+2026-09-01 03:26:01  INFO     phase09  PHASE 9 PASS

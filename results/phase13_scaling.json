@@ -1,0 +1,12 @@
+{
+  "status": "NOT REPRODUCED",
+  "reason": "Scaling (Figs A.1/A.2, Table 5 scaling reading) requires >= 2 model sizes. This run used a single substitute model (Qwen/Qwen2.5-7B-Instruct).",
+  "paper_claim": "~2x accuracy from 8B to 540B (Section 4.4)",
+  "to_reproduce": "Add a second `configs/model/*.yaml` at a larger size (e.g. Qwen2.5-14B-Instruct), set `run_tag` in configs/global.yaml to a new value, and re-run Phases 10 & 12; ideally also the non-instruct base for the 'instruction tuning helps' finding.",
+  "run_tag": "qwen25-7b-local",
+  "single_model_reference_points": {
+    "few_shot:medqa_usmle_4opt__test": 59.4,
+    "few_shot:medqa_usmle_5opt__test": 53.6,
+    "self_consistency:medqa_usmle_4opt__test": 63.3
+  }
+}

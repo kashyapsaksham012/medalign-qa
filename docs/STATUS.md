@@ -3,7 +3,7 @@
 Paper: Singhal et al., *Large Language Models Encode Clinical Knowledge*,
 arXiv:2212.13138v1 (26 Dec 2022) / *Nature* 620:172–180 (2023). "Med-PaLM / MultiMedQA".
 
-Last updated: 2026-08-31, after an external replication audit + first round of fixes.
+Last updated: 2026-09-01, after the first real Path B run (MedQA, Qwen2.5-7B on Kaggle T4).
 This file supersedes `docs/history/{replication_plan,REMAINING_PLAN,PROJECT_STATUS}.md`
 (kept for history only — do not treat them as current).
 
@@ -16,12 +16,23 @@ documentation sign-off.** The multiple-choice datasets needed for Milestone 2 �
 (4- and 5-option), PubMedQA, MMLU ×6 — are verified **exact** against the paper; MedMCQA
 data is correct with a documented eval-split assumption (RA-01). Leakage checks are clean.
 
-**Milestone 2 (model evaluation): Path B chosen (§4); code ready, no real run yet.**
-No valid model results exist. Earlier attempts — a full `llama-3.1-8b-instruct` MedQA run,
-a partial `qwen3.8-27b`/Groq run ("B1", 95/1273 few-shot), mock-data artifacts that logged
-"replication complete" — are quarantined in `attic/` (unfrozen / incomplete / mock).
-The Path B harness (local vLLM, `Qwen2.5-7B-Instruct`, frozen by HF revision) is built and
-passes end-to-end in `--mock`; the real run is pending a Kaggle GPU session (§7 steps 5–8).
+**Milestone 2 (model evaluation): Path B first pass DONE — MedQA only.**
+`Qwen/Qwen2.5-7B-Instruct` @ `a09a3545…` was run through the full harness on a Kaggle
+T4 x2 (2026-09-01, `dtype: float16` — RA-28). Real results (`mock: false`), all
+strategies, MedQA 4-opt + 5-opt. Predictions + tables + figures are committed under
+`derived_data/predictions/qwen25-7b-local/`, `results/`, `tables/`, `figures/`.
+Earlier attempts (`llama-3.1-8b-instruct`, partial Groq "B1", mock artifacts) stay
+quarantined in `attic/`.
+
+**Results (MedQA 4-opt, Qwen2.5-7B — SUBSTITUTE, not Flan-PaLM):**
+few-shot 59.4 · CoT 60.5 · self-consistency(11) 63.3 · MedQA 5-opt few-shot 53.6.
+Selective prediction (n=41, 500-Q subset RA-26): 63.6 → 79.3 % across 0–0.45 deferral,
+monotonic. Variance over 4 SC runs: 0.035. Parse rate ≈ 100 % (1 genuine CoT non-answer).
+
+**Phase 19 verdict: 2 / 7 qualitative findings evaluated, both REPRODUCED-QUALITATIVELY**
+(SC > few-shot on MedQA; selective-prediction accuracy rises with deferral). The other
+5 are NOT-ATTEMPTED pending the second pass (MedMCQA / PubMedQA / MMLU — needs `--all`)
+and a second model size (scaling / instruction-tuning findings).
 
 ---
 
@@ -38,7 +49,9 @@ passes end-to-end in `--mock`; the real run is pending a Kaggle GPU session (§7
 | 7 Prompts | ✅ | MC few-shot/CoT exemplar blocks **verbatim** from Tables A.13–A.21; MMLU few-shot = RA-06 assumption; assembled prompt adds RA-24 wrapper |
 | 8 EDA | ✅ | `results/phase08_eda_report.json`; 2 anomaly flags, both genuine dataset properties |
 
-89 pytest tests pass.
+89 pytest tests collected; 84 pass + 5 skip on a machine with the datasets staged.
+(On a checkout without `project_healthcare_.pdf` — gitignored — 2 provenance tests fail;
+that is the only difference.)
 
 ### Dataset classification (final)
 
@@ -64,7 +77,7 @@ passes end-to-end in `--mock`; the real run is pending a Kaggle GPU session (§7
 | Med-PaLM / instruction prompt tuning (§3.3.3–3.3.4, A.1, A.6) | frozen Flan-PaLM 540B weights unavailable; spec captured in `configs/global.yaml`, no training code | B2, B3 |
 | All human evaluation (§3.2, §4.5; Tables A.3–A.12; Figs 6–11) | needs 9 clinicians + 5 lay raters | B4 |
 | Scaling curves (Figs A.1, A.2) | needs ≥2 model sizes | — |
-| Any substitute-model MC number | model not frozen; no run completed | see §4 |
+| Substitute MC numbers for MedMCQA / PubMedQA / MMLU | first pass was MedQA-only (RA-27); second pass `--all` not yet run | — |
 
 ---
 
@@ -74,7 +87,7 @@ passes end-to-end in `--mock`; the real run is pending a Kaggle GPU session (§7
 - Model: `Qwen/Qwen2.5-7B-Instruct` @ `a09a35458c702b33eeacc393d103063234e8bc28`
   (pinned 2026-08-31 in `configs/model/qwen25-7b-local.yaml`; ungated, no HF token needed).
 - Runner: **local vLLM** on a free Kaggle/Colab T4 (no paid API). See `docs/pathb_runbook.md`.
-- First pass: **MedQA only** (4-opt + 5-opt), all strategies (RA-27). Second pass = `--all`.
+- First pass: **MedQA only** (4-opt + 5-opt), all strategies (RA-27) — ✅ DONE 2026-09-01. Second pass = `--all` (MedMCQA / PubMedQA / MMLU) — pending.
 - Every number tagged `REPLICATION ASSUMPTION — SUBSTITUTE MODEL`; never compared 1:1 to Flan-PaLM.
 - B3 (40 IPT exemplars) and B4 (human eval) remain **BLOCKED** — Phase 11/14 not attempted.
 - The two un-chosen candidate configs moved to `attic/configs_superseded/`; the legacy
@@ -95,7 +108,7 @@ so a fresh run never mixes with the quarantined B1 Groq run at the flat `predict
 | B2 Med-PaLM | CRITICAL | OPEN | 11,14 |
 | B3 40 IPT exemplars | HIGH | OPEN (PLACEHOLDER) | 11 (faithful) |
 | B4 human raters | CRITICAL for §4.5 | OPEN | 14,16 (§4.5 parts) |
-| B5–B14 | — | MITIGATED | documented RA-01…RA-24 |
+| B5–B14 | — | MITIGATED | documented RA-01…RA-28 |
 
 ---
 
@@ -118,22 +131,26 @@ so a fresh run never mixes with the quarantined B1 Groq run at the flat `predict
   mock runs are stamped "MOCK — not a real result"; Phase 20 no longer hard-codes a model
   name or logs "replication complete" unconditionally.
 
-## 7. Remaining before Phase 10 can officially begin
-
-Path B code is in place (2026-08-31, second commit): `configs/model/qwen25-7b-local.yaml`,
-`src/…/models/vllm_backend.py`, `src/…/config.py` (run_tag namespacing), `scripts/pin_model.py`,
-`scripts/kaggle_pathb.py`, `requirements-pathb.txt`, `docs/pathb_runbook.md`. The full pipeline
-passes end-to-end in `--mock`. What is left is operational, not code:
+## 7. Progress log
 
 | # | Item | State |
 |---|---|---|
 | 1 | Path A/B/C decision | ✅ Path B (§4) |
-| 2 | **Rotate the leaked API keys** (OpenRouter + Groq) — they were pasted in chat. `.env` still holds the old Groq key. | ❌ user action |
-| 3 | Re-transcribe Table A.1 → `metadata/paper_results.yaml` | ✅ done (`tableA1` + `tableA1_flan_palm_540b_sc`) |
+| 2 | **Rotate the leaked API keys** (OpenRouter + Groq) — they were pasted in chat. Local `.env` has been deleted; rotation on the provider side is still prudent. | ⚠ user action (Path B doesn't use them) |
+| 3 | Re-transcribe Table A.1 → `metadata/paper_results.yaml` | ✅ done |
 | 4 | `requirements-portable.txt` + `.gitattributes` + `PYTHONUTF8` in `run.py` | ✅ done |
-| 5 | **Pin the model** — `revision: a09a35458c702b33eeacc393d103063234e8bc28` (resolved 2026-08-31) | ✅ done |
-| 6 | **Kaggle/Colab GPU env**: create the notebook, `python scripts/kaggle_pathb.py --setup`, attach `processed_data/` (or run `phase04` from `raw_data/`) | ❌ |
-| 7 | **Phase 9 smoke on the real model** (`run.py phase09`) — 5 MedQA Qs, parser pulls a letter from each | ❌ blocked on 5+6 |
-| 8 | Then `python scripts/run_pathb_pipeline.py` (MedQA-only) | ❌ |
+| 5 | **Pin the model** — `revision: a09a35458c702b33eeacc393d103063234e8bc28` | ✅ done |
+| 6 | Kaggle GPU env + data staging | ✅ done (T4 x2, `medalign-medqa` dataset) |
+| 7 | Phase 9 smoke on the real model | ✅ done (`results/phase09_smoke.json`, parse rate 1.0) |
+| 8 | `run_pathb_pipeline.py` (MedQA-only), phases 9–20 | ✅ done 2026-09-01; artifacts committed |
+| 9 | Extract artifacts locally, re-run phase 16–20, hand-check predictions | ✅ done 2026-09-01 (results consistent; 84/86 tests pass, 2 fail only on missing local PDF) |
+| 10 | **Second pass — `run_pathb_pipeline.py --all`** (MedMCQA / PubMedQA / MMLU×6) | ❌ next Kaggle session (~4–6 T4-h) |
+| 11 | Optional: a second model size for scaling / instruction-tuning findings | ❌ optional stretch |
+| 12 | Phase 20 final write-up polish once the full MC sweep is in | ❌ after step 10 |
 
-Nothing here needs money. Steps 5–8 are one Kaggle session.
+### For the second pass (step 10)
+- Upload `processed_data/{medmcqa,pubmedqa,mmlu_*}.jsonl` to the Kaggle dataset (or
+  re-run `phase04` in-notebook from `raw_data/`).
+- `python scripts/run_pathb_pipeline.py --all` — append-and-skip, so MedQA is not re-run.
+- Back on this machine: `unzip -o pathb_artifacts.zip -d . && python run.py phase19`,
+  then commit the new predictions.

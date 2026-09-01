@@ -1,0 +1,550 @@
+{
+  "generated": "2026-09-01T08:58:20Z",
+  "summary": {
+    "PASS": 56,
+    "CAVEAT": 2
+  },
+  "checks": [
+    {
+      "dataset": "medqa_usmle_4opt",
+      "check": "train row count",
+      "expected": 10178,
+      "observed": 10178,
+      "status": "PASS",
+      "label": "DATASET-VERIFIED",
+      "note": ""
+    },
+    {
+      "dataset": "medqa_usmle_4opt",
+      "check": "dev row count",
+      "expected": 1272,
+      "observed": 1272,
+      "status": "PASS",
+      "label": "DATASET-VERIFIED",
+      "note": ""
+    },
+    {
+      "dataset": "medqa_usmle_4opt",
+      "check": "test row count",
+      "expected": 1273,
+      "observed": 1273,
+      "status": "PASS",
+      "label": "DATASET-VERIFIED",
+      "note": ""
+    },
+    {
+      "dataset": "medqa_usmle_4opt",
+      "check": "dev(=train+dev) == paper 11450",
+      "expected": 11450,
+      "observed": 11450,
+      "status": "PASS",
+      "label": "PAPER-SPECIFIED",
+      "note": ""
+    },
+    {
+      "dataset": "medqa_usmle_4opt",
+      "check": "n options",
+      "expected": 4,
+      "observed": 4,
+      "status": "PASS",
+      "label": "PAPER-SPECIFIED",
+      "note": ""
+    },
+    {
+      "dataset": "medqa_usmle_4opt",
+      "check": "gold present (answer_idx) all rows",
+      "expected": true,
+      "observed": true,
+      "status": "PASS",
+      "label": "DATASET-VERIFIED",
+      "note": ""
+    },
+    {
+      "dataset": "medmcqa",
+      "check": "train row count",
+      "expected": 182822,
+      "observed": 182822,
+      "status": "PASS",
+      "label": "DATASET-VERIFIED",
+      "note": ""
+    },
+    {
+      "dataset": "medmcqa",
+      "check": "dev row count",
+      "expected": 4183,
+      "observed": 4183,
+      "status": "PASS",
+      "label": "DATASET-VERIFIED",
+      "note": ""
+    },
+    {
+      "dataset": "medmcqa",
+      "check": "test row count",
+      "expected": 6150,
+      "observed": 6150,
+      "status": "PASS",
+      "label": "DATASET-VERIFIED",
+      "note": ""
+    },
+    {
+      "dataset": "medmcqa",
+      "check": "cop indexing",
+      "expected": "one_based (1..4)",
+      "observed": [
+        1,
+        2,
+        3,
+        4
+      ],
+      "status": "PASS",
+      "label": "DATASET-VERIFIED",
+      "note": ""
+    },
+    {
+      "dataset": "medmcqa",
+      "check": "test labels withheld",
+      "expected": 0,
+      "observed": 0,
+      "status": "PASS",
+      "label": "DATASET-VERIFIED",
+      "note": "test split unusable for scoring -> eval on valid (RA-01)"
+    },
+    {
+      "dataset": "pubmedqa",
+      "check": "labeled total",
+      "expected": 1000,
+      "observed": 1000,
+      "status": "PASS",
+      "label": "UNVERIFIED",
+      "note": ""
+    },
+    {
+      "dataset": "pubmedqa",
+      "check": "label set",
+      "expected": "{'no', 'yes', 'maybe'}",
+      "observed": "{'yes', 'no', 'maybe'}",
+      "status": "PASS",
+      "label": "PAPER-SPECIFIED",
+      "note": ""
+    },
+    {
+      "dataset": "pubmedqa",
+      "check": "official test split size",
+      "expected": 500,
+      "observed": 500,
+      "status": "PASS",
+      "label": "PAPER-SPECIFIED",
+      "note": "paper Table 1: 500 test (RA-02)"
+    },
+    {
+      "dataset": "mmlu",
+      "check": "anatomy/dev 6 cols",
+      "expected": true,
+      "observed": true,
+      "status": "PASS",
+      "label": "DERIVED FROM PAPER",
+      "note": ""
+    },
+    {
+      "dataset": "mmlu",
+      "check": "anatomy/validation 6 cols",
+      "expected": true,
+      "observed": true,
+      "status": "PASS",
+      "label": "DERIVED FROM PAPER",
+      "note": ""
+    },
+    {
+      "dataset": "mmlu",
+      "check": "anatomy/test 6 cols",
+      "expected": true,
+      "observed": true,
+      "status": "PASS",
+      "label": "DERIVED FROM PAPER",
+      "note": ""
+    },
+    {
+      "dataset": "mmlu",
+      "check": "anatomy/test row count",
+      "expected": 135,
+      "observed": 135,
+      "status": "PASS",
+      "label": "PAPER-SPECIFIED",
+      "note": ""
+    },
+    {
+      "dataset": "mmlu",
+      "check": "anatomy/validation == paper 'dev'",
+      "expected": 14,
+      "observed": 14,
+      "status": "PASS",
+      "label": "DATASET-VERIFIED",
+      "note": "paper Table 1 'dev' column == MMLU validation split size"
+    },
+    {
+      "dataset": "mmlu",
+      "check": "anatomy/dev == 5-shot source",
+      "expected": 5,
+      "observed": 5,
+      "status": "PASS",
+      "label": "REPLICATION ASSUMPTION",
+      "note": "RA-06: few-shot exemplars from the 5-row dev split"
+    },
+    {
+      "dataset": "mmlu",
+      "check": "clinical_knowledge/dev 6 cols",
+      "expected": true,
+      "observed": true,
+      "status": "PASS",
+      "label": "DERIVED FROM PAPER",
+      "note": ""
+    },
+    {
+      "dataset": "mmlu",
+      "check": "clinical_knowledge/validation 6 cols",
+      "expected": true,
+      "observed": true,
+      "status": "PASS",
+      "label": "DERIVED FROM PAPER",
+      "note": ""
+    },
+    {
+      "dataset": "mmlu",
+      "check": "clinical_knowledge/test 6 cols",
+      "expected": true,
+      "observed": true,
+      "status": "PASS",
+      "label": "DERIVED FROM PAPER",
+      "note": ""
+    },
+    {
+      "dataset": "mmlu",
+      "check": "clinical_knowledge/test row count",
+      "expected": 265,
+      "observed": 265,
+      "status": "PASS",
+      "label": "PAPER-SPECIFIED",
+      "note": ""
+    },
+    {
+      "dataset": "mmlu",
+      "check": "clinical_knowledge/validation == paper 'dev'",
+      "expected": 29,
+      "observed": 29,
+      "status": "PASS",
+      "label": "DATASET-VERIFIED",
+      "note": "paper Table 1 'dev' column == MMLU validation split size"
+    },
+    {
+      "dataset": "mmlu",
+      "check": "clinical_knowledge/dev == 5-shot source",
+      "expected": 5,
+      "observed": 5,
+      "status": "PASS",
+      "label": "REPLICATION ASSUMPTION",
+      "note": "RA-06: few-shot exemplars from the 5-row dev split"
+    },
+    {
+      "dataset": "mmlu",
+      "check": "college_medicine/dev 6 cols",
+      "expected": true,
+      "observed": true,
+      "status": "PASS",
+      "label": "DERIVED FROM PAPER",
+      "note": ""
+    },
+    {
+      "dataset": "mmlu",
+      "check": "college_medicine/validation 6 cols",
+      "expected": true,
+      "observed": true,
+      "status": "PASS",
+      "label": "DERIVED FROM PAPER",
+      "note": ""
+    },
+    {
+      "dataset": "mmlu",
+      "check": "college_medicine/test 6 cols",
+      "expected": true,
+      "observed": true,
+      "status": "PASS",
+      "label": "DERIVED FROM PAPER",
+      "note": ""
+    },
+    {
+      "dataset": "mmlu",
+      "check": "college_medicine/test row count",
+      "expected": 173,
+      "observed": 173,
+      "status": "PASS",
+      "label": "PAPER-SPECIFIED",
+      "note": ""
+    },
+    {
+      "dataset": "mmlu",
+      "check": "college_medicine/validation == paper 'dev'",
+      "expected": 22,
+      "observed": 22,
+      "status": "PASS",
+      "label": "DATASET-VERIFIED",
+      "note": "paper Table 1 'dev' column == MMLU validation split size"
+    },
+    {
+      "dataset": "mmlu",
+      "check": "college_medicine/dev == 5-shot source",
+      "expected": 5,
+      "observed": 5,
+      "status": "PASS",
+      "label": "REPLICATION ASSUMPTION",
+      "note": "RA-06: few-shot exemplars from the 5-row dev split"
+    },
+    {
+      "dataset": "mmlu",
+      "check": "medical_genetics/dev 6 cols",
+      "expected": true,
+      "observed": true,
+      "status": "PASS",
+      "label": "DERIVED FROM PAPER",
+      "note": ""
+    },
+    {
+      "dataset": "mmlu",
+      "check": "medical_genetics/validation 6 cols",
+      "expected": true,
+      "observed": true,
+      "status": "PASS",
+      "label": "DERIVED FROM PAPER",
+      "note": ""
+    },
+    {
+      "dataset": "mmlu",
+      "check": "medical_genetics/test 6 cols",
+      "expected": true,
+      "observed": true,
+      "status": "PASS",
+      "label": "DERIVED FROM PAPER",
+      "note": ""
+    },
+    {
+      "dataset": "mmlu",
+      "check": "medical_genetics/test row count",
+      "expected": 100,
+      "observed": 100,
+      "status": "PASS",
+      "label": "PAPER-SPECIFIED",
+      "note": ""
+    },
+    {
+      "dataset": "mmlu",
+      "check": "medical_genetics/validation == paper 'dev'",
+      "expected": 11,
+      "observed": 11,
+      "status": "PASS",
+      "label": "DATASET-VERIFIED",
+      "note": "paper Table 1 'dev' column == MMLU validation split size"
+    },
+    {
+      "dataset": "mmlu",
+      "check": "medical_genetics/dev == 5-shot source",
+      "expected": 5,
+      "observed": 5,
+      "status": "PASS",
+      "label": "REPLICATION ASSUMPTION",
+      "note": "RA-06: few-shot exemplars from the 5-row dev split"
+    },
+    {
+      "dataset": "mmlu",
+      "check": "professional_medicine/dev 6 cols",
+      "expected": true,
+      "observed": true,
+      "status": "PASS",
+      "label": "DERIVED FROM PAPER",
+      "note": ""
+    },
+    {
+      "dataset": "mmlu",
+      "check": "professional_medicine/validation 6 cols",
+      "expected": true,
+      "observed": true,
+      "status": "PASS",
+      "label": "DERIVED FROM PAPER",
+      "note": ""
+    },
+    {
+      "dataset": "mmlu",
+      "check": "professional_medicine/test 6 cols",
+      "expected": true,
+      "observed": true,
+      "status": "PASS",
+      "label": "DERIVED FROM PAPER",
+      "note": ""
+    },
+    {
+      "dataset": "mmlu",
+      "check": "professional_medicine/test row count",
+      "expected": 272,
+      "observed": 272,
+      "status": "PASS",
+      "label": "PAPER-SPECIFIED",
+      "note": ""
+    },
+    {
+      "dataset": "mmlu",
+      "check": "professional_medicine/validation == paper 'dev'",
+      "expected": 31,
+      "observed": 31,
+      "status": "PASS",
+      "label": "DATASET-VERIFIED",
+      "note": "paper Table 1 'dev' column == MMLU validation split size"
+    },
+    {
+      "dataset": "mmlu",
+      "check": "professional_medicine/dev == 5-shot source",
+      "expected": 5,
+      "observed": 5,
+      "status": "PASS",
+      "label": "REPLICATION ASSUMPTION",
+      "note": "RA-06: few-shot exemplars from the 5-row dev split"
+    },
+    {
+      "dataset": "mmlu",
+      "check": "college_biology/dev 6 cols",
+      "expected": true,
+      "observed": true,
+      "status": "PASS",
+      "label": "DERIVED FROM PAPER",
+      "note": ""
+    },
+    {
+      "dataset": "mmlu",
+      "check": "college_biology/validation 6 cols",
+      "expected": true,
+      "observed": true,
+      "status": "PASS",
+      "label": "DERIVED FROM PAPER",
+      "note": ""
+    },
+    {
+      "dataset": "mmlu",
+      "check": "college_biology/test 6 cols",
+      "expected": true,
+      "observed": true,
+      "status": "PASS",
+      "label": "DERIVED FROM PAPER",
+      "note": ""
+    },
+    {
+      "dataset": "mmlu",
+      "check": "college_biology/test row count",
+      "expected": 144,
+      "observed": 144,
+      "status": "PASS",
+      "label": "PAPER-SPECIFIED",
+      "note": ""
+    },
+    {
+      "dataset": "mmlu",
+      "check": "college_biology/validation == paper 'dev'",
+      "expected": 16,
+      "observed": 16,
+      "status": "PASS",
+      "label": "DATASET-VERIFIED",
+      "note": "paper Table 1 'dev' column == MMLU validation split size"
+    },
+    {
+      "dataset": "mmlu",
+      "check": "college_biology/dev == 5-shot source",
+      "expected": 5,
+      "observed": 5,
+      "status": "PASS",
+      "label": "REPLICATION ASSUMPTION",
+      "note": "RA-06: few-shot exemplars from the 5-row dev split"
+    },
+    {
+      "dataset": "liveqa",
+      "check": "test questions",
+      "expected": 104,
+      "observed": 104,
+      "status": "PASS",
+      "label": "DATASET-VERIFIED",
+      "note": ""
+    },
+    {
+      "dataset": "liveqa",
+      "check": "train QA pairs (truehealth mirror, RA-20)",
+      "expected": "~634 (paper Table 1)",
+      "observed": 635,
+      "status": "CAVEAT",
+      "label": "UNVERIFIED",
+      "note": "third-party mirror; paper 'dev'=634 (388+246); mirror flattens to QA pairs"
+    },
+    {
+      "dataset": "medicationqa",
+      "check": "raw row count",
+      "expected": 690,
+      "observed": 690,
+      "status": "PASS",
+      "label": "DATASET-VERIFIED",
+      "note": ""
+    },
+    {
+      "dataset": "medicationqa",
+      "check": "columns",
+      "expected": [
+        "Question",
+        "Focus (Drug)",
+        "Question Type",
+        "Answer",
+        "Section Title",
+        "URL"
+      ],
+      "observed": [
+        "Question",
+        "Focus (Drug)",
+        "Question Type",
+        "Answer",
+        "Section Title",
+        "URL"
+      ],
+      "status": "PASS",
+      "label": "DATASET-VERIFIED",
+      "note": ""
+    },
+    {
+      "dataset": "medicationqa",
+      "check": "non-empty Q&A rows",
+      "expected": 690,
+      "observed": 690,
+      "status": "PASS",
+      "label": "DATASET-VERIFIED",
+      "note": "all 690 rows have Q and A; 651 distinct questions"
+    },
+    {
+      "dataset": "medicationqa",
+      "check": "paper's 674 reconstructable?",
+      "expected": 674,
+      "observed": "no",
+      "status": "CAVEAT",
+      "label": "CANNOT BE DETERMINED FROM AVAILABLE MATERIALS",
+      "note": "RA-08: released file has 690 rows; 674 cannot be derived; use all 690"
+    },
+    {
+      "dataset": "healthsearchqa",
+      "check": "sheet1 non-empty questions",
+      "expected": 3173,
+      "observed": 3173,
+      "status": "PASS",
+      "label": "DATASET-VERIFIED",
+      "note": "paper states 3375 (CANNOT BE DETERMINED why 3173)"
+    },
+    {
+      "dataset": "healthsearchqa",
+      "check": "sheet2 human-eval subset",
+      "expected": 140,
+      "observed": 140,
+      "status": "PASS",
+      "label": "PAPER-SPECIFIED",
+      "note": ""
+    }
+  ]
+}
