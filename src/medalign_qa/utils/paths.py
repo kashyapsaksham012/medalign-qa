@@ -8,9 +8,24 @@ Layout (see README.md / docs/STATUS.md):
 """
 from __future__ import annotations
 
+import os
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[3]
+
+# A --mock run exports MEDALIGN_RUN_TAG=mock (run.py / run_pathb_pipeline.py /
+# models.load_model). When it does, the *generated-output* roots below point at a
+# `mock/` subdir so a plumbing check can never overwrite real results, tables,
+# figures, or docs. Inputs (raw_data/, processed_data/, configs/, metadata/) are
+# never redirected. Checked at import; run.py sets the env before importing this.
+_MOCK = (os.environ.get("MEDALIGN_RUN_TAG") or "").strip().strip("/") == "mock"
+
+
+def _out(name: str) -> Path:
+    d = (ROOT / name / "mock") if _MOCK else (ROOT / name)
+    if _MOCK:
+        d.mkdir(parents=True, exist_ok=True)
+    return d
 
 # --- User-provided originals (NEVER modified; referenced read-only) -------------
 ORIGINALS = {
@@ -35,17 +50,17 @@ RAW_LIVEQA = RAW / "liveqa"
 RAW_MEDICATIONQA = RAW / "medicationqa"
 RAW_HEALTHSEARCHQA = RAW / "healthsearchqa"
 
-# --- Config / metadata / docs ------------------------------------------------
+# --- Config / metadata (inputs -- never redirected) --------------------------
 CONFIGS = ROOT / "configs"
 METADATA = ROOT / "metadata"
 PROMPTS = ROOT / "prompts"
-DOCS = ROOT / "docs"
 
-# --- Outputs ----------------------------------------------------------------
-RESULTS = ROOT / "results"
-FIGURES = ROOT / "figures"
-TABLES = ROOT / "tables"
-LOGS = ROOT / "logs"
+# --- Generated outputs (redirected to <root>/mock/ during a --mock run) ------
+DOCS = _out("docs")
+RESULTS = _out("results")
+FIGURES = _out("figures")
+TABLES = _out("tables")
+LOGS = ROOT / "logs"   # logs are always real -- they record what actually ran
 
 # MMLU clinical subjects  ---  PAPER-SPECIFIED (Section 3.1, line ~340)
 MMLU_SUBJECTS = (

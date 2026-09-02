@@ -6,15 +6,30 @@ import argparse
 import json
 
 from medalign_qa import config as run_config
-from medalign_qa.evaluation.mc_accuracy import score
+from medalign_qa.evaluation.mc_accuracy import find_predictions, score
 from medalign_qa.inference.runner import run_mc_split, split_is_complete
 from medalign_qa.models import load_model
 from medalign_qa.utils import io, paths
 from medalign_qa.utils.logging_utils import get_logger
 
-# PAPER-SPECIFIED: Table 6 ablation datasets + MMLU (A.3 / Table A.1)
-TARGETS = [("medqa_usmle_4opt", "test"), ("medmcqa", "validation"), ("pubmedqa", "test")]
+# PAPER-SPECIFIED: Table 6 ablation datasets + MMLU (A.3 / Table A.1).
+# Small subjects first so a crash mid-sweep loses minutes, not the 4183-row MedMCQA.
+TARGETS = [("medqa_usmle_4opt", "test")]
 TARGETS += [(f"mmlu_{s}", "test") for s in paths.MMLU_SUBJECTS]
+TARGETS += [("pubmedqa", "test"), ("medmcqa", "validation")]
+
+
+def _summarise(strategy: str) -> dict:
+    """Score EVERY prediction file for this strategy -- the summary is always the
+    full picture, regardless of any --datasets scoping on this invocation."""
+    out = {}
+    for p in find_predictions(strategy):
+        s = score(p)
+        if not s.get("n"):
+            continue
+        s.pop("_per_uid_correct", None)
+        out[p.stem.replace("__", "/")] = s
+    return out
 
 
 def main() -> int:
@@ -38,15 +53,14 @@ def main() -> int:
     if model is None:
         log.info("all %d target(s) already complete -- re-scoring only", len(targets))
 
-    summary = {}
     for dataset, split in targets:
         run_mc_split(model, dataset, split, "cot",
                      temperature=dc["temperature"], max_tokens=dc["max_tokens"],
                      limit=args.limit, max_workers=args.workers)
-        s = score(run_config.prediction_file("cot", f"{dataset}__{split}"))
-        s.pop("_per_uid_correct", None)
-        summary[f"{dataset}/{split}"] = s
-        log.info("  %-28s acc=%.3f parse=%.3f (n=%d)", f"{dataset}/{split}",
+
+    summary = _summarise("cot")
+    for k, s in summary.items():
+        log.info("  %-28s acc=%.3f parse=%.3f (n=%d)", k,
                  s.get("accuracy", 0), s.get("parse_rate", 0), s.get("n", 0))
 
     usage = model.usage_summary() if model is not None else {

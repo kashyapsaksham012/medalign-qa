@@ -93,6 +93,11 @@ def main(argv: list[str]) -> int:
     if not script.exists():
         print(f"Task '{task}' script not created yet: {script}")
         return 2
+    # A --mock run is a plumbing check: isolate every output under */mock/ so it
+    # can never overwrite real predictions, results, tables, figures, or docs.
+    # Must be set before the phase script imports medalign_qa.utils.paths.
+    if "--mock" in rest:
+        os.environ["MEDALIGN_RUN_TAG"] = "mock"
     sys.argv = [str(script), *rest]
     runpy.run_path(str(script), run_name="__main__")
     return 0

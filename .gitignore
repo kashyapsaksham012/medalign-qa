@@ -93,6 +93,15 @@ derived_data/*
 # without a GPU). Kept under version control per docs/pathb_runbook.md.
 !derived_data/predictions/
 !derived_data/predictions/**
+# ...but never the --mock plumbing-check outputs (run_tag "mock").
+derived_data/predictions/mock/
+
+# --mock runs redirect every generated-output root to a mock/ subdir (see
+# medalign_qa/utils/paths.py). None of it is ever committed.
+results/mock/
+tables/mock/
+figures/mock/
+docs/mock/
 
 # Generated outputs & logs: preserve directory layout via .gitkeep, ignore contents.
 # The Path B run-of-record artifacts under these dirs are already tracked and stay

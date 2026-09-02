@@ -1,16 +1,19 @@
 #!/usr/bin/env python
-"""Path B pipeline -- substitute model (RA-16), MedQA-only first pass (RA-27).
+"""Path B pipeline -- substitute model (RA-16), phases 9 -> 20.
 
-Runs the local vLLM model (configs/model/qwen25-7b-local.yaml, frozen revision)
-through phases 9 -> 20. Resumable per phase (prediction JSONLs are append/skip).
-Second pass (MedMCQA / PubMedQA / MMLU) = re-run with --all once this is proven.
+Runs the local vLLM model (configs/model/qwen25-7b-local.yaml, frozen revision).
+Idempotent and resumable: every inference phase skips splits that are already
+complete (no model load), and phases 13/14/15 re-score in place rather than
+re-run. Safe to kill and restart -- e.g. for a second model size.
 
-    python scripts/run_pathb_pipeline.py            # MedQA-only
-    python scripts/run_pathb_pipeline.py --all      # full MC sweep
+    python scripts/run_pathb_pipeline.py            # MedQA 4-opt only (phase 11/12)
+    python scripts/run_pathb_pipeline.py --all      # full MC sweep (all datasets)
+    python scripts/run_pathb_pipeline.py --mock     # offline plumbing check, isolated under */mock/
 """
 from __future__ import annotations
 
 import argparse
+import os
 import subprocess
 import sys
 import time
@@ -51,11 +54,14 @@ def main() -> int:
     ap.add_argument("--all", action="store_true", help="full MC sweep, not MedQA-only")
     ap.add_argument("--mock", action="store_true", help="offline plumbing check (no GPU)")
     args = ap.parse_args()
+    # A --mock run must be isolated end-to-end: phases 16-20 don't take --mock, so
+    # export the tag here for every subprocess (paths.py redirects on it).
+    env = {**os.environ, "MEDALIGN_RUN_TAG": "mock"} if args.mock else None
     for step in steps(args.all, args.mock):
         name = step[1]
         print(f"\n{'='*70}\n>>> {name}  ({time.strftime('%H:%M:%S')})\n{'='*70}", flush=True)
         t0 = time.time()
-        r = subprocess.run([PY, *step], cwd=ROOT)
+        r = subprocess.run([PY, *step], cwd=ROOT, env=env)
         print(f"<<< {name} exit={r.returncode}  ({(time.time()-t0)/60:.1f} min)", flush=True)
         if r.returncode != 0 and name in HARD:
             print(f"!!! {name} failed -- stopping pipeline for inspection", flush=True)

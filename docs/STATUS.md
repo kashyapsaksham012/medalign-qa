@@ -3,7 +3,7 @@
 Paper: Singhal et al., *Large Language Models Encode Clinical Knowledge*,
 arXiv:2212.13138v1 (26 Dec 2022) / *Nature* 620:172–180 (2023). "Med-PaLM / MultiMedQA".
 
-Last updated: 2026-09-01, after the first real Path B run (MedQA, Qwen2.5-7B on Kaggle T4).
+Last updated: 2026-09-02, after the full Path B MC sweep (FS + CoT + SC on all datasets).
 This file supersedes `docs/history/{replication_plan,REMAINING_PLAN,PROJECT_STATUS}.md`
 (kept for history only — do not treat them as current).
 
@@ -16,35 +16,36 @@ documentation sign-off.** The multiple-choice datasets needed for Milestone 2 �
 (4- and 5-option), PubMedQA, MMLU ×6 — are verified **exact** against the paper; MedMCQA
 data is correct with a documented eval-split assumption (RA-01). Leakage checks are clean.
 
-**Milestone 2 (model evaluation): Path B in progress — few-shot done for all datasets;
-CoT + self-consistency done for MedQA only.**
-`Qwen/Qwen2.5-7B-Instruct` @ `a09a3545…` run through the harness on a Kaggle T4 x2
-(2026-09-01, `dtype: float16` — RA-28). Real results (`mock: false`). Predictions +
-tables + figures committed under `derived_data/predictions/qwen25-7b-local/`, `results/`,
-`tables/`, `figures/`. Earlier attempts (`llama-3.1-8b-instruct`, partial Groq "B1",
-mock artifacts) stay quarantined in `attic/`.
+**Milestone 2 (model evaluation): Path B multiple-choice sweep COMPLETE.**
+`Qwen/Qwen2.5-7B-Instruct` @ `a09a3545…` run through the harness on Kaggle T4 x2
+(2026-09-01/02, `dtype: float16` — RA-28, `gpu_memory_utilization: 0.80`). Real results
+(`mock: false`), parse-rate 0.998–1.0 everywhere. Branch `pathb-medqa-results` merged to
+`main` (PR #1). Earlier attempts (`llama-3.1-8b-instruct`, partial Groq "B1", mock
+artifacts) stay quarantined in `attic/`.
 
 | Strategy | Datasets with real predictions |
 |---|---|
-| few-shot | MedQA 4/5-opt, MedMCQA, PubMedQA, **all 6 MMLU** ✅ |
-| CoT | MedQA 4-opt only |
-| self-consistency (n=11) | MedQA 4-opt only |
-| selective prediction (n=41) | MedQA 4-opt, **full 1273** (RA-26) ✅ |
+| few-shot | MedQA 4/5-opt, MedMCQA, PubMedQA, MMLU ×6 ✅ |
+| CoT | MedQA 4-opt, MedMCQA, PubMedQA, MMLU ×6 ✅ |
+| self-consistency (n=11) | MedQA 4-opt, MedMCQA, PubMedQA, MMLU ×6 ✅ |
+| selective prediction (n=41) | MedQA 4-opt, full 1273 (RA-26) ✅ |
 | variance (4 runs) | MedQA 4-opt ✅ |
 
-**Results — SUBSTITUTE model, not Flan-PaLM:**
-few-shot MedQA-4opt 59.4 · MedQA-5opt 53.6 · MedMCQA 56.6 · PubMedQA 72.8 · MMLU ×6
-{anat 71.9, clin 78.9, coll-med 65.9, med-gen 81.0, prof-med 76.1, coll-bio 82.6}.
-MedQA-4opt CoT 60.5 · self-consistency 63.3. Selective prediction: 62.9 → 76.6 % over
-0–0.45 deferral, monotonic (full 1273). Variance over 4 SC runs: 0.035.
-Notable: on few-shot MMLU, Qwen2.5-7B **matches/beats Flan-PaLM-540B** on anatomy and
-medical_genetics.
+**Results — SUBSTITUTE model, not Flan-PaLM (FS / CoT / SC accuracy %):**
+MedQA-4opt 59.4 / 60.5 / 63.3 · MedQA-5opt FS 53.6 · MedMCQA 56.6 / 56.4 / 58.5 ·
+PubMedQA 72.8 / 74.8 / 73.6 · MMLU-SC {anat 71.1, clin 80.0, coll-med 76.9, med-gen 84.0,
+prof-med 78.3, coll-bio 86.1}. Selective prediction 62.9 → 76.6 % over 0–0.45 deferral,
+monotonic. Variance over 4 SC runs: 0.035.
+**Notable:** on MMLU self-consistency, Qwen2.5-7B is within 4 pp of Flan-PaLM-**540B** on
+4 of 6 subjects and beats it on medical_genetics (84.0 vs 74.0).
 
-**Phase 19 verdict: 2 / 7 qualitative findings evaluated, both REPRODUCED-QUALITATIVELY**
-(SC > few-shot on MedQA; selective-prediction accuracy rises with deferral). Three more
-(SC vs few-shot on MedMCQA; SC hurts PubMedQA; CoT ⊁ few-shot on MC) are **unblocked by
-data but pending the CoT/SC sweep** for MedMCQA/PubMedQA/MMLU. Scaling + instruction-tuning
-need a second model size.
+**Phase 19 verdict: 5 / 7 findings evaluated — 3 REPRODUCED-QUALITATIVELY, 2 DIVERGENT:**
+- ✅ SC > few-shot on MedQA (59.4 → 63.3)
+- ✅ SC > few-shot on MedMCQA (56.6 → 58.5)
+- ✅ selective-prediction accuracy rises with deferral
+- ✗ *SC hurts PubMedQA* — **DIVERGENT**: our SC slightly *helps* (72.8 → 73.6); paper had 79.0 → 75.2
+- ✗ *CoT ⊁ few-shot on MC* — **DIVERGENT**: our CoT beats FS on MedQA (+1.1) and PubMedQA (+2.0), only MedMCQA matches the paper (−0.2)
+- NOT-ATTEMPTED: instruction-tuning helps, scaling helps — both need a second model size.
 
 ---
 
@@ -159,27 +160,21 @@ so a fresh run never mixes with the quarantined B1 Groq run at the flat `predict
 | 11b | Selective prediction re-run on the **full 1273** (was 500-subset) | ✅ done 2026-09-01 (RA-26; committed) |
 | 11c | Phase-15 append bug fixed (`resume=False` now truncates) + `split_is_complete` guard so phases 10/11/12/14/15 skip the GPU model when already complete + regression test | ✅ done 2026-09-02 |
 | 11d | Reconciled the parallel "clean tarball" line into this branch: honest `phase18_repro.py` (`VERIFIED`/`UNAVAILABLE`/`HASH_MISMATCH`, no hard-fail on a missing archive), `comparison.md` now regenerates the Phase-15 variance table (was a hand edit) | ✅ done 2026-09-02 |
-| 12 | Second pass part B — **CoT + self-consistency for MedMCQA / PubMedQA / MMLU×6** | ❌ next Kaggle session (~4 T4-h); pass-2 attempt was killed mid-run |
-| 13 | Optional: a second model size for scaling / instruction-tuning findings | ❌ optional stretch |
-| 14 | Phase 20 final write-up once CoT/SC sweep is in | ❌ after step 12 |
+| 12 | Second pass part B — **CoT + self-consistency for MedMCQA / PubMedQA / MMLU×6** | ✅ done 2026-09-02 (`gpu_memory_utilization: 0.80` fixed the OOM; parse-rate 0.998–1.0; commit `87d3522`, merged to `main` PR #1) |
+| 13 | Regenerate phases 11–20 locally on the full prediction set (complete summary JSONs, `phase16` McNemar for all 9, deterministic ordering) | ✅ done 2026-09-02 |
+| 14 | **Execution-layer hardening** (the recurring source of manual cleanup): (a) phases 10/11/12 now **score the whole prediction tree** — a `--datasets`-scoped run keeps the summary complete; (b) `--mock` runs **redirect every output to `*/mock/`** (`paths._out`, driven by `MEDALIGN_RUN_TAG`) so a plumbing check can't overwrite real results/tables/figures/docs/predictions; (c) `run_pathb_pipeline.py` idempotent + resumable, safe to kill/restart; (d) TARGETS reordered small-first (MedMCQA last) as a crash canary; (e) phase16 McNemar sorted → stable output; (f) `RUNBOOK.md` template fixed (was Windows paths + the dead API env). Tests: `test_mock_isolation.py`, `test_inference_runner.py`. | ✅ done 2026-09-02 |
+| 15 | **Write-up / deliverable** — findings-verdict table, MMLU-7B-vs-540B result, limitations | ❌ next (local, no GPU) |
+| 16 | Optional: a second model size for scaling / instruction-tuning findings → 7/7 | ❌ optional stretch |
+| 17 | Housekeeping: prune/quarantine the dead hosted-API path (`openai_compat`, `.env`, `MEDALIGN_API_KEY` — Path B is vLLM-only) | ❌ low priority |
 
-### Workflow — one source of truth is this git branch
-Stop assembling tarballs. On Kaggle: `git clone -b pathb-medqa-results …`, run, then
-`git add derived_data/predictions results tables figures && git commit && git push`
-(or `git format-patch` + download). Tarballs off an older commit have forked the repo
-three times; each fork costs a manual merge.
+### Workflow — one source of truth is this git repo
+Branch `pathb-medqa-results` is merged to `main`. On Kaggle: `git clone`, run,
+`git add derived_data/predictions results tables figures && git commit && git push`.
+No tarballs. After a GPU run, re-run `phase10 11 12 13 16 17 18 19 20` locally —
+every phase now re-scores the full prediction tree, so the summaries stay complete
+even if the Kaggle run was `--datasets`-scoped.
 
-### For step 12 (the remaining CoT + SC sweep)
-- Datasets already staged locally; upload `processed_data/{medmcqa,pubmedqa,mmlu_*}.jsonl`
-  to the Kaggle dataset (or re-run `phase04` in-notebook from `raw_data/`).
-- Run **per-dataset**, not one pipeline call, so an infra kill costs minutes not the sweep:
-  `python run.py phase11 --datasets medmcqa` → `pubmedqa` → each `mmlu_*`; then the same for
-  `phase12`. The runner resumes; re-invoking is now safe (skips completed splits, no model load).
-- Likely cause of the earlier kill: vLLM OOM on 512-token CoT with `enforce_eager` +
-  `tensor_parallel_size: 2` on 15 GB T4s. Try `gpu_memory_utilization: 0.80` and run the small
-  MMLU sets first as a canary.
-- Do **not** run `run_pathb_pipeline.py --all` — it invokes phase 15. (`run_pathb_second_pass.py`
-  only ever existed in a tarball, is broken — mangled indent, `phase09` dropped — and is not in
-  this repo. Ignore any copy of it.)
-- Back on this machine (or in the notebook): `python run.py phase16 17 19 20`, then commit the
-  new `cot/` + `self_consistency/` predictions.
+### Remaining findings need a second model
+- *instruction tuning helps (PaLM < Flan-PaLM)* — needs the non-instruct base of the same family
+- *scaling helps* — needs ≥ 2 sizes
+- Add `configs/model/qwen25-14b-local.yaml`, set a new `run_tag`, re-run phases 10 & 12.

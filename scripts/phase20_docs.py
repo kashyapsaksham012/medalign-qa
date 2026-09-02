@@ -29,6 +29,22 @@ def _substitute_model() -> tuple[str, bool]:
     return "<substitute model not yet frozen -- see docs/STATUS.md>", False
 
 
+def _findings_block() -> str:
+    """Render the actual Phase-19 verdicts (never assert the paper's findings as ours)."""
+    p = paths.RESULTS / "comparison.json"
+    if not p.exists():
+        return "See `results/comparison.md` for the per-finding verdict."
+    try:
+        fs = json.loads(p.read_text(encoding="utf-8")).get("qualitative_findings", [])
+    except Exception:  # noqa: BLE001
+        return "See `results/comparison.md` for the per-finding verdict."
+    lines = []
+    for f in fs:
+        lines.append(f"- **{f.get('verdict')}** — {f.get('finding')}"
+                     + (f" ({f['detail']})" if f.get("detail") else ""))
+    return "\n".join(lines) if lines else "See `results/comparison.md`."
+
+
 def _headline(model: str, is_mock: bool) -> str:
     mock_warn = ("\n> **These outputs are from MOCK data** -- a plumbing check only, "
                  "not a model run.\n") if is_mock else ""
@@ -52,9 +68,11 @@ It **does NOT reproduce**:
   needs a recruited panel of 9 clinicians + 5 lay raters (blocker B4).
 - The **scaling curves** (Figures A.1, A.2) -- a single model size was run.
 
-What IS tested: whether the paper's **qualitative findings** hold under the same
-methodology (SC helps MedQA/MedMCQA, hurts PubMedQA; CoT does not beat few-shot on MC;
-selective-prediction accuracy rises with deferral). See `results/comparison.md`.
+## Do the paper's qualitative findings hold on the substitute model?
+
+{_findings_block()}
+
+Full numbers and tolerances: `results/comparison.md`.
 """
 
 
@@ -92,30 +110,41 @@ def main() -> int:
     runbook = """\
 # Run-book
 
-```
-python -m venv .venv
-.venv/Scripts/python -m pip install -r requirements.txt
-.venv/Scripts/python -m pip install -e .
-cp .env.example .env      # then fill MEDALIGN_API_KEY / MEDALIGN_API_BASE
+## Milestone 1 -- data harness (any machine, no GPU)
 
-python run.py phase01 .. phase08   # data harness (model-independent)
-python run.py phase09              # model backend smoke test  (needs .env + a FROZEN model config)
-python run.py phase10 --all        # few-shot MC inference
-python run.py phase11              # chain-of-thought
-python run.py phase12              # self-consistency (11x) + Tables 4-7, A.1
-python run.py phase13              # scaling (NOT REPRODUCED -- single model)
-python run.py phase14              # selective prediction (41x) -> Fig 5
-python run.py phase15              # variance (4x MedQA SC)
-python run.py phase16              # Wilson CIs / McNemar (beyond paper)
-python run.py phase17              # render in-scope tables + figures  (hard-fails with NO DATA)
-python run.py phase18              # reproducibility validation
-python run.py phase19              # paper-to-result comparison  (hard-fails with NO DATA)
-python run.py phase20              # this file  (hard-fails unless phase 19 produced comparison.md)
-python run.py test
+```
+python -m venv .venv && . .venv/bin/activate      # Windows: .venv\\Scripts\\activate
+pip install -r requirements.txt && pip install -e .
+python run.py phase01   # ... through phase08   (env -> acquire -> verify -> integrate -> cohort -> preprocess -> prompts -> EDA)
 ```
 
-Phases 12/16/17/19/20 hard-fail (exit 1, "NO DATA") when no model predictions exist,
-so an empty run cannot masquerade as a completed replication.
+## Milestone 2 -- Path B substitute-model evaluation (needs a GPU)
+
+Model + decode params are frozen in `configs/model/qwen25-7b-local.yaml`
+(`revision` is an exact HF commit SHA). Runbook for a free Kaggle/Colab T4:
+`docs/pathb_runbook.md`.
+
+```
+python scripts/run_pathb_pipeline.py --all        # phases 9-20, all MC datasets
+  # idempotent + resumable: completed splits are skipped (no model load), so this
+  # is safe to kill and restart. --mock runs the whole thing offline, isolated
+  # under */mock/ (never touches real outputs).
+
+# or phase-by-phase (per-dataset is safest on a flaky free GPU):
+python run.py phase09                       # smoke test (5 MedQA Q)
+python run.py phase10 --all                 # few-shot
+python run.py phase11 --datasets medmcqa    # CoT   (repeat per dataset)
+python run.py phase12 --datasets medmcqa    # self-consistency 11x  (repeat per dataset)
+python run.py phase13 14 15                 # scaling verdict / selective prediction 41x / variance 4x
+python run.py phase16 17 18 19 20           # stats / render / repro / comparison / docs
+```
+
+After any GPU run, re-run `phase10 11 12 13 16 17 18 19 20` locally: a
+`--datasets`-scoped run only infers that subset but every phase re-scores the
+*whole* prediction tree, so the summaries stay complete.
+
+Phases 12/16/17/19/20 hard-fail (exit 1, "NO DATA") when no model predictions
+exist, so an empty run cannot masquerade as a completed replication.
 """
     (paths.DOCS / "RUNBOOK.md").write_text(runbook, encoding="utf-8")
 

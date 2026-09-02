@@ -4,85 +4,115 @@
   "mock": false,
   "run_tag": "qwen25-7b-local",
   "summary": {
+    "medmcqa/validation": {
+      "path": "derived_data/predictions/qwen25-7b-local/few_shot/medmcqa__validation.jsonl",
+      "n": 4183,
+      "n_correct": 2367,
+      "accuracy": 0.5658618216590964,
+      "parse_rate": 1.0,
+      "n_parsed": 4183,
+      "wilson95_lo": 0.5507877675703802,
+      "wilson95_hi": 0.580815013867542,
+      "mode": "single"
+    },
     "medqa_usmle_4opt/test": {
       "path": "derived_data/predictions/qwen25-7b-local/few_shot/medqa_usmle_4opt__test.jsonl",
       "n": 1273,
-      "accuracy": 0.593872741555381,
       "n_correct": 756,
+      "accuracy": 0.593872741555381,
       "parse_rate": 1.0,
-      "n_parsed": 1273
+      "n_parsed": 1273,
+      "wilson95_lo": 0.5666508299953692,
+      "wilson95_hi": 0.6205297881799785,
+      "mode": "single"
     },
     "medqa_usmle_5opt/test": {
       "path": "derived_data/predictions/qwen25-7b-local/few_shot/medqa_usmle_5opt__test.jsonl",
       "n": 1273,
-      "accuracy": 0.5357423409269442,
       "n_correct": 682,
+      "accuracy": 0.5357423409269442,
       "parse_rate": 1.0,
-      "n_parsed": 1273
-    },
-    "medmcqa/validation": {
-      "path": "derived_data/predictions/qwen25-7b-local/few_shot/medmcqa__validation.jsonl",
-      "n": 4183,
-      "accuracy": 0.5658618216590964,
-      "n_correct": 2367,
-      "parse_rate": 1.0,
-      "n_parsed": 4183
-    },
-    "pubmedqa/test": {
-      "path": "derived_data/predictions/qwen25-7b-local/few_shot/pubmedqa__test.jsonl",
-      "n": 500,
-      "accuracy": 0.728,
-      "n_correct": 364,
-      "parse_rate": 1.0,
-      "n_parsed": 500
+      "n_parsed": 1273,
+      "wilson95_lo": 0.5082790656489896,
+      "wilson95_hi": 0.562990542108151,
+      "mode": "single"
     },
     "mmlu_anatomy/test": {
       "path": "derived_data/predictions/qwen25-7b-local/few_shot/mmlu_anatomy__test.jsonl",
       "n": 135,
-      "accuracy": 0.7185185185185186,
       "n_correct": 97,
+      "accuracy": 0.7185185185185186,
       "parse_rate": 1.0,
-      "n_parsed": 135
+      "n_parsed": 135,
+      "wilson95_lo": 0.637421759536917,
+      "wilson95_hi": 0.7875229256294886,
+      "mode": "single"
     },
     "mmlu_clinical_knowledge/test": {
       "path": "derived_data/predictions/qwen25-7b-local/few_shot/mmlu_clinical_knowledge__test.jsonl",
       "n": 265,
-      "accuracy": 0.7886792452830189,
       "n_correct": 209,
+      "accuracy": 0.7886792452830189,
       "parse_rate": 1.0,
-      "n_parsed": 265
-    },
-    "mmlu_college_medicine/test": {
-      "path": "derived_data/predictions/qwen25-7b-local/few_shot/mmlu_college_medicine__test.jsonl",
-      "n": 173,
-      "accuracy": 0.6589595375722543,
-      "n_correct": 114,
-      "parse_rate": 1.0,
-      "n_parsed": 173
-    },
-    "mmlu_medical_genetics/test": {
-      "path": "derived_data/predictions/qwen25-7b-local/few_shot/mmlu_medical_genetics__test.jsonl",
-      "n": 100,
-      "accuracy": 0.81,
-      "n_correct": 81,
-      "parse_rate": 1.0,
-      "n_parsed": 100
-    },
-    "mmlu_professional_medicine/test": {
-      "path": "derived_data/predictions/qwen25-7b-local/few_shot/mmlu_professional_medicine__test.jsonl",
-      "n": 272,
-      "accuracy": 0.7610294117647058,
-      "n_correct": 207,
-      "parse_rate": 1.0,
-      "n_parsed": 272
+      "n_parsed": 265,
+      "wilson95_lo": 0.7355790993231143,
+      "wilson95_hi": 0.8335292529556998,
+      "mode": "single"
     },
     "mmlu_college_biology/test": {
       "path": "derived_data/predictions/qwen25-7b-local/few_shot/mmlu_college_biology__test.jsonl",
       "n": 144,
-      "accuracy": 0.8263888888888888,
       "n_correct": 119,
+      "accuracy": 0.8263888888888888,
       "parse_rate": 1.0,
-      "n_parsed": 144
+      "n_parsed": 144,
+      "wilson95_lo": 0.7562641444413218,
+      "wilson95_hi": 0.8795514852596553,
+      "mode": "single"
+    },
+    "mmlu_college_medicine/test": {
+      "path": "derived_data/predictions/qwen25-7b-local/few_shot/mmlu_college_medicine__test.jsonl",
+      "n": 173,
+      "n_correct": 114,
+      "accuracy": 0.6589595375722543,
+      "parse_rate": 1.0,
+      "n_parsed": 173,
+      "wilson95_lo": 0.5855502436073681,
+      "wilson95_hi": 0.7254625497625178,
+      "mode": "single"
+    },
+    "mmlu_medical_genetics/test": {
+      "path": "derived_data/predictions/qwen25-7b-local/few_shot/mmlu_medical_genetics__test.jsonl",
+      "n": 100,
+      "n_correct": 81,
+      "accuracy": 0.81,
+      "parse_rate": 1.0,
+      "n_parsed": 100,
+      "wilson95_lo": 0.7222097592919214,
+      "wilson95_hi": 0.8748534600729574,
+      "mode": "single"
+    },
+    "mmlu_professional_medicine/test": {
+      "path": "derived_data/predictions/qwen25-7b-local/few_shot/mmlu_professional_medicine__test.jsonl",
+      "n": 272,
+      "n_correct": 207,
+      "accuracy": 0.7610294117647058,
+      "parse_rate": 1.0,
+      "n_parsed": 272,
+      "wilson95_lo": 0.7069361934310526,
+      "wilson95_hi": 0.8078520038531857,
+      "mode": "single"
+    },
+    "pubmedqa/test": {
+      "path": "derived_data/predictions/qwen25-7b-local/few_shot/pubmedqa__test.jsonl",
+      "n": 500,
+      "n_correct": 364,
+      "accuracy": 0.728,
+      "parse_rate": 1.0,
+      "n_parsed": 500,
+      "wilson95_lo": 0.6873666188831685,
+      "wilson95_hi": 0.7651565550667395,
+      "mode": "single"
     }
   },
   "usage": {
