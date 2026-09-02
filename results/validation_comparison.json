@@ -1,0 +1,66 @@
+{
+  "validation_type": "independent_fresh_inference_cross_check",
+  "model": "Qwen/Qwen2.5-7B-Instruct",
+  "revision": "a09a35458c702b33eeacc393d103063234e8bc28",
+  "dataset": "MedQA 4-option",
+  "n_questions": 1273,
+  "gpu_environment": "2 x Tesla T4",
+  "dtype": "float16",
+  "gpu_memory_utilization": 0.8,
+  "seed": 0,
+  "results": {
+    "few_shot": {
+      "old_rows": 1273,
+      "new_rows": 1273,
+      "common_uids": 1273,
+      "old_accuracy_percent": 59.387,
+      "new_accuracy_percent": 59.387,
+      "accuracy_difference_pp": 0.0,
+      "valid_answer_comparisons": 1273,
+      "same_parsed_answer": 1273,
+      "answer_agreement_percent": 100.0,
+      "same_correctness": 1273,
+      "correctness_agreement_percent": 100.0
+    },
+    "cot": {
+      "old_rows": 1273,
+      "new_rows": 1273,
+      "common_uids": 1273,
+      "old_accuracy_percent": 60.487,
+      "new_accuracy_percent": 60.644,
+      "accuracy_difference_pp": 0.157,
+      "valid_answer_comparisons": 1272,
+      "same_parsed_answer": 1267,
+      "answer_agreement_percent": 99.607,
+      "same_correctness": 1269,
+      "correctness_agreement_percent": 99.686
+    },
+    "self_consistency": {
+      "old_rows": 1273,
+      "new_rows": 1273,
+      "common_uids": 1273,
+      "old_accuracy_percent": 63.315,
+      "new_accuracy_percent": 63.236,
+      "accuracy_difference_pp": -0.079,
+      "valid_majority_votes": 1273,
+      "same_final_majority_vote": 1262,
+      "final_vote_agreement_percent": 99.136,
+      "same_correctness": 1266,
+      "correctness_agreement_percent": 99.45
+    }
+  },
+  "fresh_prediction_artifacts": {
+    "derived_data/predictions/qwen25-7b-validation/few_shot/medqa_usmle_4opt__test.jsonl": {
+      "sha256": "5cc7d5b5ab5e27682d493358ef549b999f08d1261620674d154fb9a70399e82e",
+      "bytes": 345677
+    },
+    "derived_data/predictions/qwen25-7b-validation/cot/medqa_usmle_4opt__test.jsonl": {
+      "sha256": "ed2ae4cb04f1eb1eb7adb81b48a7a36e9a40d615ea8fbb4926dd3c5fbf069c60",
+      "bytes": 908902
+    },
+    "derived_data/predictions/qwen25-7b-validation/self_consistency/medqa_usmle_4opt__test.jsonl": {
+      "sha256": "407ed9c068f36157b7fa2765c395a48b3413027b988f0a95acebf92bec922da6",
+      "bytes": 6880652
+    }
+  }
+}

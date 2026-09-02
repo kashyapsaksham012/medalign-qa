@@ -1,0 +1,14 @@
+{
+  "derived_data/predictions/qwen25-7b-validation/few_shot/medqa_usmle_4opt__test.jsonl": {
+    "sha256": "5cc7d5b5ab5e27682d493358ef549b999f08d1261620674d154fb9a70399e82e",
+    "bytes": 345677
+  },
+  "derived_data/predictions/qwen25-7b-validation/cot/medqa_usmle_4opt__test.jsonl": {
+    "sha256": "ed2ae4cb04f1eb1eb7adb81b48a7a36e9a40d615ea8fbb4926dd3c5fbf069c60",
+    "bytes": 908902
+  },
+  "derived_data/predictions/qwen25-7b-validation/self_consistency/medqa_usmle_4opt__test.jsonl": {
+    "sha256": "407ed9c068f36157b7fa2765c395a48b3413027b988f0a95acebf92bec922da6",
+    "bytes": 6880652
+  }
+}
