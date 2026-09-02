@@ -16,7 +16,7 @@ model: Qwen/Qwen2.5-7B-Instruct
 revision: a09a35458c702b33eeacc393d103063234e8bc28   # Qwen/Qwen2.5-7B-Instruct @ main, resolved 2026-08-31 (ungated)
 dtype: float16                    # T4 (Turing) has no bf16; the actual run used fp16 (RA-28). On an Ampere+ GPU set bfloat16.
 max_model_len: 4096
-gpu_memory_utilization: 0.90
+gpu_memory_utilization: 0.80
 tensor_parallel_size: 2            # Kaggle T4 x2: real tensor parallelism. Set 1 for a single 16 GB+ GPU.
 distributed_executor_backend: mp  # multiprocessing (no Ray) -- reliable on Kaggle/Colab
 enforce_eager: true               # skip CUDA graphs -- avoids OOM on 15 GB T4s (small speed cost)

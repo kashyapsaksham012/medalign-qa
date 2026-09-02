@@ -39,55 +39,55 @@
     {
       "metric": "MMLU anatomy SC",
       "paper": 71.9,
-      "ours": null,
-      "delta": null,
+      "ours": 71.1,
+      "delta": -0.8,
       "tolerance_pp": 4.0,
-      "verdict": "NOT-ATTEMPTED",
+      "verdict": "WITHIN-TOLERANCE",
       "note": "vs Flan-PaLM 540B (approx)"
     },
     {
       "metric": "MMLU clinical_knowledge SC",
       "paper": 80.4,
-      "ours": null,
-      "delta": null,
+      "ours": 80.0,
+      "delta": -0.4,
       "tolerance_pp": 4.0,
-      "verdict": "NOT-ATTEMPTED",
+      "verdict": "WITHIN-TOLERANCE",
       "note": "vs Flan-PaLM 540B (approx)"
     },
     {
       "metric": "MMLU college_medicine SC",
       "paper": 76.3,
-      "ours": null,
-      "delta": null,
+      "ours": 76.9,
+      "delta": 0.6,
       "tolerance_pp": 4.0,
-      "verdict": "NOT-ATTEMPTED",
+      "verdict": "WITHIN-TOLERANCE",
       "note": "vs Flan-PaLM 540B (approx)"
     },
     {
       "metric": "MMLU medical_genetics SC",
       "paper": 74.0,
-      "ours": null,
-      "delta": null,
+      "ours": 84.0,
+      "delta": 10.0,
       "tolerance_pp": 4.0,
-      "verdict": "NOT-ATTEMPTED",
+      "verdict": "DIVERGENT (expected: different model)",
       "note": "vs Flan-PaLM 540B (approx)"
     },
     {
       "metric": "MMLU professional_medicine SC",
       "paper": 83.5,
-      "ours": null,
-      "delta": null,
+      "ours": 78.3,
+      "delta": -5.2,
       "tolerance_pp": 4.0,
-      "verdict": "NOT-ATTEMPTED",
+      "verdict": "DIVERGENT (expected: different model)",
       "note": "vs Flan-PaLM 540B (approx)"
     },
     {
       "metric": "MMLU college_biology SC",
       "paper": 88.9,
-      "ours": null,
-      "delta": null,
+      "ours": 86.1,
+      "delta": -2.8,
       "tolerance_pp": 4.0,
-      "verdict": "NOT-ATTEMPTED",
+      "verdict": "WITHIN-TOLERANCE",
       "note": "vs Flan-PaLM 540B (approx)"
     }
   ],
@@ -99,18 +99,18 @@
     },
     {
       "finding": "SC beats few-shot on MedMCQA",
-      "verdict": "NOT-ATTEMPTED",
-      "detail": "ours: FS 56.6 -> SC None; paper 56.5 -> 57.6"
+      "verdict": "REPRODUCED-QUALITATIVELY",
+      "detail": "ours: FS 56.6 -> SC 58.5; paper 56.5 -> 57.6"
     },
     {
       "finding": "SC hurts PubMedQA",
-      "verdict": "NOT-ATTEMPTED",
-      "detail": "ours: FS 72.8 -> SC None; paper 79.0 -> 75.2"
+      "verdict": "DIVERGENT",
+      "detail": "ours: FS 72.8 -> SC 73.6; paper 79.0 -> 75.2"
     },
     {
       "finding": "CoT does not beat few-shot on MC (MedQA/MedMCQA/PubMedQA)",
-      "verdict": "NOT-ATTEMPTED",
-      "detail": "ours FS/CoT -- MedQA 59.4/60.5, MedMCQA 56.6/None, PubMedQA 72.8/None"
+      "verdict": "DIVERGENT",
+      "detail": "ours FS/CoT -- MedQA 59.4/60.5, MedMCQA 56.6/56.4, PubMedQA 72.8/74.8"
     },
     {
       "finding": "Selective-prediction accuracy rises with deferral",

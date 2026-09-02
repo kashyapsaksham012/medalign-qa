@@ -17,7 +17,7 @@ alembic==1.18.4
 altair==5.5.0
 annotated-doc==0.0.4
 annotated-types==0.7.0
-anthropic==1.2.0
+anthropic==1.3.0
 antlr4-python3-runtime==4.9.3
 anyio==4.13.0
 anywidget==0.9.21
@@ -462,7 +462,7 @@ matplotlib-venn==1.1.2
 mcp==1.27.0
 mdit-py-plugins==0.5.0
 mdurl==0.1.2
--e git+https://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@github.com/kashyapsaksham012/medalign-qa.git@5246b67de2ced0fbbf75c5200d426affb7270792#egg=medalign_qa
+-e git+https://kashyapsaksham012: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@github.com/kashyapsaksham012/medalign-qa.git@65a69becfc50777eef30a2d94094e74dbaaa2904#egg=medalign_qa
 mgwr==2.2.1
 minify_html==0.18.1
 miniKanren==1.0.5
@@ -503,7 +503,7 @@ nbclient==0.5.13
 nbconvert==6.4.5
 nbdev==3.0.17
 nbformat==5.10.4
-nccl4py==0.4.1
+nccl4py==0.5.0
 ndindex==1.10.1
 nest-asyncio==1.6.0
 networkx==3.6.1
