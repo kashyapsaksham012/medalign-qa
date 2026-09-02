@@ -1,0 +1,6 @@
+2026-09-01 04:00:26  INFO     inference.runner  medqa_usmle_4opt/test [self_consistency] n=11: 1273 rows, 0 done, 1273 to run (workers=16)
+2026-09-01 04:08:45  INFO     inference.runner    256/1273  (0.5/s)
+2026-09-01 04:16:57  INFO     inference.runner    512/1273  (0.5/s)
+2026-09-01 04:24:59  INFO     inference.runner    768/1273  (0.5/s)
+2026-09-01 04:33:14  INFO     inference.runner    1024/1273  (0.5/s)
+2026-09-01 04:41:11  INFO     inference.runner    1273/1273  (0.5/s)

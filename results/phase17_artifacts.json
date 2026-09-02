@@ -1,0 +1,20 @@
+{
+  "tables": [
+    "tables/table4.md",
+    "tables/table5.md",
+    "tables/table6.md",
+    "tables/table7.md",
+    "tables/tableA1.md"
+  ],
+  "figures": [
+    "figures/fig3_replication.png",
+    "figures/fig4_replication.png",
+    "figures/fig5_replication.png"
+  ],
+  "blocked": [
+    "Table 8 (Flan-PaLM MedQA explanations) -- needs the actual model outputs",
+    "Tables 9, 10 (Med-PaLM long-form answers) -- Med-PaLM unavailable (B2)",
+    "Figures 6-11 (human evaluation) -- needs the clinician/lay rater panel (B4)",
+    "Figures A.1, A.2 (scaling) -- single model; see Phase 13"
+  ]
+}

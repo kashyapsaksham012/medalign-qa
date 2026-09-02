@@ -1,0 +1,137 @@
+{
+  "absolute_comparisons": [
+    {
+      "metric": "MedQA 4-opt few-shot",
+      "paper": 35.4,
+      "ours": 59.4,
+      "delta": 24.0,
+      "tolerance_pp": 1.0,
+      "verdict": "DIVERGENT (expected: different model)",
+      "note": "vs paper Flan-PaLM 8B (same size)"
+    },
+    {
+      "metric": "MedQA 4-opt SC",
+      "paper": 67.6,
+      "ours": 63.3,
+      "delta": -4.3,
+      "tolerance_pp": 1.5,
+      "verdict": "DIVERGENT (expected: different model)",
+      "note": "vs paper Flan-PaLM 540B"
+    },
+    {
+      "metric": "MedMCQA few-shot",
+      "paper": 34.5,
+      "ours": 56.6,
+      "delta": 22.1,
+      "tolerance_pp": 1.0,
+      "verdict": "DIVERGENT (expected: different model)",
+      "note": "vs Flan-PaLM 8B"
+    },
+    {
+      "metric": "PubMedQA few-shot",
+      "paper": 67.6,
+      "ours": 72.8,
+      "delta": 5.2,
+      "tolerance_pp": 1.5,
+      "verdict": "DIVERGENT (expected: different model)",
+      "note": "vs Flan-PaLM 8B"
+    },
+    {
+      "metric": "MMLU anatomy SC",
+      "paper": 71.9,
+      "ours": 71.1,
+      "delta": -0.8,
+      "tolerance_pp": 4.0,
+      "verdict": "WITHIN-TOLERANCE",
+      "note": "vs Flan-PaLM 540B (approx)"
+    },
+    {
+      "metric": "MMLU clinical_knowledge SC",
+      "paper": 80.4,
+      "ours": 80.0,
+      "delta": -0.4,
+      "tolerance_pp": 4.0,
+      "verdict": "WITHIN-TOLERANCE",
+      "note": "vs Flan-PaLM 540B (approx)"
+    },
+    {
+      "metric": "MMLU college_medicine SC",
+      "paper": 76.3,
+      "ours": 76.9,
+      "delta": 0.6,
+      "tolerance_pp": 4.0,
+      "verdict": "WITHIN-TOLERANCE",
+      "note": "vs Flan-PaLM 540B (approx)"
+    },
+    {
+      "metric": "MMLU medical_genetics SC",
+      "paper": 74.0,
+      "ours": 84.0,
+      "delta": 10.0,
+      "tolerance_pp": 4.0,
+      "verdict": "DIVERGENT (expected: different model)",
+      "note": "vs Flan-PaLM 540B (approx)"
+    },
+    {
+      "metric": "MMLU professional_medicine SC",
+      "paper": 83.5,
+      "ours": 78.3,
+      "delta": -5.2,
+      "tolerance_pp": 4.0,
+      "verdict": "DIVERGENT (expected: different model)",
+      "note": "vs Flan-PaLM 540B (approx)"
+    },
+    {
+      "metric": "MMLU college_biology SC",
+      "paper": 88.9,
+      "ours": 86.1,
+      "delta": -2.8,
+      "tolerance_pp": 4.0,
+      "verdict": "WITHIN-TOLERANCE",
+      "note": "vs Flan-PaLM 540B (approx)"
+    }
+  ],
+  "qualitative_findings": [
+    {
+      "finding": "SC beats few-shot on MedQA",
+      "verdict": "REPRODUCED-QUALITATIVELY",
+      "detail": "ours: FS 59.4 -> SC 63.3; paper 60.3 -> 67.6"
+    },
+    {
+      "finding": "SC beats few-shot on MedMCQA",
+      "verdict": "REPRODUCED-QUALITATIVELY",
+      "detail": "ours: FS 56.6 -> SC 58.5; paper 56.5 -> 57.6"
+    },
+    {
+      "finding": "SC hurts PubMedQA",
+      "verdict": "DIVERGENT",
+      "detail": "ours: FS 72.8 -> SC 73.6; paper 79.0 -> 75.2"
+    },
+    {
+      "finding": "CoT does not beat few-shot on MC (MedQA/MedMCQA/PubMedQA)",
+      "verdict": "DIVERGENT",
+      "detail": "ours FS/CoT -- MedQA 59.4/60.5, MedMCQA 56.6/56.4, PubMedQA 72.8/74.8"
+    },
+    {
+      "finding": "Selective-prediction accuracy rises with deferral",
+      "verdict": "REPRODUCED-QUALITATIVELY",
+      "detail": "ours points: [(0.0, 0.6292), (0.05, 0.6452), (0.1, 0.6632), (0.15, 0.671), (0.2, 0.6945), (0.25, 0.7047), (0.3, 0.7273), (0.35, 0.7388), (0.4, 0.7513), (0.45, 0.7657)]"
+    },
+    {
+      "finding": "Instruction tuning helps (PaLM < Flan-PaLM)",
+      "verdict": "NOT-ATTEMPTED",
+      "detail": "requires the model's non-instruct base -- not run (single model)"
+    },
+    {
+      "finding": "Scaling helps (~2x 8B->540B)",
+      "verdict": "NOT-ATTEMPTED",
+      "detail": "requires >= 2 model sizes -- see Phase 13"
+    }
+  ],
+  "framing": "Absolute-value gaps vs Flan-PaLM are EXPECTED -- a different (2024, 8B) model. The replication tests whether the paper's QUALITATIVE findings hold with the same methodology.",
+  "not_reproduced": [
+    "Med-PaLM / instruction prompt tuning (B1/B2)",
+    "All human evaluation, Section 4.5 (B4)",
+    "Scaling curves (single model)"
+  ]
+}

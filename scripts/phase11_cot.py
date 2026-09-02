@@ -7,7 +7,7 @@ import json
 
 from medalign_qa import config as run_config
 from medalign_qa.evaluation.mc_accuracy import score
-from medalign_qa.inference.runner import run_mc_split
+from medalign_qa.inference.runner import run_mc_split, split_is_complete
 from medalign_qa.models import load_model
 from medalign_qa.utils import io, paths
 from medalign_qa.utils.logging_utils import get_logger
@@ -27,16 +27,19 @@ def main() -> int:
     args = ap.parse_args()
     log = get_logger("phase11")
 
-    dc = io.read_yaml(args.config)["decode"]["cot"]
-    model = load_model(args.config, mock=args.mock)
+    mcfg = io.read_yaml(args.config)
+    dc = mcfg["decode"]["cot"]
     only = set(args.datasets.split(",")) if args.datasets else None
+    targets = [(d, s) for (d, s) in TARGETS
+               if (only is None or d in only) and (paths.PROCESSED / f"{d}.jsonl").exists()]
+
+    need = [t for t in targets if not split_is_complete("cot", *t, limit=args.limit)]
+    model = load_model(args.config, mock=args.mock) if need else None
+    if model is None:
+        log.info("all %d target(s) already complete -- re-scoring only", len(targets))
 
     summary = {}
-    for dataset, split in TARGETS:
-        if only and dataset not in only:
-            continue
-        if not (paths.PROCESSED / f"{dataset}.jsonl").exists():
-            continue
+    for dataset, split in targets:
         run_mc_split(model, dataset, split, "cot",
                      temperature=dc["temperature"], max_tokens=dc["max_tokens"],
                      limit=args.limit, max_workers=args.workers)
@@ -46,9 +49,12 @@ def main() -> int:
         log.info("  %-28s acc=%.3f parse=%.3f (n=%d)", f"{dataset}/{split}",
                  s.get("accuracy", 0), s.get("parse_rate", 0), s.get("n", 0))
 
-    usage = model.usage_summary()
+    usage = model.usage_summary() if model is not None else {
+        "model": f"{mcfg['model']}@{str(mcfg.get('revision', ''))[:12]}",
+        "revision": mcfg.get("revision"), "n_calls": 0,
+        "prompt_tokens": 0, "completion_tokens": 0, "est_cost_usd": 0.0}
     (paths.RESULTS / "phase11_cot_accuracy.json").write_text(
-        json.dumps({"strategy": "cot", "model": model.name, "summary": summary, "usage": usage},
+        json.dumps({"strategy": "cot", "model": usage["model"], "summary": summary, "usage": usage},
                    indent=2, ensure_ascii=False), encoding="utf-8")
     min_parse = min((s.get("parse_rate", 0) for s in summary.values()), default=0)
     log.info("est cost $%.4f | min parse-rate %.1f%%", usage.get("est_cost_usd", 0), 100 * min_parse)

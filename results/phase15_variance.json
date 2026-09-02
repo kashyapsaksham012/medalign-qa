@@ -1,0 +1,14 @@
+{
+  "runs": [
+    62.45,
+    62.37,
+    62.69,
+    62.84
+  ],
+  "mean": 62.587,
+  "variance": 0.0351,
+  "stdev": 0.187,
+  "paper_variance_4runs": 0.078,
+  "note": "Loose comparison only -- different model. Paper's 0.078 is for Flan-PaLM 540B.",
+  "mock": false
+}

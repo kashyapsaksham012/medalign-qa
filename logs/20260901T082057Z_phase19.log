@@ -1,0 +1,8 @@
+2026-09-01 08:20:58  INFO     phase19    SC beats few-shot on MedQA                           REPRODUCED-QUALITATIVELY
+2026-09-01 08:20:58  INFO     phase19    SC beats few-shot on MedMCQA                         NOT-ATTEMPTED
+2026-09-01 08:20:58  INFO     phase19    SC hurts PubMedQA                                    NOT-ATTEMPTED
+2026-09-01 08:20:58  INFO     phase19    CoT does not beat few-shot on MC (MedQA/MedMCQA/PubMedQA) NOT-ATTEMPTED
+2026-09-01 08:20:58  INFO     phase19    Selective-prediction accuracy rises with deferral    REPRODUCED-QUALITATIVELY
+2026-09-01 08:20:58  INFO     phase19    Instruction tuning helps (PaLM < Flan-PaLM)          NOT-ATTEMPTED
+2026-09-01 08:20:58  INFO     phase19    Scaling helps (~2x 8B->540B)                         NOT-ATTEMPTED
+2026-09-01 08:20:58  INFO     phase19  PHASE 19 PASS -- results/comparison.md  (2/7 findings evaluated)

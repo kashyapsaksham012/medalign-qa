@@ -20,27 +20,39 @@ def main() -> int:
     ap.add_argument("--runs", type=int, default=4)          # PAPER-SPECIFIED (A.2)
     ap.add_argument("--limit", type=int, default=None)
     ap.add_argument("--workers", type=int, default=16)
+    ap.add_argument("--force", action="store_true",
+                    help="re-generate the variance runs even if all N already exist "
+                         "(each run is resume=False, so this DISCARDS the current samples)")
     ap.add_argument("--config", default=str(paths.CONFIGS / "model" / "qwen25-7b-local.yaml"))
     args = ap.parse_args()
     log = get_logger("phase15")
 
     sc = io.read_yaml(args.config)["decode"]["self_consistency"]
-    model = load_model(args.config, mock=args.mock)
     dataset, split = "medqa_usmle_4opt", "test"
 
-    accs = []
-    for i in range(args.runs):
-        run_mc_split(model, dataset, split, "self_consistency",
-                     temperature=sc["temperature"], top_p=sc.get("top_p", 1.0),
-                     max_tokens=sc["max_tokens"], n=sc["n"], seed=1000 + i,
-                     limit=args.limit, max_workers=args.workers, resume=False,
-                     out_subdir=f"variance/run{i}")
-        s = score(run_config.prediction_file(f"variance/run{i}", f"{dataset}__{split}"))
-        if not s.get("n"):
-            log.error("PHASE 15 NO DATA -- run %d produced no scored predictions.", i)
-            return 1
-        accs.append(round(100 * s["accuracy"], 2))
-        log.info("  run %d: acc=%.2f", i, accs[-1])
+    # Idempotency guard: phase 15 does resume=False inference. If a pipeline re-invokes
+    # it on an incremental sweep it would re-run ~3 GPU-h and replace a completed
+    # experiment. Skip (and just re-score) when every run is already present, unless --force.
+    existing = [run_config.prediction_file(f"variance/run{i}", f"{dataset}__{split}")
+                for i in range(args.runs)]
+    if not args.force and all(p.exists() and any(True for _ in io.read_jsonl(p)) for p in existing):
+        accs = [round(100 * score(p)["accuracy"], 2) for p in existing]
+        log.info("all %d variance runs present -- re-scoring only (use --force to regenerate)", args.runs)
+    else:
+        model = load_model(args.config, mock=args.mock)
+        accs = []
+        for i in range(args.runs):
+            run_mc_split(model, dataset, split, "self_consistency",
+                         temperature=sc["temperature"], top_p=sc.get("top_p", 1.0),
+                         max_tokens=sc["max_tokens"], n=sc["n"], seed=1000 + i,
+                         limit=args.limit, max_workers=args.workers, resume=False,
+                         out_subdir=f"variance/run{i}")
+            s = score(run_config.prediction_file(f"variance/run{i}", f"{dataset}__{split}"))
+            if not s.get("n"):
+                log.error("PHASE 15 NO DATA -- run %d produced no scored predictions.", i)
+                return 1
+            accs.append(round(100 * s["accuracy"], 2))
+            log.info("  run %d: acc=%.2f", i, accs[-1])
 
     var = statistics.pvariance(accs) if len(accs) > 1 else 0.0
     res = {"runs": accs, "mean": round(statistics.mean(accs), 3),
