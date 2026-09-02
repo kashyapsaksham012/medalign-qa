@@ -163,9 +163,11 @@ so a fresh run never mixes with the quarantined B1 Groq run at the flat `predict
 | 12 | Second pass part B — **CoT + self-consistency for MedMCQA / PubMedQA / MMLU×6** | ✅ done 2026-09-02 (`gpu_memory_utilization: 0.80` fixed the OOM; parse-rate 0.998–1.0; commit `87d3522`, merged to `main` PR #1) |
 | 13 | Regenerate phases 11–20 locally on the full prediction set (complete summary JSONs, `phase16` McNemar for all 9, deterministic ordering) | ✅ done 2026-09-02 |
 | 14 | **Execution-layer hardening** (the recurring source of manual cleanup): (a) phases 10/11/12 now **score the whole prediction tree** — a `--datasets`-scoped run keeps the summary complete; (b) `--mock` runs **redirect every output to `*/mock/`** (`paths._out`, driven by `MEDALIGN_RUN_TAG`) so a plumbing check can't overwrite real results/tables/figures/docs/predictions; (c) `run_pathb_pipeline.py` idempotent + resumable, safe to kill/restart; (d) TARGETS reordered small-first (MedMCQA last) as a crash canary; (e) phase16 McNemar sorted → stable output; (f) `RUNBOOK.md` template fixed (was Windows paths + the dead API env). Tests: `test_mock_isolation.py`, `test_inference_runner.py`. | ✅ done 2026-09-02 |
-| 15 | **Write-up / deliverable** — findings-verdict table, MMLU-7B-vs-540B result, limitations | ❌ next (local, no GPU) |
-| 16 | Optional: a second model size for scaling / instruction-tuning findings → 7/7 | ❌ optional stretch |
-| 17 | Housekeeping: prune/quarantine the dead hosted-API path (`openai_compat`, `.env`, `MEDALIGN_API_KEY` — Path B is vLLM-only) | ❌ low priority |
+| 15 | **Write-up / deliverable** — `docs/REPLICATION_REPORT.md` (scope, full FS/CoT/SC matrix + Wilson CIs, 5/7 verdict table + McNemar p, MMLU-7B-vs-540B, limitations, repro). README refreshed. | ✅ done 2026-09-02 |
+| 16 | Merge `pathb-medqa-results` → `main` | ✅ done 2026-09-02 (`02c749f`) |
+| 17 | Housekeeping: hosted-API path quarantined — `load_model` defaults to `vllm`, `openai_compat` lazy-imported + labelled B1-only, `phase09` no longer logs `MEDALIGN_API_*`. (`table1_reproduced.json` is *not* dead — `test_phase04_integration` reads it; kept.) | ✅ done 2026-09-02 |
+| 18 | Optional: a second model size for scaling / instruction-tuning findings → 7/7 | ❌ optional stretch (GPU) |
+| 19 | Rotate leaked OpenRouter + Groq keys provider-side (local `.env` already gone) | ⚠ user action |
 
 ### Workflow — one source of truth is this git repo
 Branch `pathb-medqa-results` is merged to `main`. On Kaggle: `git clone`, run,

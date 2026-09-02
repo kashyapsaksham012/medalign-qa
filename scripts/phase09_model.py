@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 """Phase 9 -- Model backend smoke test + Table 4 baseline column.
 
-Runs 5 MedQA-4opt test questions end-to-end through the real API backend:
-build prompt -> generate (greedy) -> parse answer -> score. Prints cost.
+Runs 5 MedQA-4opt test questions end-to-end through the frozen Path B backend
+(local vLLM): build prompt -> generate (greedy) -> parse answer -> score.
 """
 from __future__ import annotations
 
@@ -11,7 +11,6 @@ import json
 
 from medalign_qa.models import load_model
 from medalign_qa.models.base import GenConfig
-from medalign_qa.models.env import get, redact
 from medalign_qa.preprocessing import prompt_builder as pb
 from medalign_qa.preprocessing.answer_parser import parse_choice
 from medalign_qa.utils import io, paths
@@ -50,8 +49,9 @@ def main() -> int:
     write_table4_baselines()
     log.info("Wrote tables/table4_baselines.md")
 
-    log.info("API base : %s", get("MEDALIGN_API_BASE", "<unset>"))
-    log.info("API key  : %s", redact(get("MEDALIGN_API_KEY")))
+    mcfg = io.read_yaml(args.config)
+    log.info("Backend  : %s", mcfg.get("provider", "vllm"))
+    log.info("Config   : %s  (revision %s)", mcfg.get("model"), str(mcfg.get("revision"))[:12])
     model = load_model(args.config, mock=args.mock)
     log.info("Model    : %s", model.name)
 
