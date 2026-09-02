@@ -29,6 +29,22 @@ def _substitute_model() -> tuple[str, bool]:
     return "<substitute model not yet frozen -- see docs/STATUS.md>", False
 
 
+def _findings_block() -> str:
+    """Render the actual Phase-19 verdicts (never assert the paper's findings as ours)."""
+    p = paths.RESULTS / "comparison.json"
+    if not p.exists():
+        return "See `results/comparison.md` for the per-finding verdict."
+    try:
+        fs = json.loads(p.read_text(encoding="utf-8")).get("qualitative_findings", [])
+    except Exception:  # noqa: BLE001
+        return "See `results/comparison.md` for the per-finding verdict."
+    lines = []
+    for f in fs:
+        lines.append(f"- **{f.get('verdict')}** — {f.get('finding')}"
+                     + (f" ({f['detail']})" if f.get("detail") else ""))
+    return "\n".join(lines) if lines else "See `results/comparison.md`."
+
+
 def _headline(model: str, is_mock: bool) -> str:
     mock_warn = ("\n> **These outputs are from MOCK data** -- a plumbing check only, "
                  "not a model run.\n") if is_mock else ""
@@ -52,9 +68,11 @@ It **does NOT reproduce**:
   needs a recruited panel of 9 clinicians + 5 lay raters (blocker B4).
 - The **scaling curves** (Figures A.1, A.2) -- a single model size was run.
 
-What IS tested: whether the paper's **qualitative findings** hold under the same
-methodology (SC helps MedQA/MedMCQA, hurts PubMedQA; CoT does not beat few-shot on MC;
-selective-prediction accuracy rises with deferral). See `results/comparison.md`.
+## Do the paper's qualitative findings hold on the substitute model?
+
+{_findings_block()}
+
+Full numbers and tolerances: `results/comparison.md`.
 """
 
 

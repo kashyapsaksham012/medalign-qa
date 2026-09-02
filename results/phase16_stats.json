@@ -255,19 +255,26 @@
     }
   },
   "mcnemar_fewshot_vs_sc": {
+    "medmcqa__validation": {
+      "statistic": 8.461752433936022,
+      "p_value": 0.0035977234354199737,
+      "discordant": 719,
+      "b": 320,
+      "c": 399
+    },
+    "medqa_usmle_4opt__test": {
+      "statistic": 13.048913043478262,
+      "p_value": 0.00028062150627415476,
+      "discordant": 184,
+      "b": 67,
+      "c": 117
+    },
     "mmlu_anatomy__test": {
       "statistic": 0.0,
       "p_value": 1.0,
       "discordant": 13,
       "b": 7,
       "c": 6
-    },
-    "pubmedqa__test": {
-      "statistic": 0.16666666666666666,
-      "p_value": 0.6834892282353375,
-      "discordant": 54,
-      "b": 25,
-      "c": 29
     },
     "mmlu_clinical_knowledge__test": {
       "statistic": 0.12903225806451613,
@@ -276,12 +283,12 @@
       "b": 14,
       "c": 17
     },
-    "medmcqa__validation": {
-      "statistic": 8.461752433936022,
-      "p_value": 0.0035977234354199737,
-      "discordant": 719,
-      "b": 320,
-      "c": 399
+    "mmlu_college_biology__test": {
+      "statistic": 0.9411764705882353,
+      "p_value": 0.332305908203125,
+      "discordant": 17,
+      "b": 6,
+      "c": 11
     },
     "mmlu_college_medicine__test": {
       "statistic": 12.0,
@@ -290,13 +297,6 @@
       "b": 4,
       "c": 23
     },
-    "mmlu_professional_medicine__test": {
-      "statistic": 0.78125,
-      "p_value": 0.37708558747544885,
-      "discordant": 32,
-      "b": 13,
-      "c": 19
-    },
     "mmlu_medical_genetics__test": {
       "statistic": 0.4444444444444444,
       "p_value": 0.5078125,
@@ -304,19 +304,19 @@
       "b": 3,
       "c": 6
     },
-    "mmlu_college_biology__test": {
-      "statistic": 0.9411764705882353,
-      "p_value": 0.332305908203125,
-      "discordant": 17,
-      "b": 6,
-      "c": 11
+    "mmlu_professional_medicine__test": {
+      "statistic": 0.78125,
+      "p_value": 0.37708558747544885,
+      "discordant": 32,
+      "b": 13,
+      "c": 19
     },
-    "medqa_usmle_4opt__test": {
-      "statistic": 13.048913043478262,
-      "p_value": 0.00028062150627415476,
-      "discordant": 184,
-      "b": 67,
-      "c": 117
+    "pubmedqa__test": {
+      "statistic": 0.16666666666666666,
+      "p_value": 0.6834892282353375,
+      "discordant": 54,
+      "b": 25,
+      "c": 29
     }
   },
   "tolerances_RA17": {

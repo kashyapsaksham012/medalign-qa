@@ -32,8 +32,8 @@ def main() -> int:
                 "parse_rate": round(s["parse_rate"], 4)}
             per_uid[key] = s["_per_uid_correct"]
 
-    # McNemar: few_shot vs self_consistency on shared datasets
-    for stem in {p.stem for p in find_predictions("few_shot")}:
+    # McNemar: few_shot vs self_consistency on shared datasets (sorted -> stable output)
+    for stem in sorted({p.stem for p in find_predictions("few_shot")}):
         a = per_uid.get(f"few_shot:{stem}")
         b = per_uid.get(f"self_consistency:{stem}")
         if not a or not b:

@@ -29,51 +29,59 @@
     {
       "check": "original untouched: project_healthcare_.pdf",
       "pass": true,
-      "status": "UNAVAILABLE",
-      "expected_sha256": "e83a6fecf5820a49b2b1c716f4c1839a7301300a6e27aa53c3cb7212b7db9f4e"
+      "status": "VERIFIED",
+      "expected_sha256": "e83a6fecf5820a49b2b1c716f4c1839a7301300a6e27aa53c3cb7212b7db9f4e",
+      "actual_sha256": "e83a6fecf5820a49b2b1c716f4c1839a7301300a6e27aa53c3cb7212b7db9f4e"
     },
     {
       "check": "original untouched: data.zip",
       "pass": true,
-      "status": "UNAVAILABLE",
-      "expected_sha256": "16c1fbc6f47d548d2af7837b18e893aa45f45c0be9bda0a9adfff3c625bf9262"
+      "status": "VERIFIED",
+      "expected_sha256": "16c1fbc6f47d548d2af7837b18e893aa45f45c0be9bda0a9adfff3c625bf9262",
+      "actual_sha256": "16c1fbc6f47d548d2af7837b18e893aa45f45c0be9bda0a9adfff3c625bf9262"
     },
     {
       "check": "original untouched: data_clean.zip",
       "pass": true,
-      "status": "UNAVAILABLE",
-      "expected_sha256": "1c2ca8130b3d86d9a99a432ab9bef14f3bb9807bef20facd9ac86ba36960f629"
+      "status": "VERIFIED",
+      "expected_sha256": "1c2ca8130b3d86d9a99a432ab9bef14f3bb9807bef20facd9ac86ba36960f629",
+      "actual_sha256": "1c2ca8130b3d86d9a99a432ab9bef14f3bb9807bef20facd9ac86ba36960f629"
     },
     {
       "check": "original untouched: LiveQA_MedicalTask_TREC2017-master.zip",
       "pass": true,
-      "status": "UNAVAILABLE",
-      "expected_sha256": "ea56456197b5714f7c2af67410c7fa881cab5b1b459f300abe5c92d1b72379ae"
+      "status": "VERIFIED",
+      "expected_sha256": "ea56456197b5714f7c2af67410c7fa881cab5b1b459f300abe5c92d1b72379ae",
+      "actual_sha256": "ea56456197b5714f7c2af67410c7fa881cab5b1b459f300abe5c92d1b72379ae"
     },
     {
       "check": "original untouched: MedInfo2019-QA-Medications.xlsx",
       "pass": true,
-      "status": "UNAVAILABLE",
-      "expected_sha256": "4f13d0e3b195bd6a5d72a1872f9118cb5f69fd02c370001695330cfc9e3b5832"
+      "status": "VERIFIED",
+      "expected_sha256": "4f13d0e3b195bd6a5d72a1872f9118cb5f69fd02c370001695330cfc9e3b5832",
+      "actual_sha256": "4f13d0e3b195bd6a5d72a1872f9118cb5f69fd02c370001695330cfc9e3b5832"
     },
     {
       "check": "original untouched: 41586_2023_6291_MOESM6_ESM.xlsx",
       "pass": true,
-      "status": "UNAVAILABLE",
-      "expected_sha256": "a89f6639ee76717e2a1ea25bbe25c8c69cf396681be76fd8145da7e9c8917e1e"
+      "status": "VERIFIED",
+      "expected_sha256": "a89f6639ee76717e2a1ea25bbe25c8c69cf396681be76fd8145da7e9c8917e1e",
+      "actual_sha256": "a89f6639ee76717e2a1ea25bbe25c8c69cf396681be76fd8145da7e9c8917e1e"
     },
     {
       "check": "phase04 re-run is byte-identical (Table1 + 3 processed files)",
-      "pass": false,
+      "pass": true,
       "before": {
         "tables/table1_reproduced.md": "62026b98e68b472754aeaa7ac503d926c1807f5198700d7d4c28cb763720e3d6",
         "processed_data/pubmedqa.jsonl": "586ea3fee877c417921cc1192577bf6351d2ea3583640eeb363918e693ef0900",
-        "processed_data/mmlu_anatomy.jsonl": "66d475ca6d572187c3b14dfc9341d074ebe7cdc707f05fec9ef65c0aff6e2ea8"
+        "processed_data/mmlu_anatomy.jsonl": "66d475ca6d572187c3b14dfc9341d074ebe7cdc707f05fec9ef65c0aff6e2ea8",
+        "processed_data/medqa_usmle_4opt.jsonl": "776a987b8a10c296bbb339ebb450e371ec5f3378660a7bcb375221aaa27f053c"
       },
       "after": {
         "tables/table1_reproduced.md": "62026b98e68b472754aeaa7ac503d926c1807f5198700d7d4c28cb763720e3d6",
         "processed_data/pubmedqa.jsonl": "586ea3fee877c417921cc1192577bf6351d2ea3583640eeb363918e693ef0900",
-        "processed_data/mmlu_anatomy.jsonl": "66d475ca6d572187c3b14dfc9341d074ebe7cdc707f05fec9ef65c0aff6e2ea8"
+        "processed_data/mmlu_anatomy.jsonl": "66d475ca6d572187c3b14dfc9341d074ebe7cdc707f05fec9ef65c0aff6e2ea8",
+        "processed_data/medqa_usmle_4opt.jsonl": "776a987b8a10c296bbb339ebb450e371ec5f3378660a7bcb375221aaa27f053c"
       }
     },
     {
@@ -95,5 +103,5 @@
       "offenders": []
     }
   ],
-  "all_pass": false
+  "all_pass": true
 }

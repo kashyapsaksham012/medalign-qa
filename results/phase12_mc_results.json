@@ -5,6 +5,39 @@
   "mock": false,
   "seed": 0,
   "summary": {
+    "medqa_usmle_4opt/test": {
+      "path": "derived_data/predictions/qwen25-7b-local/self_consistency/medqa_usmle_4opt__test.jsonl",
+      "n": 1273,
+      "n_correct": 806,
+      "accuracy": 0.6331500392772977,
+      "parse_rate": 1.0,
+      "n_parsed": 1273,
+      "wilson95_lo": 0.606311045809888,
+      "wilson95_hi": 0.659187822648032,
+      "mode": "self_consistency"
+    },
+    "medmcqa/validation": {
+      "path": "derived_data/predictions/qwen25-7b-local/self_consistency/medmcqa__validation.jsonl",
+      "n": 4183,
+      "n_correct": 2446,
+      "accuracy": 0.5847477886684198,
+      "parse_rate": 1.0,
+      "n_parsed": 4183,
+      "wilson95_lo": 0.5697434952222442,
+      "wilson95_hi": 0.5995965629256448,
+      "mode": "self_consistency"
+    },
+    "pubmedqa/test": {
+      "path": "derived_data/predictions/qwen25-7b-local/self_consistency/pubmedqa__test.jsonl",
+      "n": 500,
+      "n_correct": 368,
+      "accuracy": 0.736,
+      "parse_rate": 1.0,
+      "n_parsed": 500,
+      "wilson95_lo": 0.6956683729184137,
+      "wilson95_hi": 0.7727328071349999,
+      "mode": "self_consistency"
+    },
     "mmlu_anatomy/test": {
       "path": "derived_data/predictions/qwen25-7b-local/self_consistency/mmlu_anatomy__test.jsonl",
       "n": 135,
@@ -82,9 +115,9 @@
   "usage": {
     "model": "Qwen/Qwen2.5-7B-Instruct@a09a35458c70",
     "revision": "a09a35458c702b33eeacc393d103063234e8bc28",
-    "n_calls": 11979,
-    "prompt_tokens": 1341831,
-    "completion_tokens": 1062283,
+    "n_calls": 0,
+    "prompt_tokens": 0,
+    "completion_tokens": 0,
     "est_cost_usd": 0.0
   }
 }
