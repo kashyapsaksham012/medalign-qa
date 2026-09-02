@@ -162,16 +162,17 @@ so a fresh run never mixes with the quarantined B1 Groq run at the flat `predict
 | 11d | Reconciled the parallel "clean tarball" line into this branch: honest `phase18_repro.py` (`VERIFIED`/`UNAVAILABLE`/`HASH_MISMATCH`, no hard-fail on a missing archive), `comparison.md` now regenerates the Phase-15 variance table (was a hand edit) | ✅ done 2026-09-02 |
 | 12 | Second pass part B — **CoT + self-consistency for MedMCQA / PubMedQA / MMLU×6** | ✅ done 2026-09-02 (`gpu_memory_utilization: 0.80` fixed the OOM; parse-rate 0.998–1.0; commit `87d3522`, merged to `main` PR #1) |
 | 13 | Regenerate phases 11–20 locally on the full prediction set (complete summary JSONs, `phase16` McNemar for all 9, deterministic ordering) | ✅ done 2026-09-02 |
-| 14 | **Write-up / deliverable** — findings-verdict table, MMLU-7B-vs-540B result, limitations | ❌ next (local, no GPU) |
-| 15 | Optional: a second model size for scaling / instruction-tuning findings → 7/7 | ❌ optional stretch |
-| 16 | Housekeeping: regenerate a non-Windows `RUNBOOK.md` (phase20 template), prune/quarantine the dead hosted-API path (`openai_compat`, `.env`, `MEDALIGN_API_KEY`) | ❌ low priority |
+| 14 | **Execution-layer hardening** (the recurring source of manual cleanup): (a) phases 10/11/12 now **score the whole prediction tree** — a `--datasets`-scoped run keeps the summary complete; (b) `--mock` runs **redirect every output to `*/mock/`** (`paths._out`, driven by `MEDALIGN_RUN_TAG`) so a plumbing check can't overwrite real results/tables/figures/docs/predictions; (c) `run_pathb_pipeline.py` idempotent + resumable, safe to kill/restart; (d) TARGETS reordered small-first (MedMCQA last) as a crash canary; (e) phase16 McNemar sorted → stable output; (f) `RUNBOOK.md` template fixed (was Windows paths + the dead API env). Tests: `test_mock_isolation.py`, `test_inference_runner.py`. | ✅ done 2026-09-02 |
+| 15 | **Write-up / deliverable** — findings-verdict table, MMLU-7B-vs-540B result, limitations | ❌ next (local, no GPU) |
+| 16 | Optional: a second model size for scaling / instruction-tuning findings → 7/7 | ❌ optional stretch |
+| 17 | Housekeeping: prune/quarantine the dead hosted-API path (`openai_compat`, `.env`, `MEDALIGN_API_KEY` — Path B is vLLM-only) | ❌ low priority |
 
 ### Workflow — one source of truth is this git repo
 Branch `pathb-medqa-results` is merged to `main`. On Kaggle: `git clone`, run,
 `git add derived_data/predictions results tables figures && git commit && git push`.
-No tarballs. After a GPU run, re-run `phase11 12 13 16 17 18 19 20` locally so the
-summary JSONs reflect the full prediction set (a `--datasets`-scoped Kaggle run only
-writes that batch into the summary; the prediction files are complete regardless).
+No tarballs. After a GPU run, re-run `phase10 11 12 13 16 17 18 19 20` locally —
+every phase now re-scores the full prediction tree, so the summaries stay complete
+even if the Kaggle run was `--datasets`-scoped.
 
 ### Remaining findings need a second model
 - *instruction tuning helps (PaLM < Flan-PaLM)* — needs the non-instruct base of the same family

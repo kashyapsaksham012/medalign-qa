@@ -19,6 +19,9 @@ def load_model(config_path=None, *, mock: bool = False):
       anything else     -> OpenAICompatLLM (hosted OpenAI-compatible API; legacy)
     """
     if mock:
+        # Isolation of --mock output under */mock/ is driven by MEDALIGN_RUN_TAG,
+        # which run.py / run_pathb_pipeline.py export before the phase runs (so it
+        # is set before medalign_qa.utils.paths is imported). Nothing to do here.
         return MockLLM()
     from ..utils import io, paths
     if config_path is None:

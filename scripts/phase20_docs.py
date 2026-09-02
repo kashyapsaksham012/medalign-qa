@@ -110,30 +110,41 @@ def main() -> int:
     runbook = """\
 # Run-book
 
-```
-python -m venv .venv
-.venv/Scripts/python -m pip install -r requirements.txt
-.venv/Scripts/python -m pip install -e .
-cp .env.example .env      # then fill MEDALIGN_API_KEY / MEDALIGN_API_BASE
+## Milestone 1 -- data harness (any machine, no GPU)
 
-python run.py phase01 .. phase08   # data harness (model-independent)
-python run.py phase09              # model backend smoke test  (needs .env + a FROZEN model config)
-python run.py phase10 --all        # few-shot MC inference
-python run.py phase11              # chain-of-thought
-python run.py phase12              # self-consistency (11x) + Tables 4-7, A.1
-python run.py phase13              # scaling (NOT REPRODUCED -- single model)
-python run.py phase14              # selective prediction (41x) -> Fig 5
-python run.py phase15              # variance (4x MedQA SC)
-python run.py phase16              # Wilson CIs / McNemar (beyond paper)
-python run.py phase17              # render in-scope tables + figures  (hard-fails with NO DATA)
-python run.py phase18              # reproducibility validation
-python run.py phase19              # paper-to-result comparison  (hard-fails with NO DATA)
-python run.py phase20              # this file  (hard-fails unless phase 19 produced comparison.md)
-python run.py test
+```
+python -m venv .venv && . .venv/bin/activate      # Windows: .venv\\Scripts\\activate
+pip install -r requirements.txt && pip install -e .
+python run.py phase01   # ... through phase08   (env -> acquire -> verify -> integrate -> cohort -> preprocess -> prompts -> EDA)
 ```
 
-Phases 12/16/17/19/20 hard-fail (exit 1, "NO DATA") when no model predictions exist,
-so an empty run cannot masquerade as a completed replication.
+## Milestone 2 -- Path B substitute-model evaluation (needs a GPU)
+
+Model + decode params are frozen in `configs/model/qwen25-7b-local.yaml`
+(`revision` is an exact HF commit SHA). Runbook for a free Kaggle/Colab T4:
+`docs/pathb_runbook.md`.
+
+```
+python scripts/run_pathb_pipeline.py --all        # phases 9-20, all MC datasets
+  # idempotent + resumable: completed splits are skipped (no model load), so this
+  # is safe to kill and restart. --mock runs the whole thing offline, isolated
+  # under */mock/ (never touches real outputs).
+
+# or phase-by-phase (per-dataset is safest on a flaky free GPU):
+python run.py phase09                       # smoke test (5 MedQA Q)
+python run.py phase10 --all                 # few-shot
+python run.py phase11 --datasets medmcqa    # CoT   (repeat per dataset)
+python run.py phase12 --datasets medmcqa    # self-consistency 11x  (repeat per dataset)
+python run.py phase13 14 15                 # scaling verdict / selective prediction 41x / variance 4x
+python run.py phase16 17 18 19 20           # stats / render / repro / comparison / docs
+```
+
+After any GPU run, re-run `phase10 11 12 13 16 17 18 19 20` locally: a
+`--datasets`-scoped run only infers that subset but every phase re-scores the
+*whole* prediction tree, so the summaries stay complete.
+
+Phases 12/16/17/19/20 hard-fail (exit 1, "NO DATA") when no model predictions
+exist, so an empty run cannot masquerade as a completed replication.
 """
     (paths.DOCS / "RUNBOOK.md").write_text(runbook, encoding="utf-8")
 

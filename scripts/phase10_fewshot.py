@@ -11,7 +11,8 @@ import argparse
 import json
 
 from medalign_qa import config as run_config
-from medalign_qa.inference.runner import run_mc_split, score_file, split_is_complete
+from medalign_qa.evaluation.mc_accuracy import find_predictions, score
+from medalign_qa.inference.runner import run_mc_split, split_is_complete
 from medalign_qa.models import load_model
 from medalign_qa.utils import io, paths
 from medalign_qa.utils.logging_utils import get_logger
@@ -52,14 +53,21 @@ def main() -> int:
     if model is None:
         log.info("all %d target(s) already complete -- re-scoring only", len(targets))
 
-    summary = {}
     for dataset, split in targets:
-        res = run_mc_split(model, dataset, split, "few_shot",
-                           temperature=cfg["temperature"], max_tokens=cfg["max_tokens"],
-                           limit=args.limit, max_workers=args.workers)
-        summary[f"{dataset}/{split}"] = res
-        log.info("  %-28s acc=%.3f  parse=%.3f  (n=%d)",
-                 f"{dataset}/{split}", res.get("accuracy", 0), res.get("parse_rate", 0), res.get("n", 0))
+        run_mc_split(model, dataset, split, "few_shot",
+                     temperature=cfg["temperature"], max_tokens=cfg["max_tokens"],
+                     limit=args.limit, max_workers=args.workers)
+
+    # Summary = every few-shot prediction file, not just this run's --datasets subset.
+    summary = {}
+    for p in find_predictions("few_shot"):
+        s = score(p)
+        if not s.get("n"):
+            continue
+        s.pop("_per_uid_correct", None)
+        summary[p.stem.replace("__", "/")] = s
+        log.info("  %-28s acc=%.3f  parse=%.3f  (n=%d)", p.stem.replace("__", "/"),
+                 s.get("accuracy", 0), s.get("parse_rate", 0), s.get("n", 0))
 
     usage = model.usage_summary() if model is not None else {
         "model": f"{mcfg['model']}@{str(mcfg.get('revision', ''))[:12]}",
