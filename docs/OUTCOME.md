@@ -27,4 +27,4 @@ It **does NOT reproduce**:
 - **NOT-ATTEMPTED** — Instruction tuning helps (PaLM < Flan-PaLM) (requires the model's non-instruct base -- not run (single model))
 - **NOT-ATTEMPTED** — Scaling helps (~2x 8B->540B) (requires >= 2 model sizes -- see Phase 13)
 
-Full numbers and tolerances: `results/comparison.md`.
+Full analysis: **`docs/REPLICATION_REPORT.md`**. Numbers + tolerances: `results/comparison.md`.

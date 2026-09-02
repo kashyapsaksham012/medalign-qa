@@ -1,15 +1,19 @@
 # MedAlign QA — replication of *Large Language Models Encode Clinical Knowledge*
 
-Faithful-replication scaffold for **Med-PaLM / MultiMedQA**
-(Singhal et al., arXiv:2212.13138v1, 2022 · *Nature* 620:172–180, 2023).
+Replication of the **MultiMedQA** multiple-choice methodology from
+Singhal et al. (arXiv:2212.13138v1, 2022 · *Nature* 620:172–180, 2023), run on a
+frozen open substitute model.
 
-> **Replication status:** the paper's models (**PaLM / Flan-PaLM / Med-PaLM**) were
-> never publicly released, and the human evaluation used a recruited clinician
-> panel. A strict reproduction of the paper's numbers is therefore **not possible**
-> from public materials. This repo faithfully reconstructs everything that *is*
-> reproducible — the MultiMedQA benchmark, the prompting/self-consistency/selective-
-> prediction harness, the instruction-prompt-tuning recipe, and the human-evaluation
-> statistics machinery — and stops at the model boundary. See `docs/blockers.md`.
+> **Status.** The paper's models (PaLM / Flan-PaLM / Med-PaLM) were never released,
+> so its *numbers* cannot be reproduced. This repo reconstructs the benchmark and
+> the full prompting harness (few-shot / CoT / self-consistency / selective
+> prediction) and runs it end-to-end on **`Qwen/Qwen2.5-7B-Instruct`** (frozen HF
+> revision, local vLLM). Of the paper's 7 qualitative MC findings, **5 are
+> evaluated: 3 reproduce, 2 diverge**; the other 2 need a second model size.
+> Instruction prompt tuning (Med-PaLM) and the human evaluation stay out of scope.
+>
+> **→ [`docs/REPLICATION_REPORT.md`](docs/REPLICATION_REPORT.md)** — results, verdicts, limitations.
+> **→ [`docs/STATUS.md`](docs/STATUS.md)** — single source of truth. **[`docs/blockers.md`](docs/blockers.md)** — what's not reproducible and why.
 
 ## Layout
 
@@ -28,32 +32,34 @@ src/medalign_qa/ the package (utils, data, preprocessing, inference, training,
                  evaluation, fairness, uncertainty, figures)
 scripts/         phaseNN_*.py entrypoints
 tests/           pytest suite (per-phase validation)
-docs/            STATUS.md (single source of truth), blockers.md, deviations.md,
-                 history/ (superseded planning docs)
+docs/            REPLICATION_REPORT.md (results + verdicts), STATUS.md (source of
+                 truth), OUTCOME.md, blockers.md, deviations.md, pathb_runbook.md,
+                 reproducibility.md, history/ (superseded planning docs)
 results/ figures/ tables/ logs/   generated artifacts
 ```
 
 ## Setup
 
 ```bash
-python -m venv .venv
-.venv/Scripts/python -m pip install -r requirements.txt
-.venv/Scripts/python -m pip install -e .
+python -m venv .venv && . .venv/bin/activate      # Windows: .venv\Scripts\activate
+pip install -r requirements.txt && pip install -e .
 ```
 
-Environment: CPython **3.14.7** (the only interpreter on the build machine — the
-model-independent stack works on it; see `docs/deviations.md` RA-18′).
+Milestone-1 stack runs on CPython **3.14.7** (`docs/deviations.md` RA-18′). The GPU
+runtime (vLLM) uses its own env — see `requirements-pathb.txt` / `docs/pathb_runbook.md`.
 
 ## Run
 
 ```bash
-.venv/Scripts/python run.py --list
-.venv/Scripts/python run.py phase01     # environment self-check
-.venv/Scripts/python run.py test        # full pytest suite
+python run.py --list
+python run.py phase01            # ... through phase08: data harness (no GPU)
+python scripts/run_pathb_pipeline.py --all    # phases 9–20: substitute-model eval (GPU)
+python run.py test              # full pytest suite (96 tests)
 ```
 
-Phases execute sequentially (1 → 20). Each `scripts/phaseNN_*.py` prints an
-execution plan, does its work, and writes a status block.
+Phases execute sequentially (1 → 20); each `scripts/phaseNN_*.py` prints a plan,
+does its work, and writes a status block. `docs/RUNBOOK.md` has the phase-by-phase
+form. `--mock` runs the whole pipeline offline, isolated under `*/mock/`.
 
 ## Evidence labelling
 

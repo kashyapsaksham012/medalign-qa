@@ -72,7 +72,7 @@ It **does NOT reproduce**:
 
 {_findings_block()}
 
-Full numbers and tolerances: `results/comparison.md`.
+Full analysis: **`docs/REPLICATION_REPORT.md`**. Numbers + tolerances: `results/comparison.md`.
 """
 
 
