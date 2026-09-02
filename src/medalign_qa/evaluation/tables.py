@@ -103,14 +103,22 @@ def table7() -> str:
 
 
 def tableA1() -> str:
+    # PAPER["tableA1"][subj] = [PaLM-540B FS, Flan-PaLM-540B FS, Flan-PaLM-540B CoT,
+    #                           Flan-PaLM-540B SC]  (all B1 -- unobtainable weights)
     L = ["# Table A.1 -- MMLU clinical topics",
-         "", "| Subject | Paper Flan-PaLM 540B (SC) | Ours FS | Ours CoT | Ours SC |", "|---|---|---|---|---|"]
+         "",
+         "Paper columns are Flan-PaLM / PaLM 540B (blocker B1 -- not reproducible). "
+         "`Ours` is the substitute model.",
+         "",
+         "| Subject | Paper PaLM-540B FS | Paper FlanPaLM-540B FS | Paper FlanPaLM CoT | "
+         "Paper FlanPaLM SC | Ours FS | Ours CoT | Ours SC |",
+         "|---|---|---|---|---|---|---|---|"]
     for s in paths.MMLU_SUBJECTS:
+        p = PAPER.get("tableA1", {}).get(s, ["-", "-", "-", "-"])
         fs = _acc("few_shot", f"mmlu_{s}", "test")
         cot = _acc("cot", f"mmlu_{s}", "test")
         sc = _acc("self_consistency", f"mmlu_{s}", "test")
-        paper = PAPER["tableA1_flan_palm_540b_sc"].get(s, "-")
-        L.append(f"| {s} | {paper} | {fs or '-'} | {cot or '-'} | {sc or '-'} |")
+        L.append(f"| {s} | {p[0]} | {p[1]} | {p[2]} | {p[3]} | {fs or '-'} | {cot or '-'} | {sc or '-'} |")
     return "\n".join(L) + "\n"
 
 

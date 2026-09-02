@@ -8,19 +8,37 @@
 
 ---
 
-## 1. Scope
+## 1. Completeness against the paper — every table, figure, and section
 
-| Paper component | Status |
-|---|---|
-| MultiMedQA benchmark assembly (§3.1, Table 1) | ✅ reproduced — 56/58 dataset checks exact, 2 documented caveats (RA-01, RA-08/09) |
-| Few-shot MC evaluation (§4.1–4.4, Tables 4–7, A.1; Figs 3–4) | ✅ methodology reproduced on the substitute model |
-| Chain-of-thought (§4.4, Table 6) | ✅ |
-| Self-consistency, 11 decodes (§4.4, Table 7) | ✅ |
-| Selective prediction, 41 decodes (§4.4, Fig 5) | ✅ (full 1,273-question MedQA test set) |
-| Run-to-run variance (§A.2) | ✅ (4 runs) |
-| Scaling curves (Figs A.1–A.2) | ❌ single model size |
-| Instruction prompt tuning → Med-PaLM (§3.3.3–3.3.4, A.1, A.6) | ❌ needs frozen Flan-PaLM 540B weights (B1/B2) + 40 unpublished exemplars (B3) |
-| Human evaluation (§3.2, §4.5; Tables A.3–A.12; Figs 6–11) | ❌ needs 9 clinicians + 5 lay raters (B4) |
+Three states: **✅ done** (reproducible from public materials, and done) · **🔒 impossible** (needs Google's unreleased PaLM/Flan-PaLM/Med-PaLM weights or the paper's recruited clinician panel — no replication can do it) · **⚪ possible, not done** (needs a second open model — deliberately out of scope here).
+
+| Paper item | State | Notes |
+|---|---|---|
+| §3.1 · **MultiMedQA benchmark** (7 datasets) · **Table 1** | ✅ | `phase03`: 56 PASS / 2 CAVEAT / 0 FAIL. Caveats (HealthSearchQA 3173 vs 3375, MedicationQA 690 vs 674, LiveQA-train mirror) are cases where the *public release* differs from the paper — unfixable by anyone. |
+| §3.2 · **Human-evaluation framework** (Tables 2, 3) | ✅ spec / 🔒 ratings | 12 clinician + 2 lay axes captured; 140-question eval set materialised; bootstrap machinery (100 replicas, 95 %ile) implemented in `evaluation/stats.py`. The ratings themselves need 9 clinicians + 5 lay raters (**B4**). |
+| §3.3.1 · **Models** (PaLM/Flan-PaLM 8B/62B/540B) | 🔒 | Never released (**B1**). Substitute: Qwen2.5-7B. |
+| §3.3.2 · **Prompting** — few-shot / CoT / self-consistency (prompts A.13–A.21) | ✅ | Implemented; exemplar blocks transcribed verbatim. |
+| §3.3.3–3.3.4 · **Instruction prompt tuning → Med-PaLM** (Fig 2, spec in `configs/global.yaml`) | 🔒 | Needs frozen Flan-PaLM 540B weights (**B2**) + the 40 unpublished clinician exemplars (**B3**). |
+| §4.1 · **MedQA** — **Table 4** (leaderboard), **Fig 3** | ✅ | Methodology + all 6 cited baselines (RA-15) + substitute row. Paper's Flan-PaLM 67.6 = **B1**. |
+| §4.2 · **MedMCQA / PubMedQA** — **Fig 3** | ✅ | Rendered with prior-SOTA + substitute numbers. |
+| §4.3 · **MMLU clinical topics** — **Fig 4** | ✅ methodology / ⚠ partial | Ours-vs-Flan-PaLM-540B rendered. The OPT/BLOOM/Galactica/Gopher/Chinchilla context bars (paper's ref [79]) are not re-plotted — those values can't be read precisely from the paper's chart and ref [79] isn't in the provided materials. |
+| §4.4 · **Table 5** (few-shot × PaLM/Flan-PaLM × 3 sizes) | ✅ substitute col / 🔒 grid | Full 6-model grid = **B1**. |
+| §4.4 · **Table 6** (few-shot vs CoT) | ✅ | MedQA / MedMCQA / PubMedQA. |
+| §4.4 · **Table 7** (few-shot vs self-consistency) | ✅ | MedQA / MedMCQA / PubMedQA. |
+| §4.4 · **Scaling** finding + **Figs A.1, A.2** | ⚪ | Requires ≥ 2 model sizes. **The only paper component that is possible but not done.** |
+| §4.4 · **Fig 5** (selective prediction, 41 decodes) | ✅ | Full 1,273-question MedQA test set. |
+| §4.4 · **Table 8** (Flan-PaLM MedQA explanations) | 🔒 | Needs Flan-PaLM's actual generations (**B1**). |
+| §4.5 / §A.7 · **Human-evaluation results** — **Tables A.3–A.12**, **Figs 6–11** | 🔒 | Rater panel (**B4**). |
+| §A.1 · IPT hyperparameters | ✅ recorded | In `configs/global.yaml`; not runnable without B2. |
+| §A.2 · **Variance** (0.078 over 4 runs) | ✅ | 4 runs, variance 0.035. |
+| §A.3 · **Table A.1** (MMLU × 4 strategies) | ✅ | Ours FS/CoT/SC for all 6 subjects, beside all 4 paper columns (paper cols = B1). |
+| §A.4 · **Figs A.1, A.2** (scaling plots) | ⚪ | Same as scaling above. |
+| §A.5 · Med-PaLM model card | ✅ recorded | `docs/model_card.md` is the substitute-model analogue. |
+| §A.6 · **Med-PaLM MC** (67.2 % MedQA) | 🔒 | Needs frozen Flan-PaLM 540B (**B2**). |
+| §A.8 / §A.9 · Prompt exemplars (A.13–A.21) | ✅ | Transcribed into `prompts/`. |
+| Tables 9, 10 · Med-PaLM long-form outputs | 🔒 | Needs Med-PaLM generations (**B2**). |
+
+**Verdict.** Everything the paper does that is reproducible from public materials is done. **One** paper component — the scaling analysis — is reproducible only with a second open model and is deliberately excluded. Everything else that is undone (≈40 % of the paper by page count: Med-PaLM, instruction prompt tuning, and the entire human evaluation) is **permanently blocked** by the unavailability of Google's model weights and the paper's clinician panel — see `docs/blockers.md` (B1–B4).
 
 **Datasets & scored splits.** MedQA-USMLE 4-opt (test, 1273) and 5-opt (test, 1273); MedMCQA (validation, 4183 — RA-01, test labels withheld); PubMedQA `pqa_labeled` (official test, 500 — RA-02); MMLU ×6 clinical subjects (test, 1089 total). Prompting is verbatim from the paper's exemplar blocks (Tables A.13–A.21); a chat-model system message is added for output formatting (RA-24); MMLU few-shot uses each subject's 5 `dev` rows (RA-06, the paper gives no MMLU few-shot prompt). Decoding: greedy for few-shot/CoT; temperature 0.7 for SC (RA-03, unspecified in the preprint). Runtime: local vLLM on a Kaggle T4×2, `float16` (Turing has no bf16 — RA-28). All 28 gap-filling assumptions are in `docs/deviations.md`.
 
